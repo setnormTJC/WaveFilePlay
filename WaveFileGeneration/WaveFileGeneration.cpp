@@ -60,6 +60,41 @@ void demoChromaticScaleFromC3ToC5()
 	}
 }
 
+void demoAmazingGrace()
+{
+	/*For "Amazing Grace" -> https://musescore.com/user/2018/scores/1937
+*/
+	const int tempoForAmazingGrace = 80; //beats per minute 
+	float secondsInAMinute = 60.0;
+	float quarterNoteDurationIn3_4Time = secondsInAMinute / tempoForAmazingGrace;
+
+	std::vector<SongNote> amazingGraceNotes =
+	{
+		{"C3", quarterNoteDurationIn3_4Time,	 SongNote::Loudness::Mezzo}, //quarter note ("A")
+		{"F3", quarterNoteDurationIn3_4Time * 2, SongNote::Loudness::Forte}, //half note ("may"
+		{"A3", quarterNoteDurationIn3_4Time / 2, SongNote::Loudness::Mezzo}, //eighth note ("zee..")
+		{"F3", quarterNoteDurationIn3_4Time / 2, SongNote::Loudness::Piano}, //another eighth note ("..ing)
+
+		{"A3", quarterNoteDurationIn3_4Time * 2, SongNote::Loudness::Piano},
+		{"G3", quarterNoteDurationIn3_4Time,	 SongNote::Loudness::Mezzo},
+		{"F3", quarterNoteDurationIn3_4Time * 2, SongNote::Loudness::Piano},
+		{"D3", quarterNoteDurationIn3_4Time,	 SongNote::Loudness::Mezzo},
+
+		{"C3", quarterNoteDurationIn3_4Time * 2, SongNote::Loudness::Piano}
+	};
+
+	WaveFile aWaveFile(amazingGraceNotes, WaveFile::WaveType::Sine);
+
+	time_t now = time(nullptr);
+
+	std::string filename = std::to_string(localtime(&now)->tm_hour) + "_"
+		+ std::to_string(localtime(&now)->tm_min);
+
+	filename += ".wav";
+
+	aWaveFile.writeToFile(filename);
+}
+
 int main()
 {
 
@@ -69,38 +104,8 @@ int main()
 		//WaveFile aWaveFile{}; 
 		//WaveFile aWaveFile("C3", WaveFile::WaveType::Sine, 2);
 		//WaveFile aWaveFile("A4", WaveFile::WaveType::Square, 2); 
-		
-		/*For "Amazing Grace" -> https://musescore.com/user/2018/scores/1937
-		*/
-		const int tempoForAmazingGrace = 80; //beats per minute 
-		float secondsInAMinute = 60.0; 
-		float quarterNoteDurationIn3_4Time = secondsInAMinute/ tempoForAmazingGrace;
+		demoAmazingGrace(); 
 
-		std::vector<SongNote> amazingGraceNotes =
-		{
-			{"C3", quarterNoteDurationIn3_4Time,	 SongNote::Loudness::Mezzo}, //quarter note ("A")
-			{"F3", quarterNoteDurationIn3_4Time * 2, SongNote::Loudness::Forte}, //half note ("may"
-			{"A3", quarterNoteDurationIn3_4Time / 2, SongNote::Loudness::Mezzo}, //eighth note ("zee..")
-			{"F3", quarterNoteDurationIn3_4Time / 2, SongNote::Loudness::Piano}, //another eighth note ("..ing)
-
-			{"A3", quarterNoteDurationIn3_4Time * 2, SongNote::Loudness::Piano}, 
-			{"G3", quarterNoteDurationIn3_4Time,	 SongNote::Loudness::Mezzo}, 
-			{"F3", quarterNoteDurationIn3_4Time * 2, SongNote::Loudness::Piano}, 
-			{"D3", quarterNoteDurationIn3_4Time,	 SongNote::Loudness::Mezzo},
-
-			{"C3", quarterNoteDurationIn3_4Time * 2, SongNote::Loudness::Piano}
-		};
-
-		WaveFile aWaveFile(amazingGraceNotes, WaveFile::WaveType::Sine);
-
-		time_t now = time(nullptr);
-
-		std::string filename = std::to_string(localtime(&now)->tm_hour) + "_"
-			+ std::to_string(localtime(&now)->tm_min);
-
-		filename += ".wav";
-
-		aWaveFile.writeToFile(filename); 
 	}
 	
 	catch (const std::exception& e)
