@@ -28,7 +28,7 @@ void demo880HzSineWave()
 
 		filename += ".wav";
 
-		aWaveFile.writeToFile(filename);
+		aWaveFile.writeToWaveFile(filename);
 	}
 	catch (const std::exception& e)
 	{
@@ -51,7 +51,7 @@ void demoChromaticScaleFromC3ToC5()
 
 		filename += ".wav";
 
-		aWaveFile.writeToFile(filename);
+		aWaveFile.writeToWaveFile(filename);
 	}
 
 	catch (const std::exception& e)
@@ -85,6 +85,15 @@ void demoAmazingGrace()
 
 	WaveFile aWaveFile(amazingGraceNotes, WaveFile::WaveType::Sine);
 
+	////reverse audio: 
+	//aWaveFile.reverseAudio(); 
+
+	////increase volume: 
+	//aWaveFile.modifyVolume(3.0); 
+
+	//decrease volume: 
+	aWaveFile.modifyVolume(0.5);
+
 	time_t now = time(nullptr);
 
 	std::string filename = std::to_string(localtime(&now)->tm_hour) + "_"
@@ -92,7 +101,34 @@ void demoAmazingGrace()
 
 	filename += ".wav";
 
-	aWaveFile.writeToFile(filename);
+	aWaveFile.writeToWaveFile(filename);
+}
+
+void demoSimpleWaveFileReading()
+{
+	std::string inputFilename = "First wave!.wav";
+	WaveFile inputWaveFile(inputFilename);
+
+	std::string csvFilename = "firstWave.csv";
+	inputWaveFile.writeSoundDataToCSV(csvFilename);
+
+	std::string outputFilename = "outversion.wav";
+	inputWaveFile.writeToWaveFile(outputFilename);
+
+}
+
+void demoMeSpeakingInReverse()
+{
+	std::string infileName = "meSpeaking.wav";
+
+	WaveFile inputWaveObject(infileName);
+
+	std::string outfileName = "echoingMe.wav";
+	inputWaveObject.writeToWaveFile(outfileName);
+
+	std::string reversedOutFileName = "reversedMe.wav";
+	inputWaveObject.reverseAudio();
+	inputWaveObject.writeToWaveFile(reversedOutFileName);
 }
 
 int main()
@@ -104,8 +140,14 @@ int main()
 		//WaveFile aWaveFile{}; 
 		//WaveFile aWaveFile("C3", WaveFile::WaveType::Sine, 2);
 		//WaveFile aWaveFile("A4", WaveFile::WaveType::Square, 2); 
-		demoAmazingGrace(); 
+		//demoAmazingGrace(); 
 
+		std::string infileName = "skywardSword.wav";
+		WaveFile inputWaveObject(infileName); 
+
+		inputWaveObject.reverseAudio(); 
+		inputWaveObject.writeToWaveFile("reversedskywardSword.wav");
+		
 	}
 	
 	catch (const std::exception& e)
