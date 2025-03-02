@@ -2,7 +2,7 @@
 #pragma once
 
 
-#include"SongNote.h"
+#include"PianoNote.h"
 
 #include<cmath> 
 #include<fstream>
@@ -118,10 +118,10 @@ public:
 	WaveFile(const std::string& noteName, const WaveType theWaveType, const float durationInSeconds);
 	
 	/*The fanciest constructor overload (so far)*/
-	WaveFile(const std::vector<SongNote>& melodicNotes, const WaveType theWaveType);
+	WaveFile(const std::vector<PianoNote>& melodicNotes, const WaveType theWaveType);
 
 	/*Defaults to a sine wave type*/
-	WaveFile(const std::vector<SongNote>& harmonicNotes);
+	WaveFile(const std::vector<PianoNote>& harmonicNotes);
 
 	/*Creates a WaveFile object by reading an input file (whose extension MUST be .wav)*/
 	WaveFile(const std::string& inputFileName);

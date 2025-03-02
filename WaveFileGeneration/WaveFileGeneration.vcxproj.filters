@@ -21,7 +21,7 @@
     <ClCompile Include="WaveFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SongNote.cpp">
+    <ClCompile Include="PianoNote.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -29,7 +29,7 @@
     <ClInclude Include="WaveFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SongNote.h">
+    <ClInclude Include="PianoNote.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

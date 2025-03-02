@@ -159,7 +159,7 @@ WaveFile::WaveFile(const std::string& noteName, const WaveType theWaveType, cons
 
 }
 
-WaveFile::WaveFile(const std::vector<SongNote>& melodicNotes, const WaveType theWaveType)
+WaveFile::WaveFile(const std::vector<PianoNote>& melodicNotes, const WaveType theWaveType)
 {
 	int totalSamples = 0;
 	for (const auto& note : melodicNotes)
@@ -191,7 +191,7 @@ WaveFile::WaveFile(const std::vector<SongNote>& melodicNotes, const WaveType the
 
 }
 
-WaveFile::WaveFile(const std::vector<SongNote>& harmonicNotes)
+WaveFile::WaveFile(const std::vector<PianoNote>& harmonicNotes)
 {
 	int totalSamples = 0;
 
@@ -211,7 +211,7 @@ WaveFile::WaveFile(const std::vector<SongNote>& harmonicNotes)
 	{
 		theSoundSubchunk.data[time] = 0; 
 
-		for (const SongNote& currentHarmonicNote : harmonicNotes)
+		for (const PianoNote& currentHarmonicNote : harmonicNotes)
 		{
 			int amplitude = static_cast<int>(currentHarmonicNote.amplitude);
 			float frequency = notesToFrequencies.at(currentHarmonicNote.name);

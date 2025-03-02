@@ -2,7 +2,7 @@
 //
 #define _CRT_SECURE_NO_WARNINGS
 
-#include"SongNote.h"
+#include"PianoNote.h"
 #include "WaveFile.h"
 
 #include<algorithm> 
@@ -69,19 +69,19 @@ void demoAmazingGrace()
 	float secondsInAMinute = 60.0;
 	float quarterNoteDurationIn3_4Time = secondsInAMinute / tempoForAmazingGrace;
 
-	std::vector<SongNote> amazingGraceNotes =
+	std::vector<PianoNote> amazingGraceNotes =
 	{
-		{"C3", quarterNoteDurationIn3_4Time,	 SongNote::Loudness::Mezzo}, //quarter note ("A")
-		{"F3", quarterNoteDurationIn3_4Time * 2, SongNote::Loudness::Forte}, //half note ("may"
-		{"A3", quarterNoteDurationIn3_4Time / 2, SongNote::Loudness::Mezzo}, //eighth note ("zee..")
-		{"F3", quarterNoteDurationIn3_4Time / 2, SongNote::Loudness::Piano}, //another eighth note ("..ing)
+		{"C3", quarterNoteDurationIn3_4Time,	 PianoNote::Loudness::Mezzo}, //quarter note ("A")
+		{"F3", quarterNoteDurationIn3_4Time * 2, PianoNote::Loudness::Forte}, //half note ("may"
+		{"A3", quarterNoteDurationIn3_4Time / 2, PianoNote::Loudness::Mezzo}, //eighth note ("zee..")
+		{"F3", quarterNoteDurationIn3_4Time / 2, PianoNote::Loudness::Piano}, //another eighth note ("..ing)
 
-		{"A3", quarterNoteDurationIn3_4Time * 2, SongNote::Loudness::Piano},
-		{"G3", quarterNoteDurationIn3_4Time,	 SongNote::Loudness::Mezzo},
-		{"F3", quarterNoteDurationIn3_4Time * 2, SongNote::Loudness::Piano},
-		{"D3", quarterNoteDurationIn3_4Time,	 SongNote::Loudness::Mezzo},
+		{"A3", quarterNoteDurationIn3_4Time * 2, PianoNote::Loudness::Piano},
+		{"G3", quarterNoteDurationIn3_4Time,	 PianoNote::Loudness::Mezzo},
+		{"F3", quarterNoteDurationIn3_4Time * 2, PianoNote::Loudness::Piano},
+		{"D3", quarterNoteDurationIn3_4Time,	 PianoNote::Loudness::Mezzo},
 
-		{"C3", quarterNoteDurationIn3_4Time * 2, SongNote::Loudness::Piano}
+		{"C3", quarterNoteDurationIn3_4Time * 2, PianoNote::Loudness::Piano}
 	};
 
 	WaveFile aWaveFile(amazingGraceNotes, WaveFile::WaveType::Sine);
@@ -169,12 +169,12 @@ void simpleWaveAnalysis()
 
 void demoCMajorChord()
 {
-	SongNote C4("C4", 2.0f, SongNote::Loudness::Piano);
-	SongNote E4("E4", 2.0f, SongNote::Loudness::Piano);
-	SongNote G4("G4", 2.0f, SongNote::Loudness::Piano);
+	PianoNote C4("C4", 2.0f, PianoNote::Loudness::Piano);
+	PianoNote E4("E4", 2.0f, PianoNote::Loudness::Piano);
+	PianoNote G4("G4", 2.0f, PianoNote::Loudness::Piano);
 
 
-	std::vector<SongNote> harmonicSongNotes = { C4, E4, G4 };
+	std::vector<PianoNote> harmonicSongNotes = { C4, E4, G4 };
 
 	std::string chordFileName = "C4E4G4_CMaj";
 
@@ -185,33 +185,37 @@ void demoCMajorChord()
 
 }
 
+void demoSeventhChord()
+{
+	PianoNote C4("C4", 2.0f, PianoNote::Loudness::Piano);
+	PianoNote E4("E4", 2.0f, PianoNote::Loudness::Piano);
+	PianoNote G4("G4", 2.0f, PianoNote::Loudness::Piano);
+	//SongNote A4("A4", 2.0f, SongNote::Loudness::Piano);
+	PianoNote B4("B4", 2.0f, PianoNote::Loudness::Piano);
+
+
+	//std::vector<SongNote> harmonicSongNotes = { C4, E4, G4, A4 };
+	std::vector<PianoNote> harmonicSongNotes = { C4, E4, G4, B4 };
+
+
+	//WaveFile c6MajorChord(harmonicSongNotes);
+	WaveFile c7MajorChord(harmonicSongNotes);
+
+	std::ostringstream chordFileName;
+	//chordFileName << C4.name << E4.name << G4.name << A4.name;
+	chordFileName << C4.name << E4.name << G4.name << B4.name;
+
+	c7MajorChord.writeSoundDataToCSV(chordFileName.str() + ".csv");
+	c7MajorChord.writeToWaveFile(chordFileName.str() + ".wav");
+
+}
+
 int main()
 {
 
 	try
 	{
-		SongNote C4("C4", 2.0f, SongNote::Loudness::Piano);
-		SongNote E4("E4", 2.0f, SongNote::Loudness::Piano);
-		SongNote G4("G4", 2.0f, SongNote::Loudness::Piano);
-		//SongNote A4("A4", 2.0f, SongNote::Loudness::Piano);
-		SongNote B4("B4", 2.0f, SongNote::Loudness::Piano);
-
-
-		//std::vector<SongNote> harmonicSongNotes = { C4, E4, G4, A4 };
-		std::vector<SongNote> harmonicSongNotes = { C4, E4, G4, B4 };
-
-
-		//WaveFile c6MajorChord(harmonicSongNotes);
-		WaveFile c7MajorChord(harmonicSongNotes);
-
-		std::ostringstream chordFileName;
-		//chordFileName << C4.name << E4.name << G4.name << A4.name;
-		chordFileName << C4.name << E4.name << G4.name << B4.name;
-
-		c7MajorChord.writeSoundDataToCSV(chordFileName.str() + ".csv");
-		c7MajorChord.writeToWaveFile(chordFileName.str() + ".wav");
-
-		
+		PianoNote note; 
 	}
 	
 	catch (const std::exception& e)
