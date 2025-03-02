@@ -7,6 +7,7 @@
 
 #include<algorithm> 
 #include<chrono> 
+#include<sstream>
 
 void demo880HzSineWave()
 {
@@ -131,22 +132,85 @@ void demoMeSpeakingInReverse()
 	inputWaveObject.writeToWaveFile(reversedOutFileName);
 }
 
+void skywardSwordDemo()
+{
+	try
+	{
+		std::string infileName = "skywardSword.wav";
+		WaveFile inputWaveObject(infileName);
+
+		inputWaveObject.reverseAudio();
+		inputWaveObject.writeToWaveFile("reversedskywardSword.wav");
+
+	}
+
+	catch (const std::exception& e)
+	{
+		std::cout << e.what() << "\n";
+	}
+}
+
+void simpleWaveAnalysis()
+{
+	int sampleCount = 44'100 / 10; //4410 (should be 0.1 second duration) 
+	int amplitude = 32'767; //give full dynamic range -> for ease of visualization 
+	float frequency = 100.0f; //nice easy to work with - also easy to hear 
+
+	std::ostringstream filename;
+	filename << sampleCount << "samples_With_A=" << amplitude << "_andF=" << frequency;
+
+	//const char* filename = tempFilename.str().c_str(); 
+
+	WaveFile outWave(sampleCount, amplitude, frequency);
+
+	outWave.writeSoundDataToCSV(filename.str() + ".csv");
+	outWave.writeToWaveFile(filename.str() + ".wav");
+}
+
+void demoCMajorChord()
+{
+	SongNote C4("C4", 2.0f, SongNote::Loudness::Piano);
+	SongNote E4("E4", 2.0f, SongNote::Loudness::Piano);
+	SongNote G4("G4", 2.0f, SongNote::Loudness::Piano);
+
+
+	std::vector<SongNote> harmonicSongNotes = { C4, E4, G4 };
+
+	std::string chordFileName = "C4E4G4_CMaj";
+
+	WaveFile cMajorChord(harmonicSongNotes);
+
+	cMajorChord.writeSoundDataToCSV(chordFileName + ".csv");
+	cMajorChord.writeToWaveFile(chordFileName + ".wav");
+
+}
+
 int main()
 {
 
-	//demo880HzSineWave(); 
 	try
 	{
-		//WaveFile aWaveFile{}; 
-		//WaveFile aWaveFile("C3", WaveFile::WaveType::Sine, 2);
-		//WaveFile aWaveFile("A4", WaveFile::WaveType::Square, 2); 
-		//demoAmazingGrace(); 
+		SongNote C4("C4", 2.0f, SongNote::Loudness::Piano);
+		SongNote E4("E4", 2.0f, SongNote::Loudness::Piano);
+		SongNote G4("G4", 2.0f, SongNote::Loudness::Piano);
+		//SongNote A4("A4", 2.0f, SongNote::Loudness::Piano);
+		SongNote B4("B4", 2.0f, SongNote::Loudness::Piano);
 
-		std::string infileName = "skywardSword.wav";
-		WaveFile inputWaveObject(infileName); 
 
-		inputWaveObject.reverseAudio(); 
-		inputWaveObject.writeToWaveFile("reversedskywardSword.wav");
+		//std::vector<SongNote> harmonicSongNotes = { C4, E4, G4, A4 };
+		std::vector<SongNote> harmonicSongNotes = { C4, E4, G4, B4 };
+
+
+		//WaveFile c6MajorChord(harmonicSongNotes);
+		WaveFile c7MajorChord(harmonicSongNotes);
+
+		std::ostringstream chordFileName;
+		//chordFileName << C4.name << E4.name << G4.name << A4.name;
+		chordFileName << C4.name << E4.name << G4.name << B4.name;
+
+		c7MajorChord.writeSoundDataToCSV(chordFileName.str() + ".csv");
+		c7MajorChord.writeToWaveFile(chordFileName.str() + ".wav");
+
 		
 	}
 	

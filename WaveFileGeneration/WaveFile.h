@@ -118,10 +118,16 @@ public:
 	WaveFile(const std::string& noteName, const WaveType theWaveType, const float durationInSeconds);
 	
 	/*The fanciest constructor overload (so far)*/
-	WaveFile(const std::vector<SongNote>& notes, const WaveType theWaveType);
+	WaveFile(const std::vector<SongNote>& melodicNotes, const WaveType theWaveType);
+
+	/*Defaults to a sine wave type*/
+	WaveFile(const std::vector<SongNote>& harmonicNotes);
 
 	/*Creates a WaveFile object by reading an input file (whose extension MUST be .wav)*/
 	WaveFile(const std::string& inputFileName);
+
+	WaveFile(const WaveFile& other) = delete; 
+	WaveFile(const WaveFile&& other) = delete; 
 
 	/*This method calls std::reverse on `SoundSubchunk's` vector of data (the sound wave)*/
 	void reverseAudio();

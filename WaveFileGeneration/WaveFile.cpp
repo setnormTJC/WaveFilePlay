@@ -159,23 +159,23 @@ WaveFile::WaveFile(const std::string& noteName, const WaveType theWaveType, cons
 
 }
 
-WaveFile::WaveFile(const std::vector<SongNote>& notes, const WaveType theWaveType)
+WaveFile::WaveFile(const std::vector<SongNote>& melodicNotes, const WaveType theWaveType)
 {
 	int totalSamples = 0;
-	for (const auto& note : notes)
+	for (const auto& note : melodicNotes)
 	{
-		totalSamples += note.duration * theFormatHeader.SampleRate;
+		totalSamples += note.durationInSeconds * theFormatHeader.SampleRate;
 	}
 
 	// Resize the data vector only once
 	theSoundSubchunk.data.resize(totalSamples);
 
 	int currentSample = 0; 
-	for (int i = 0; i < notes.size(); ++i)
+	for (int i = 0; i < melodicNotes.size(); ++i)
 	{
-		int NumSamples = notes[i].duration * theFormatHeader.SampleRate;
-		int amplitude = static_cast<int>(notes[i].amplitude);
-		float frequency = notesToFrequencies.at(notes[i].name);
+		int NumSamples = melodicNotes[i].durationInSeconds * theFormatHeader.SampleRate;
+		int amplitude = static_cast<int>(melodicNotes[i].amplitude);
+		float frequency = notesToFrequencies.at(melodicNotes[i].name);
 
 		for (int time = currentSample; time < currentSample + NumSamples; ++time)
 		{
@@ -185,6 +185,41 @@ WaveFile::WaveFile(const std::vector<SongNote>& notes, const WaveType theWaveTyp
 		currentSample += NumSamples; 
 	}
 	
+	theSoundSubchunk.Subchunk2Size = totalSamples * theFormatHeader.NumChannels * (theFormatHeader.BitsPerSample / 8);
+
+	theRiffHeader.ChunkSize = 4 + (8 + theFormatHeader.Subchunk1Size) + (8 + theSoundSubchunk.Subchunk2Size);
+
+}
+
+WaveFile::WaveFile(const std::vector<SongNote>& harmonicNotes)
+{
+	int totalSamples = 0;
+
+	for (int i = 0; i < harmonicNotes.size() - 1; ++i)
+	{
+		if (harmonicNotes[i].durationInSeconds != harmonicNotes[i + 1].durationInSeconds)
+		{
+			throw std::exception("FOR NOW, all harmonic notes must have same duration!");
+		}
+	}
+
+	totalSamples += harmonicNotes[0].durationInSeconds * theFormatHeader.SampleRate;
+
+	theSoundSubchunk.data.resize(totalSamples); 
+
+	for (int time = 0; time < totalSamples; ++time)
+	{
+		theSoundSubchunk.data[time] = 0; 
+
+		for (const SongNote& currentHarmonicNote : harmonicNotes)
+		{
+			int amplitude = static_cast<int>(currentHarmonicNote.amplitude);
+			float frequency = notesToFrequencies.at(currentHarmonicNote.name);
+
+			theSoundSubchunk.data[time] += amplitude * sin(2 * 3.141592 * frequency * time / theFormatHeader.SampleRate);
+		}
+	}
+
 	theSoundSubchunk.Subchunk2Size = totalSamples * theFormatHeader.NumChannels * (theFormatHeader.BitsPerSample / 8);
 
 	theRiffHeader.ChunkSize = 4 + (8 + theFormatHeader.Subchunk1Size) + (8 + theSoundSubchunk.Subchunk2Size);
