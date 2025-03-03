@@ -131,12 +131,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DemoingWaveFile.cpp" />
     <ClCompile Include="PianoNote.cpp" />
     <ClCompile Include="WaveFile.cpp" />
-    <ClCompile Include="WaveFileGeneration.cpp" />
+    <ClCompile Include="GenerateWaveFile.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DemoingWaveFile.h" />
     <ClInclude Include="PianoNote.h" />
+    <ClInclude Include="scrappedCode.h" />
     <ClInclude Include="WaveFile.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

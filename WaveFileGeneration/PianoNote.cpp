@@ -1,6 +1,14 @@
 #include "PianoNote.h"
 
 
+/*******************************STATIC stuff*********************/
+std::vector<std::string> PianoNote::the88Notes; 
+std::map<std::string, double, PianoNoteComparator> PianoNote::notesToFrequencies;
+
+bool PianoNote::initialized = false; 
+
+
+
 /*Example of why this is needed: std::map<string, float> puts "C8" before "C#1" 
 (because '#' ASCII value is 35 and '8' dec value = 56)*/
 PianoNoteComparator::PianoNoteComparator()
@@ -46,15 +54,35 @@ void PianoNote::mapNotesToFrequencies()
 
 PianoNote::PianoNote()
 {
-	the88Notes = generateThe88Notes(); 
-	mapNotesToFrequencies(); 
+	//the88Notes = generateThe88Notes(); 
+	//mapNotesToFrequencies(); 
+
+	initialize(); 
 }
 
 PianoNote::PianoNote(const std::string& name, const float durationInSeconds, Loudness amplitude)
 	:name(name), durationInSeconds(durationInSeconds), amplitude(amplitude)
 {
+	//the88Notes = generateThe88Notes();
+	//mapNotesToFrequencies();
+
+	initialize(); 
+}
+
+void PianoNote::initialize()
+{
+	if (initialized) return; // Ensure this runs only once
+	initialized = true;
+
 	the88Notes = generateThe88Notes();
-	mapNotesToFrequencies();
+
+	double twelfthRootOf2 = pow(2, (1.0 / 12));
+	double A4Frequency = 440.0;
+
+	for (int n = 0; n < the88Notes.size(); ++n)
+	{
+		notesToFrequencies[the88Notes[n]] = A4Frequency * pow(twelfthRootOf2, (n - 48));
+	}
 }
 
 std::vector<std::string> generateThe88Notes()

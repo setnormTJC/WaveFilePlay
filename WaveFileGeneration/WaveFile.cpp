@@ -73,41 +73,11 @@ void WaveFile::writeSoundDataToCSV(const std::string& CSVfilename)
 	}
 }
 
-WaveFile::WaveFile()
+std::vector<short> WaveFile::getSoundWave()
 {
-
-	const int NumSamples = (theFormatHeader.SampleRate/2) * notesToFrequencies.size(); 
-	//makes each note in notesToFrequencies sound for 0.5 seconds 
-
-	theSoundSubchunk.data.resize(NumSamples);
-
-	constexpr float amplitude = 32'767;   
-
-	auto it = notesToFrequencies.begin(); 
-
-	float frequency = notesToFrequencies.at(notesToFrequencies.begin()->first); //Hz
-
-	for (int time = 0; time < NumSamples; ++time)
-	{
-		if (time % (theFormatHeader.SampleRate / 2) == 0)
-		{
-			if (it != notesToFrequencies.end()) //safety check
-			{
-				//update frequency to next note: 
-				frequency = it->second; 
-				++it; 
-			}
-
-		}
-
-		theSoundSubchunk.data[time] = amplitude * sin(2 * 3.141592 * frequency * time / theFormatHeader.SampleRate);
-
-	}
-		
-	theSoundSubchunk.Subchunk2Size = NumSamples * theFormatHeader.NumChannels * (theFormatHeader.BitsPerSample / 8);
-
-	theRiffHeader.ChunkSize = 4 + (8 + theFormatHeader.Subchunk1Size) + (8 + theSoundSubchunk.Subchunk2Size); 
+	return theSoundSubchunk.data; 
 }
+
 
 WaveFile::WaveFile(const int NumSamples, const int amplitude, const float frequency)
 {
@@ -124,17 +94,17 @@ WaveFile::WaveFile(const int NumSamples, const int amplitude, const float freque
 	theRiffHeader.ChunkSize = 4 + (8 + theFormatHeader.Subchunk1Size) + (8 + theSoundSubchunk.Subchunk2Size);
 }
 
-WaveFile::WaveFile(const std::string& noteName, const WaveType theWaveType, const float durationInSeconds)
+WaveFile::WaveFile(const PianoNote& pianoNote, const WaveType theWaveType)
 {
-	if (notesToFrequencies.find(noteName) == notesToFrequencies.end())
+	if (PianoNote::notesToFrequencies.find(pianoNote.name) == PianoNote::notesToFrequencies.end())
 	{
 		throw std::exception("Given note name is not included in the map"); 
 		//NOTE: interestingly, this exception is overruled by one that is built in to std::map
 	}
 
-	float frequency = notesToFrequencies[noteName];
-	int amplitude = 32'767;
-	int NumSamples = theFormatHeader.SampleRate * durationInSeconds; 
+	float frequency = PianoNote::notesToFrequencies[pianoNote.name];
+	int amplitude = (int)pianoNote.amplitude;
+	int NumSamples = theFormatHeader.SampleRate * pianoNote.durationInSeconds; 
 
 	theSoundSubchunk.data.resize(NumSamples);
 
@@ -175,7 +145,7 @@ WaveFile::WaveFile(const std::vector<PianoNote>& melodicNotes, const WaveType th
 	{
 		int NumSamples = melodicNotes[i].durationInSeconds * theFormatHeader.SampleRate;
 		int amplitude = static_cast<int>(melodicNotes[i].amplitude);
-		float frequency = notesToFrequencies.at(melodicNotes[i].name);
+		float frequency = PianoNote::notesToFrequencies.at(melodicNotes[i].name);
 
 		for (int time = currentSample; time < currentSample + NumSamples; ++time)
 		{
@@ -214,7 +184,7 @@ WaveFile::WaveFile(const std::vector<PianoNote>& harmonicNotes)
 		for (const PianoNote& currentHarmonicNote : harmonicNotes)
 		{
 			int amplitude = static_cast<int>(currentHarmonicNote.amplitude);
-			float frequency = notesToFrequencies.at(currentHarmonicNote.name);
+			float frequency = PianoNote::notesToFrequencies.at(currentHarmonicNote.name);
 
 			theSoundSubchunk.data[time] += amplitude * sin(2 * 3.141592 * frequency * time / theFormatHeader.SampleRate);
 		}

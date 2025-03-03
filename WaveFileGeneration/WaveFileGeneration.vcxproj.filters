@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="WaveFileGeneration.cpp">
+    <ClCompile Include="GenerateWaveFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WaveFile.cpp">
@@ -24,12 +24,21 @@
     <ClCompile Include="PianoNote.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DemoingWaveFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WaveFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PianoNote.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DemoingWaveFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scrappedCode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
