@@ -131,14 +131,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="adsrEnvelope.cpp" />
+    <ClCompile Include="BMPImage.cpp" />
     <ClCompile Include="DemoingWaveFile.cpp" />
     <ClCompile Include="PianoNote.cpp" />
+    <ClCompile Include="PlotImage.cpp" />
     <ClCompile Include="WaveFile.cpp" />
     <ClCompile Include="GenerateWaveFile.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="adsrEnvelope.h" />
+    <ClInclude Include="BMPImage.h" />
     <ClInclude Include="DemoingWaveFile.h" />
     <ClInclude Include="PianoNote.h" />
+    <ClInclude Include="PlotImage.h" />
     <ClInclude Include="scrappedCode.h" />
     <ClInclude Include="WaveFile.h" />
   </ItemGroup>

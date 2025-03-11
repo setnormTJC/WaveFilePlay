@@ -1,16 +1,13 @@
 //written using http://soundfile.sapp.org/doc/WaveFormat/
 #pragma once
 
+#define _USE_MATH_DEFINES //for M_E in music envelope's exponential decay (piano timbre)
 
 #include"PianoNote.h"
+#include"PlotImage.h" //an attempt to visualize sound wave data as bitmap image file (removing need for other spreadsheet software)
 
 #include<cmath> 
 #include<fstream>
-#include <iostream>
-#include <string>
-#include <vector>
-#include <unordered_map>
-#include <map>
 
 
 
@@ -68,6 +65,9 @@ class WaveFile
 
 	void fillDataWithSineWave(const int NumSamples, const int amplitude, const float frequency);
 	void fillDataWithSquareWave(const int NumSamples, const int amplitude, const float frequency);
+	
+	/*a PIANO has envelope similar to exponential decay according to: https://www.muzines.co.uk/articles/back-to-basics/1882*/
+	void fillDataWithExponentialDecay(const int NumSamples, const int amplitude, const float frequency);
 
 
 public: 
@@ -78,7 +78,7 @@ public:
 		Triangular,
 		Square,
 		Saw,
-		FancyInstrument // more ambitious -> model the Attack, Sustain, Release, Decay envelope curve thing
+		FancyInstrument // more ambitious -> model the Attack, Sustain, Release, Decay envelope curve
 	};
 
 	WaveFile() = delete; 
@@ -90,9 +90,11 @@ public:
 	*/
 	WaveFile(const PianoNote& pianoNote, const WaveType theWaveType);
 	
-	/*The fanciest constructor overload (so far)*/
+	/*The fanciest constructor overload (so far)
+	* @param - melodicNotes -> N.B. to specify a REST note (silence), set PianoNote::Name = "" (the empty string)
+	*/
 	WaveFile(const std::vector<PianoNote>& melodicNotes, const WaveType theWaveType);
-
+	
 	/*Defaults to a sine wave type*/
 	WaveFile(const std::vector<PianoNote>& harmonicNotes);
 
@@ -120,6 +122,8 @@ public:
 	void writeSoundDataToCSV(const std::string& CSVfilename);
 	
 	std::vector<short> getSoundWave(); 
+
+	void writeSoundDataToImagePlot(const std::string& imageFilename);
 
 	
 #pragma endregion

@@ -45,3 +45,13 @@ namespace SimpleTesting
 
 	void demoSeventhChord();
 }
+
+/*"Music" is ... debatable*/
+namespace MusicMaking
+{
+	/*AND it doesn't do too well, I think*/
+	void chatGPTTriesLaFilleAuxCheveuxDeLin();
+
+	/*VAGUELY recognizable*/
+	void playMysterySong();
+}

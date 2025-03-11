@@ -36,6 +36,7 @@ public:
 	/*Be wary of the summing of multiple harmonics - can cause popping*/
 	enum class Loudness : int16_t //int16_t expected by 16 bit WAV
 	{
+		Silent		=	 0, //ex: for a rest note
 		Pianissimo = 32'767 / 10, 
 		Piano =		32'767 / 7,
 		Mezzo =		32'767 / 5,

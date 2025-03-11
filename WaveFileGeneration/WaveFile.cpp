@@ -35,6 +35,46 @@ void WaveFile::fillDataWithSquareWave(const int NumSamples, const int amplitude,
 	}
 }
 
+void WaveFile::fillDataWithExponentialDecay(const int NumSamples, const int amplitude, const float frequency)
+{
+	int attackPhaseSampleCount = NumSamples / 10;  //arbitrary-ish, rise to peak "fast"
+	int kAttack = 300; 
+
+	int newAmplitude = 0; //updated below, of course: 
+
+	//see screenshot in "chatGPTNotesOnEvelopes.jpg" in this folder for some details on this magic number 300...
+	for (int time = 0; time < attackPhaseSampleCount; ++time)
+	{
+		//double exponentPart = pow(M_E, -time * kAttack); //just to reduce "complexity" of arithmetic expression
+
+		double exponentPart = pow(M_E, -static_cast<double>(time) / attackPhaseSampleCount * kAttack); 
+		//note the "normalization"
+		newAmplitude = amplitude * (1 - exponentPart);
+
+		theSoundSubchunk.data[time] = newAmplitude * sin(2 * 3.141592 * frequency * time / theFormatHeader.SampleRate);
+	}
+
+	//int KDecay = 10; //again, see the jpg
+	////decay (and sustain?): 
+	//for (int time = attackPhaseSampleCount; time < NumSamples; ++time)
+	//{
+	//	double exponentPart = pow(M_E, -time * KDecay);
+	//	theSoundSubchunk.data[time] = amplitude * exponentPart; 
+	//}
+
+	int KDecay = 4;
+
+	for (int time = 0; time < NumSamples - attackPhaseSampleCount; ++time)
+	{
+		double exponentPart = pow(M_E, -static_cast<double>(time) / (NumSamples - attackPhaseSampleCount) * KDecay);
+		newAmplitude = amplitude * exponentPart;
+
+		theSoundSubchunk.data[attackPhaseSampleCount + time] = newAmplitude * sin(2 * 3.141592 * frequency * time / theFormatHeader.SampleRate);
+
+	}
+	
+}
+
 void WaveFile::reverseAudio()
 {
 	//ain't nothin' to it but to do it...
@@ -78,6 +118,32 @@ std::vector<short> WaveFile::getSoundWave()
 	return theSoundSubchunk.data; 
 }
 
+void WaveFile::writeSoundDataToImagePlot(const std::string& imageFilename)
+{
+	std::vector<short> soundWave = getSoundWave(); 
+	if (soundWave.size() == 0) 
+		throw std::exception("Sound wave data is empty - didst thou forget initialization?");
+
+	unsigned int imageWidth, imageHeight; 
+	imageWidth = 1'000; 
+	imageHeight = 1'000; 
+
+	PlotImage plotImage(imageWidth, imageHeight, Color(ColorEnum::Black));
+	
+	//PlotImage::plotData expects a map of x,y values (unsurprisingly), so make one: 
+	std::map<int, int> timeVersusAmplitude; 
+	int timePoint = 0; 
+	for (const auto& amplitude : soundWave)
+	{
+		timeVersusAmplitude.insert({ timePoint, amplitude });
+		timePoint++; 
+	}
+
+	plotImage.plotData(timeVersusAmplitude, ColorEnum::Green);
+	
+	plotImage.writeImageFile(imageFilename);
+}
+
 
 WaveFile::WaveFile(const int NumSamples, const int amplitude, const float frequency)
 {
@@ -118,6 +184,10 @@ WaveFile::WaveFile(const PianoNote& pianoNote, const WaveType theWaveType)
 		fillDataWithSquareWave(NumSamples, amplitude, frequency); 
 		break; 
 
+	case WaveType::FancyInstrument:
+		fillDataWithExponentialDecay(NumSamples, amplitude, frequency); 
+		break; 
+
 	default: 
 		throw std::exception("unsupported wave type");
 		break; 
@@ -145,7 +215,13 @@ WaveFile::WaveFile(const std::vector<PianoNote>& melodicNotes, const WaveType th
 	{
 		int NumSamples = melodicNotes[i].durationInSeconds * theFormatHeader.SampleRate;
 		int amplitude = static_cast<int>(melodicNotes[i].amplitude);
-		float frequency = PianoNote::notesToFrequencies.at(melodicNotes[i].name);
+		
+		float frequency;
+		if (melodicNotes[i].name != "") //Let this mean SILENCE 
+		{
+			frequency = PianoNote::notesToFrequencies.at(melodicNotes[i].name);
+		}
+		else frequency = 0.0f; //0 oscillation should? mean no sound (expect A = 0 from client also for that note)
 
 		for (int time = currentSample; time < currentSample + NumSamples; ++time)
 		{

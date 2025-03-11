@@ -82,6 +82,7 @@ void SimpleTesting::demoAmazingGrace()
 	};
 
 	WaveFile aWaveFile(amazingGraceNotes, WaveFile::WaveType::Sine);
+	aWaveFile.writeToWaveFile("amazingGrace.wav");
 
 	////reverse audio: 
 	//aWaveFile.reverseAudio(); 
@@ -306,3 +307,77 @@ std::vector<double> FourierTransform::getTransformOfWaveFile(const std::string& 
 
 	return transform;
 }
+
+#pragma region MusicMaking namespace 
+
+void MusicMaking::chatGPTTriesLaFilleAuxCheveuxDeLin()
+{
+	//ChatGPT attempting first two measures of La Fille Aux Cheveux de Lin given the link: 
+// https://musescore.com/r_d/scores/5449385:
+	float quarterNoteDuration = 60.0 / 110.0; // Approximately 0.545 seconds
+	float eighthNoteDuration = quarterNoteDuration / 2.0; // Approximately 0.273 seconds
+
+	std::vector<PianoNote> laFilleMelody = {
+		{"F#4", quarterNoteDuration, PianoNote::Loudness::Mezzo}, // Measure 1, Beat 1
+		{"G#4", eighthNoteDuration, PianoNote::Loudness::Mezzo},  // Measure 1, Beat 2 (first half)
+		{"A#4", eighthNoteDuration, PianoNote::Loudness::Mezzo},  // Measure 1, Beat 2 (second half)
+		{"G#4", eighthNoteDuration, PianoNote::Loudness::Mezzo},  // Measure 1, Beat 3 (first half)
+		{"F#4", eighthNoteDuration, PianoNote::Loudness::Mezzo},  // Measure 1, Beat 3 (second half)
+		{"D#4", quarterNoteDuration, PianoNote::Loudness::Mezzo}, // Measure 2, Beat 1
+		// Rest for eighth note (Measure 2, Beat 2 first half) omitted
+		{"F#4", eighthNoteDuration, PianoNote::Loudness::Piano},  // Measure 2, Beat 2 (second half)
+		{"G#4", quarterNoteDuration, PianoNote::Loudness::Forte}  // Measure 2, Beat 3		
+	};
+
+	WaveFile waveFile(laFilleMelody, WaveFile::WaveType::Sine);
+	waveFile.writeToWaveFile("LaFilleAuxCheveuxDeLin.wav"); //NOPE!
+}
+
+void MusicMaking::playMysterySong()
+{
+	//from: https://musescore.com/user/16242231/scores/3424496
+
+	float tempo = 96.0f; //beats per minute
+	float secondsPerMinute = 60.0f;
+	float quarterNoteDuration = secondsPerMinute / tempo;
+	float eighthNoteDuration = quarterNoteDuration / 2.0;
+
+	int silentScalingFactor = 8; //dictates how long silence lasts -> see below
+
+	std::vector<PianoNote> mysteryMelody =
+	{
+		PianoNote("B3", quarterNoteDuration, PianoNote::Loudness::Mezzo), //feet 
+		//make a bit of silence for staccato style (same note without silence sounds like double duration!) 
+		PianoNote("", eighthNoteDuration / silentScalingFactor, PianoNote::Loudness::Silent),
+		PianoNote("B3", quarterNoteDuration, PianoNote::Loudness::Mezzo), //don't
+		PianoNote("A3", quarterNoteDuration, PianoNote::Loudness::Mezzo), //fail 
+		PianoNote("B3", eighthNoteDuration, PianoNote::Loudness::Mezzo), //me
+		PianoNote("A3", eighthNoteDuration + quarterNoteDuration, PianoNote::Loudness::Mezzo), //now ...
+
+		//3/4 rest (note the EMPTY string note name -> silence)
+		PianoNote("", eighthNoteDuration + quarterNoteDuration, PianoNote::Loudness::Silent),
+
+		PianoNote("B3", eighthNoteDuration, PianoNote::Loudness::Mezzo), //take
+		PianoNote("", eighthNoteDuration / silentScalingFactor, PianoNote::Loudness::Silent), //again -> stacatto silence
+		PianoNote("B3", eighthNoteDuration, PianoNote::Loudness::Mezzo), //me
+		PianoNote("", eighthNoteDuration / silentScalingFactor, PianoNote::Loudness::Silent),
+		PianoNote("B3", eighthNoteDuration, PianoNote::Loudness::Mezzo), //to
+		PianoNote("", eighthNoteDuration / silentScalingFactor, PianoNote::Loudness::Silent),
+		PianoNote("B3", eighthNoteDuration, PianoNote::Loudness::Mezzo), //the
+
+		PianoNote("A3", eighthNoteDuration, PianoNote::Loudness::Mezzo), //fi-
+		PianoNote("B3", eighthNoteDuration, PianoNote::Loudness::Mezzo), //-NISH
+		PianoNote("A3", eighthNoteDuration + quarterNoteDuration, PianoNote::Loudness::Mezzo), //line
+	};
+
+	WaveFile waveFile(mysteryMelody, WaveFile::WaveType::Sine);
+
+	const char* waveFilename = "mysteryMelody.wav";
+	waveFile.writeToWaveFile(waveFilename);
+
+	system(waveFilename);
+
+}
+
+
+#pragma endregion 
