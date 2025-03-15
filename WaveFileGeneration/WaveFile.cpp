@@ -1,5 +1,7 @@
 #include "WaveFile.h"
 
+#include"MyException.h"
+
 FormatHeader::FormatHeader()
 {
 	ByteRate = SampleRate * NumChannels * (BitsPerSample / 8); 
@@ -223,10 +225,12 @@ WaveFile::WaveFile(const std::vector<PianoNote>& melodicNotes, const WaveType th
 		}
 		else frequency = 0.0f; //0 oscillation should? mean no sound (expect A = 0 from client also for that note)
 
-		for (int time = currentSample; time < currentSample + NumSamples; ++time)
-		{
-			theSoundSubchunk.data[time] = amplitude * sin(2 * 3.141592 * frequency * time / theFormatHeader.SampleRate);
-		}
+		//sine-wave only approach in the loop below: 
+		//for (int time = currentSample; time < currentSample + NumSamples; ++time)
+		//{
+		//	theSoundSubchunk.data[time] = amplitude * sin(2 * 3.141592 * frequency * time / theFormatHeader.SampleRate);
+		//}
+		fillDataWithExponentialDecay(NumSamples, amplitude, frequency); 
 
 		currentSample += NumSamples; 
 	}
@@ -278,7 +282,9 @@ WaveFile::WaveFile(const std::string& inputFileName)
 
 	std::ifstream fin{ inputFileName, std::ios::binary };
 
-	if (!fin) throw std::exception("input file not found");
+	//if (!fin) throw std::exception("input file not found");
+
+	if (!fin) throw MyException("input file not found", __FILE__, __LINE__);
 
 	readRiffHeader(fin); 
 	readFormatHeader(fin); 

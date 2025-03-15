@@ -1,8 +1,10 @@
 // WaveFileGeneration.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-#include"DemoingWaveFile.h"
+//#include"DemoingWaveFile.h"
 
+#include"FourierTransform.h"
+#include"MyException.h"
 
 
 int main()
@@ -10,39 +12,33 @@ int main()
 
 	try
 	{
-		//FourierTransform::transform1SecondOf100Hz(); 
-		//const std::string filename = "C4E4G4B4.wav";
-		//expected max frequencies: 262, 330, 392, 494
+	
+		std::string baseFilename = "TimpaniC2";
+		//wavefile.writeToWaveFile(baseFilename + ".wav");
 
-		//const std::string filename = "me.wav";
-		// 
-		//const std::string filename = "d4VirtualPiano.wav";
+		FourierTransform ft(baseFilename + ".wav");
 
+		ft.fillTransformDataAndFrequencyMap(); 
+	
+		ft.writeFTMapToCSV(baseFilename + ".csv");
 
-		//std::vector<double> transform = FourierTransform::getTransformOfWaveFile(filename);
-		//MusicMaking::chatGPTTriesLaFilleAuxCheveuxDeLin(); 
-
-
-		WaveFile waveFile(PianoNote("C4", 2.0, PianoNote::Loudness::Forte), WaveFile::WaveType::FancyInstrument);
-
-		const char* waveFilename = "C4_withExponentialDecayEnvelope.wav";
-
-		waveFile.writeToWaveFile(waveFilename);
-		
-		std::string plotImageFilename = "plotImage.bmp";
-
-		system(waveFilename);
-
-		//waveFile.writeSoundDataToImagePlot(plotImageFilename);
-
-		//system(plotImageFilename.c_str());
-
-		//system(filename); 
+		std::string callPythonPlottingScript = "python plotTheData.py " + baseFilename + ".csv";
+		system(callPythonPlottingScript.c_str());
 	}
 	
+	catch (const MyException& e)
+	{
+		std::cout << e.what() << "\n";
+	}
+
 	catch (const std::exception& e)
 	{
 		std::cout << e.what() << "\n";
+	}
+	
+	catch (...)
+	{
+		std::cout << "Some other? exception type got thrown? \n";
 	}
 }
 

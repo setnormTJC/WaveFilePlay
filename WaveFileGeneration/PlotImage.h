@@ -28,9 +28,10 @@ class PlotImage :public BMPImage
 
 public:
 	PlotImage() = delete;
-	PlotImage(unsigned int imageWidth, unsigned int imageHeight, const Color& fillColor);
+	PlotImage(unsigned int imageWidth, unsigned int imageHeight, const Color& backgroundColor);
 
-	void plotData(const map<int, int>& elementCountsToExecutionTimes, const ColorEnum& color);
+	/*@param xToY -> NOTE: I previously used this for algo analysis so x is "element counts" and y is "time" in the function definition*/
+	void plotData(const map<int, int>& xToY, const ColorEnum& dataPointColor);
 
 };
 

@@ -1,5 +1,6 @@
 #include "DemoingWaveFile.h"
 
+#pragma region SimpleTesting
 void SimpleTesting::demo880HzSineWave()
 {
 	try
@@ -208,9 +209,10 @@ void SimpleTesting::demoSeventhChord()
 	c7MajorChord.writeToWaveFile(chordFileName.str() + ".wav");
 
 }
+#pragma endregion
 
 
-
+#pragma region FT
 void FourierTransform::transform1SecondOf100Hz()
 {
 
@@ -270,6 +272,9 @@ std::vector<double> FourierTransform::getTransformOfWaveFile(const std::string& 
 	int minFrequency = 20; //around the lowest frequency audible to humans: 
 	int maxFrequency = 5'020; //A "little" higher than C8 -> probably an okay cutoff 
 
+	std::cout << "Generating FT from minFrequency = " << minFrequency << " hz to maxFrequency = "
+		<< maxFrequency << " hz.\n";
+
 	std::vector<double> realPartOfTransform(maxFrequency - minFrequency, 0.0); //the second arg inits all elements to 0.0
 	std::vector<double> imagPartOfTransform(maxFrequency - minFrequency, 0.0);
 
@@ -296,17 +301,32 @@ std::vector<double> FourierTransform::getTransformOfWaveFile(const std::string& 
 
 	//write out to csv file for visualization: 
 	
-	std::string outCSVfilename = filename.substr(0, filename.find(".wav")) + ".csv";
+	//std::string outCSVfilename = filename.substr(0, filename.find(".wav")) + ".csv";
 
-	std::ofstream fout(outCSVfilename); 
-	for (int k = 0; k < transform.size(); ++k)
-	{
-		fout << transform[k] << "\n";
-	}
-	fout.close(); 
+	//std::ofstream fout(outCSVfilename); 
+	//for (int k = 0; k < transform.size(); ++k)
+	//{
+	//	fout << transform[k] << "\n";
+	//}
+	//fout.close(); 
 
 	return transform;
 }
+
+
+
+void FourierTransform::Testing::getFTOfSinglePureSineWave()
+{
+	auto transformOfWaveFile = getTransformOfWaveFile("F = 100_N = 44100_A = 10000.wav");
+
+	PlotImage plotImage(1'000, 1'000, Color(ColorEnum::Black));
+	//plotImage.plotData
+
+}
+
+#pragma endregion 
+
+
 
 #pragma region MusicMaking namespace 
 
@@ -381,3 +401,25 @@ void MusicMaking::playMysterySong()
 
 
 #pragma endregion 
+
+void ADSRTesting::playC4()
+{
+	WaveFile waveFile(PianoNote("C4", 2.0, PianoNote::Loudness::Forte), WaveFile::WaveType::FancyInstrument);
+
+
+	const char* waveFilename = "C4_withExponentialDecayEnvelope.wav";
+
+	waveFile.writeToWaveFile(waveFilename);
+
+	std::string plotImageFilename = "plotImage.bmp";
+
+	system(waveFilename);
+
+	//waveFile.writeSoundDataToImagePlot(plotImageFilename);
+
+	//system(plotImageFilename.c_str());
+
+	//system(filename); 
+}
+
+

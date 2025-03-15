@@ -67,33 +67,29 @@ void PlotImage::drawYAxis(unsigned int x0, unsigned int y0, unsigned int yf, con
     }
 }
 
-void PlotImage::plotData(const map<int, int>& elementCountsToExecutionTimes, const ColorEnum& color)
+void PlotImage::plotData(const map<int, int>& xToY, const ColorEnum& color)
 {
     // Get the maximum element count (last key in the map) for SCALING 
-    int maxElementCount = elementCountsToExecutionTimes.rbegin()->first;
+    int max_x_value = xToY.rbegin()->first;
+
     //also maxExecutionTime, for scaling (POSSIBLE that this won't be rbegin()->second (if "unlucky" algo)
-    int maxExecutionTime = 0;
-    for (const auto& currentPair : elementCountsToExecutionTimes)
+    int max_y_value = 0;
+    for (const auto& currentPair : xToY)
     {
-        if (currentPair.second > maxExecutionTime)
+        if (currentPair.second > max_y_value)
         {
-            maxExecutionTime = currentPair.second;
+            max_y_value = currentPair.second;
         }
     }
 
-    int pairCounter = 0;
-
-    for (const auto& currentPair : elementCountsToExecutionTimes)
+    for (const auto& currentPair : xToY)
     {
-        pairCounter++;
-        //int x = origin.first + currentPair.first / plotWidth;  
-        //int y = origin.second + currentPair.second / plotHeight; 
-        int x = origin.first + (currentPair.first * (plotWidth - origin.first)) / maxElementCount;
-        int y = origin.second + (currentPair.second * (plotHeight - origin.second)) / maxExecutionTime;
+
+        int x = origin.first + (currentPair.first * (plotWidth - origin.first)) / max_x_value;
+        int y = origin.second + (currentPair.second * (plotHeight - origin.second)) / max_y_value;
 
         setPixelToColor_withThickness(x, y, Color{ color }, 3);
 
-     
     }
 }
 

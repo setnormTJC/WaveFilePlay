@@ -19,6 +19,15 @@ namespace FourierTransform
 
 	std::vector<double> getTransformOfWaveFile(const std::string& filename); 
 
+	/*Calls `getTransformOfWaveFile` to get the vector*/
+	std::map<int, int> getMapOfFrequencyToAmplitude(const std::string& filename); 
+
+	namespace Testing
+	{
+		/*F = 100_N = 44100_A = 10000.wav*/
+		void getFTOfSinglePureSineWave();
+	}
+
 }
 
 namespace SimpleTesting
@@ -54,4 +63,11 @@ namespace MusicMaking
 
 	/*VAGUELY recognizable*/
 	void playMysterySong();
+}
+
+/*Attack, decay, sustain, release envelope*/
+namespace ADSRTesting
+{
+	/*The sound here is more "natural" - the buildup to max amplitude and the drop off sounds "better" than pure sine wave*/
+	void playC4();
 }
