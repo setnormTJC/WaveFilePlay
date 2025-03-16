@@ -139,7 +139,7 @@
     <ClCompile Include="PianoNote.cpp" />
     <ClCompile Include="PlotImage.cpp" />
     <ClCompile Include="WaveFile.cpp" />
-    <ClCompile Include="GenerateWaveFile.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="adsrEnvelope.h" />

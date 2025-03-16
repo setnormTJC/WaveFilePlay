@@ -47,7 +47,7 @@ public:
 	Loudness amplitude; 
 
 
-	/*These will be restricted to sharps (#), for the moment*/
+	/*These will be restricted to sharps (#), for the moment...N.B. Use PianoNote::initialize() if not creating an object but want to use static member vars of this class!*/
 	static std::vector<std::string> the88Notes;
 
 	static std::map<std::string, double, PianoNoteComparator> notesToFrequencies;
@@ -64,7 +64,71 @@ public:
 	* N.B. A private boolean flag is part of this class that prevents wasting time running through this function more than once. 
 	*/
 	static void initialize();
+
+	/*Needed if using std::find on a vector of PianoNotes - this method just compares the note names on the left and right (hand sides)*/
+	//bool operator == (const PianoNote& rhs);
+
+	friend class PianoChord; 
+
 };
 
 /*Called by NoteComparator and PianoNote - so not a member of either...*/
 std::vector<std::string> generateThe88Notes();
+
+class PianoChord
+{
+private: 
+	int getIndexOfBaseNote(const std::string& baseNoteName);
+	
+	/*Ex: returns 3 for C3, 6 for A#6, etc.*/
+	int getOctaveOfNote(const std::string& noteName);
+
+	/*Ex: returns C for C3, A# for A#6, etc.*/
+	std::string getShortNameOfNote(const std::string& note);
+
+	//std::string getNextNoteNameInChordInversion(const std::string& nextToLastNoteName, const std::string& lastNoteNameWithoutOctave);
+
+	void getMajorChord(const std::string& baseNoteName);
+	void getMajor6thChord(const std::string& baseNoteName);
+
+	std::vector<std::string> getChordNoteNames(); 
+public: 
+	const float duration = 2.0f;
+	PianoNote::Loudness loudness = PianoNote::Loudness::Mezzo;
+
+
+	std::vector<PianoNote> theChordNotes;
+
+	std::vector<std::vector<PianoNote>> getChordAndItsInversions(); 
+
+	enum class ChordType
+	{
+		minor = 1, 
+		Major = 2, 
+		minorSeventh = 3, 
+		majorSixth = 4
+		//etc. as desired 
+	};
+
+	/*Intervals in semitone steps - ex: MinorSecond = 1 semitone*/
+	enum class Interval
+	{
+		MinorSecond = 1, 
+		MajorSecond = 2,
+		MinorThird = 3,
+		MajorThird = 4,
+		PerfectFourth = 5,
+		Tritone = 6,   // Augmented Fourth or Diminished Fifth
+		PerfectFifth = 7,
+		MinorSixth = 8,
+		MajorSixth = 9,
+		MinorSeventh = 10,
+		MajorSeventh = 11,
+		PerfectOctave = 12
+	};
+	PianoChord() = delete; 
+	/*
+	* @param chordType -> ex: minor, major, minorSeventh, majorSixth,etc
+	*/
+	PianoChord(const std::string baseNoteName, const ChordType& chordType); 
+};

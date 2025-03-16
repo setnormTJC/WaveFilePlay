@@ -69,27 +69,6 @@ void FourierTransform::fillTransformDataAndFrequencyMap()
 
 }
 
-void FourierTransform::displayFTPlot(const std::string& bitmapFilename) const
-{
-	if (bitmapFilename.find(".bmp") == string::npos)
-		throw MyException("plot file name MUST include .bmp", __FILE__, __LINE__);
-
-	PlotImage plot(1'000, 1'000, Color(ColorEnum::Black));
-
-	//std::map<int, int> subMap; 
-	//auto it = frequenciesToAmplitudes.begin();
-
-	//for (int i = 0; i < 1000 && it != frequenciesToAmplitudes.end(); ++i, ++it) {
-	//	subMap.insert(*it); // Insert each element into subMap
-	//}
-	
-	plot.plotData(frequenciesToAmplitudes, ColorEnum::Cyan);
-
-	plot.writeImageFile(bitmapFilename); 
-
-	system(bitmapFilename.c_str());
-	
-}
 
 void FourierTransform::writeFTMapToCSV(const std::string& csvFilename) const
 {

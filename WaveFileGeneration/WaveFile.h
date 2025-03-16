@@ -66,9 +66,20 @@ class WaveFile
 	void fillDataWithSineWave(const int NumSamples, const int amplitude, const float frequency);
 	void fillDataWithSquareWave(const int NumSamples, const int amplitude, const float frequency);
 	
-	/*a PIANO has envelope similar to exponential decay according to: https://www.muzines.co.uk/articles/back-to-basics/1882*/
-	void fillDataWithExponentialDecay(const int NumSamples, const int amplitude, const float frequency);
+	/*Apply attack, decay, sustain, release envelopes (can simulate player's legato, staccato, and the instrument's natural acoustics)*/
+	void applyADSR(int& newAmplitude, int amplitude, int attackPhaseSampleCount, int time, int kAttack, int kDecay, int NumSamples);
 
+	/*Overload for HARMONIC notes*/
+	int applyADSR(int time, int totalSamples, int amplitude);
+
+	// Function to apply overtone contributions based on the fundamental frequency and overtone scaling
+	void applyOvertones(int time, float frequency, int amplitude, map<int, float>& pianoOvertonesToAmplitudeScalingFactors);
+
+	/*a PIANO has envelope similar to exponential decay according to: https://www.muzines.co.uk/articles/back-to-basics/1882*/
+	void fillDataWithADSRPianoOvertones(const int NumSamples, const int amplitude, const float frequency);
+
+	// The overload that MUST be used for melodic data
+	void fillDataWithADSRPianoOvertones(const int NumSamples, const int amplitude, const float frequency, const int currentSample);
 
 public: 
 	/*Default constructor sets NumSamples to 44'100, frequency = 440.0 Hz, and amplitude 1.0*/
@@ -78,7 +89,7 @@ public:
 		Triangular,
 		Square,
 		Saw,
-		FancyInstrument // more ambitious -> model the Attack, Sustain, Release, Decay envelope curve
+		Piano // more ambitious -> model the Attack, Sustain, Release, Decay envelope curve
 	};
 
 	WaveFile() = delete; 
@@ -95,7 +106,7 @@ public:
 	*/
 	WaveFile(const std::vector<PianoNote>& melodicNotes, const WaveType theWaveType);
 	
-	/*Defaults to a sine wave type*/
+	/*Defaults to a Piano wave type*/
 	WaveFile(const std::vector<PianoNote>& harmonicNotes);
 
 	/*Creates a WaveFile object by reading an input file (whose extension MUST be .wav)*/
@@ -117,13 +128,9 @@ public:
 	...Also note that "capped out waves" will sound more unpleasant than expected (due to square wavy-ness).
 	*/
 	void modifyVolume(const float scalingFactor);
-
-	/*Anticipate this being used for sound wave visualization*/
-	void writeSoundDataToCSV(const std::string& CSVfilename);
 	
 	std::vector<short> getSoundWave(); 
 
-	void writeSoundDataToImagePlot(const std::string& imageFilename);
 
 	
 #pragma endregion

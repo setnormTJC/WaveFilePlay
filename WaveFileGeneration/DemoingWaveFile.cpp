@@ -110,7 +110,7 @@ void SimpleTesting::demoSimpleWaveFileReading()
 	WaveFile inputWaveFile(inputFilename);
 
 	std::string csvFilename = "firstWave.csv";
-	inputWaveFile.writeSoundDataToCSV(csvFilename);
+	//inputWaveFile.writeSoundDataToCSV(csvFilename);
 
 	std::string outputFilename = "outversion.wav";
 	inputWaveFile.writeToWaveFile(outputFilename);
@@ -162,7 +162,7 @@ void SimpleTesting::simpleWaveAnalysis()
 
 	WaveFile outWave(sampleCount, amplitude, frequency);
 
-	outWave.writeSoundDataToCSV(filename.str() + ".csv");
+	//outWave.writeSoundDataToCSV(filename.str() + ".csv");
 	outWave.writeToWaveFile(filename.str() + ".wav");
 }
 
@@ -179,7 +179,7 @@ void SimpleTesting::demoCMajorChord()
 
 	WaveFile cMajorChord(harmonicSongNotes);
 
-	cMajorChord.writeSoundDataToCSV(chordFileName + ".csv");
+	//cMajorChord.writeSoundDataToCSV(chordFileName + ".csv");
 	cMajorChord.writeToWaveFile(chordFileName + ".wav");
 
 }
@@ -205,126 +205,12 @@ void SimpleTesting::demoSeventhChord()
 	chordFileName << C4.name << E4.name << G4.name << B4.name;
 
 
-	c7MajorChord.writeSoundDataToCSV(chordFileName.str() + ".csv");
+	//c7MajorChord.writeSoundDataToCSV(chordFileName.str() + ".csv");
 	c7MajorChord.writeToWaveFile(chordFileName.str() + ".wav");
 
 }
 #pragma endregion
 
-
-#pragma region FT
-void FourierTransform::transform1SecondOf100Hz()
-{
-
-	WaveFile waveFile("F = 100_N = 44100_A = 10000.wav"); //the guinea pig
-
-	std::vector<short> soundWave = waveFile.getSoundWave();
-
-	int minFrequency = 20; //around the lowest frequency audible to humans: 
-	int maxFrequency = 20'020; //around the highest (added in the 20 for nice "round" number)
-
-	//anticipate transform having 20K amplitudes - one for each Hz value
-	std::vector<double> realPartOfTransform(maxFrequency - minFrequency, 0.0); //the second arg inits all elements to 0.0
-	std::vector<double> imagPartOfTransform(maxFrequency - minFrequency, 0.0);
-
-	//recall: e^(ix) = cos(x) + i*sin(x)
-	//FT involves negative sign in exponent - is it true that: 
-	//e^(-ix) = cos(x) - i*sin(x)? 
-
-	const int N = soundWave.size();
-
-	for (int k = 0; k < realPartOfTransform.size(); ++k) //k is each frequency value in the transform 
-	{
-		for (int n = 0; n < N - 1; ++n) //n is each time point in sound wave 
-		{
-			double angle = 2 * M_PI * k * n / N;
-
-			realPartOfTransform[k] += soundWave[n] * cos(angle);
-			imagPartOfTransform[k] -= soundWave[n] * sin(angle);
-		}
-	}
-
-	std::vector<double> magnitude(maxFrequency - minFrequency, 0.0);
-
-	for (int k = 0; k < magnitude.size(); ++k)
-	{
-		magnitude[k] = sqrt(realPartOfTransform[k] * realPartOfTransform[k] +
-			imagPartOfTransform[k] * imagPartOfTransform[k]);
-	}
-
-
-	for (int k = 80; k <= 120; ++k)
-	{
-		std::cout << "Frequency " << k << " Hz: " << magnitude[k] << std::endl;
-	}
-
-	//10^8 = ? (amplitude * 44,100 total samples in 1 second audio /2) = AN/2 
-	//			==  10'000 (22'050)
-	//			==~ 2 * 10 ^8 
-}
-
-std::vector<double> FourierTransform::getTransformOfWaveFile(const std::string& filename)
-{
-	WaveFile waveFile(filename); 
-
-	std::vector<short> soundWave = waveFile.getSoundWave();
-
-	int minFrequency = 20; //around the lowest frequency audible to humans: 
-	int maxFrequency = 5'020; //A "little" higher than C8 -> probably an okay cutoff 
-
-	std::cout << "Generating FT from minFrequency = " << minFrequency << " hz to maxFrequency = "
-		<< maxFrequency << " hz.\n";
-
-	std::vector<double> realPartOfTransform(maxFrequency - minFrequency, 0.0); //the second arg inits all elements to 0.0
-	std::vector<double> imagPartOfTransform(maxFrequency - minFrequency, 0.0);
-
-	const int N = soundWave.size();
-
-	for (int k = 0; k < realPartOfTransform.size(); ++k) //k is each frequency value in the transform 
-	{
-		for (int n = 0; n < N - 1; ++n) //n is each time point in sound wave 
-		{
-			double angle = 2 * M_PI * k * n / N;
-
-			realPartOfTransform[k] += soundWave[n] * cos(angle);
-			imagPartOfTransform[k] -= soundWave[n] * sin(angle);
-		}
-	}
-
-	std::vector<double> transform(maxFrequency - minFrequency, 0.0);
-
-	for (int k = 0; k < transform.size(); ++k)
-	{
-		transform[k] = sqrt(realPartOfTransform[k] * realPartOfTransform[k] +
-			imagPartOfTransform[k] * imagPartOfTransform[k]);
-	}
-
-	//write out to csv file for visualization: 
-	
-	//std::string outCSVfilename = filename.substr(0, filename.find(".wav")) + ".csv";
-
-	//std::ofstream fout(outCSVfilename); 
-	//for (int k = 0; k < transform.size(); ++k)
-	//{
-	//	fout << transform[k] << "\n";
-	//}
-	//fout.close(); 
-
-	return transform;
-}
-
-
-
-void FourierTransform::Testing::getFTOfSinglePureSineWave()
-{
-	auto transformOfWaveFile = getTransformOfWaveFile("F = 100_N = 44100_A = 10000.wav");
-
-	PlotImage plotImage(1'000, 1'000, Color(ColorEnum::Black));
-	//plotImage.plotData
-
-}
-
-#pragma endregion 
 
 
 
@@ -390,7 +276,7 @@ void MusicMaking::playMysterySong()
 		PianoNote("A3", eighthNoteDuration + quarterNoteDuration, PianoNote::Loudness::Mezzo), //line
 	};
 
-	WaveFile waveFile(mysteryMelody, WaveFile::WaveType::Sine);
+	WaveFile waveFile(mysteryMelody, WaveFile::WaveType::Piano);
 
 	const char* waveFilename = "mysteryMelody.wav";
 	waveFile.writeToWaveFile(waveFilename);
@@ -402,9 +288,9 @@ void MusicMaking::playMysterySong()
 
 #pragma endregion 
 
-void ADSRTesting::playC4()
+void SynthesizerTesting::playC4()
 {
-	WaveFile waveFile(PianoNote("C4", 2.0, PianoNote::Loudness::Forte), WaveFile::WaveType::FancyInstrument);
+	WaveFile waveFile(PianoNote("C4", 2.0, PianoNote::Loudness::Forte), WaveFile::WaveType::Piano);
 
 
 	const char* waveFilename = "C4_withExponentialDecayEnvelope.wav";
@@ -422,4 +308,98 @@ void ADSRTesting::playC4()
 	//system(filename); 
 }
 
+void SynthesizerTesting::demoSynthesizedPianoNote(const std::string& noteName)
+{
+	WaveFile waveFile(PianoNote(noteName, 2.0f, PianoNote::Loudness::Forte),
+		WaveFile::WaveType::Piano);
 
+	std::string wavefileName = noteName + "PianoSynthesized.wav";
+
+	waveFile.writeToWaveFile(wavefileName);
+
+	system(wavefileName.c_str());
+}
+
+void SynthesizerTesting::demo88SynthesizedPianoNotes()
+{
+	PianoNote::initialize();
+
+	for (const auto& note : PianoNote::the88Notes)
+	{
+		demoSynthesizedPianoNote(note);
+		std::cout << "Any key to continue to next note: \n";
+		std::cin.get();
+	}
+}
+
+void SynthesizerTesting::demoMelodicSynthesizedPianoNote(const std::vector<PianoNote>& notes)
+{
+	WaveFile wavefile(notes, WaveFile::WaveType::Piano); 
+
+	int noteCount = 0; //non-silent note count
+	for (const auto& note : notes)
+	{
+		if (note.name != "")
+		{
+			noteCount++; 
+		}
+	}
+	std::string wavefileName = std::to_string(noteCount) + "_melodicSynthNotes.wav";
+
+	wavefile.writeToWaveFile(wavefileName);
+
+	system(wavefileName.c_str());
+}
+
+std::vector<PianoNote> Utils::generateSomeNotes()
+{
+	const float duration = 1.0f;
+	std::vector<PianoNote> notes =
+	{
+		PianoNote("C4", duration, PianoNote::Loudness::Mezzo),
+		PianoNote("", duration / 2, PianoNote::Loudness::Silent), //pause 
+		PianoNote("E4", duration, PianoNote::Loudness::Mezzo),
+		PianoNote("", duration / 2, PianoNote::Loudness::Silent),
+		PianoNote("G4", duration, PianoNote::Loudness::Mezzo),
+		PianoNote("", duration / 2, PianoNote::Loudness::Silent),
+		PianoNote("B4", duration, PianoNote::Loudness::Mezzo),
+
+		PianoNote("C5", duration, PianoNote::Loudness::Mezzo),
+		PianoNote("", duration / 2, PianoNote::Loudness::Silent),
+		PianoNote("E5", duration, PianoNote::Loudness::Mezzo),
+		PianoNote("", duration / 2, PianoNote::Loudness::Silent),
+		PianoNote("G5", duration, PianoNote::Loudness::Mezzo),
+		PianoNote("", duration / 2, PianoNote::Loudness::Silent),
+		PianoNote("B5", duration, PianoNote::Loudness::Mezzo),
+	};
+
+	return notes; 
+}
+
+std::vector<PianoNote> Utils::generateC3Major()
+{
+	const float duration = 2.0f;
+	std::vector<PianoNote> notes =
+	{
+		PianoNote("C3", duration, PianoNote::Loudness::Mezzo),
+		PianoNote("E3", duration, PianoNote::Loudness::Mezzo),
+		PianoNote("G3", duration, PianoNote::Loudness::Mezzo)
+	};
+
+
+	return notes; 
+}
+
+std::vector<PianoNote> Utils::generateF3Maj7()
+{
+	const float duration = 3.0f;
+	std::vector<PianoNote> notes =
+	{
+		PianoNote("F3", duration, PianoNote::Loudness::Mezzo),
+		PianoNote("A3", duration, PianoNote::Loudness::Mezzo),
+		PianoNote("C4", duration, PianoNote::Loudness::Mezzo),
+		PianoNote("E4", duration, PianoNote::Loudness::Mezzo)
+	};
+
+	return notes;
+}

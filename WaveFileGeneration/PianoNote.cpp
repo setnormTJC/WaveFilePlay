@@ -1,5 +1,8 @@
 #include "PianoNote.h"
 
+#include"MyException.h"
+
+#include<algorithm>
 
 /*******************************STATIC stuff*********************/
 std::vector<std::string> PianoNote::the88Notes; 
@@ -85,6 +88,11 @@ void PianoNote::initialize()
 	}
 }
 
+//bool PianoNote::operator==(const PianoNote& rhs)
+//{
+//	return this->name == rhs.name; 
+//}
+
 std::vector<std::string> generateThe88Notes()
 {
 	std::vector<std::string> the88Notes; 
@@ -134,4 +142,160 @@ std::vector<std::string> generateThe88Notes()
 	return the88Notes; 
 }
 
+//std::string PianoChord::getNextNoteNameInChordInversion(const std::string& nextToLastNoteName, const std::string& lastNoteNameWithoutOctave)
+//{
+//	auto iteratorToNextToLast = std::find()
+//}
 
+void PianoChord::getMajorChord(const std::string& baseNoteName)
+{
+
+	//first note: 
+	PianoNote baseNote(baseNoteName, duration, loudness);
+
+	/********Second note stuff************************/
+	int indexOfFirstNote = getIndexOfBaseNote(baseNoteName);
+	int indexOfSecondNote = indexOfFirstNote + (int)Interval::MajorThird; 
+
+	//add out of bounds check later, if desired 
+	std::string secondNoteName = PianoNote::the88Notes.at(indexOfSecondNote);
+
+	PianoNote secondNote(secondNoteName, duration, loudness); 
+
+	/********Third note stuff************************/
+	int indexOfThirdNote = indexOfFirstNote + (int)Interval::PerfectFifth; 
+	
+	PianoNote thirdNote(PianoNote::the88Notes.at(indexOfThirdNote), duration, loudness); 
+
+	theChordNotes = { baseNote, secondNote, thirdNote };
+}
+
+void PianoChord::getMajor6thChord(const std::string& baseNoteName)
+{
+	getMajorChord(baseNoteName); 
+
+	int indexOfBaseNote = getIndexOfBaseNote(baseNoteName);
+	int semitoneDistanceToFourthNote =  (int)Interval::MajorSixth;
+	int indexOfFourthNote = indexOfBaseNote + semitoneDistanceToFourthNote;
+
+	theChordNotes.push_back(PianoNote(PianoNote::the88Notes.at(indexOfFourthNote), duration, loudness));
+
+}
+
+std::vector<std::string> PianoChord::getChordNoteNames()
+{
+	if (theChordNotes.size() == 0)
+		throw MyException("cannot get note names if chord notes is empty", __FILE__, __LINE__);
+
+	std::vector<std::string> chordNoteNames; 
+
+	for (const auto& note: theChordNotes)
+	{
+		chordNoteNames.push_back(note.name);
+	}
+
+	return chordNoteNames;
+}
+
+std::vector<std::vector<PianoNote>> PianoChord::getChordAndItsInversions()
+{
+	if (theChordNotes.size() == 0)
+		throw MyException("cannot invert nuthin'! (an empty chord)", __FILE__, __LINE__);
+
+	std::vector<std::vector<PianoNote>> chordAndItsInversions;
+	chordAndItsInversions.push_back(theChordNotes); //first get the starting chord 
+
+	std::vector<PianoNote> currentInvertedChord = theChordNotes;
+
+	/*1st inversion up through the N - 1th inversion (where N is the number of notes in chord)*/
+	for (int inversionNumber = 1; inversionNumber < theChordNotes.size(); ++inversionNumber)
+	{
+		std::string nameOfCurrentFirstNote = currentInvertedChord.at(0).name;
+		int octaveOfFirstNote = getOctaveOfNote(nameOfCurrentFirstNote);
+
+		for (int i = 1; i < currentInvertedChord.size(); ++i)
+		{
+			currentInvertedChord.at(i - 1).name = currentInvertedChord.at(i).name;
+			//no change to duration or loudness ... 
+		}
+
+		//need to set last note -> ex: if original is C3E3G3A3, last note should become C4 
+		std::string newLastNote =
+			getShortNameOfNote(nameOfCurrentFirstNote) + std::to_string(octaveOfFirstNote + 1);
+
+		currentInvertedChord.at(currentInvertedChord.size() - 1).name = newLastNote; 
+
+		chordAndItsInversions.push_back(currentInvertedChord);
+	}
+
+	return chordAndItsInversions; 
+}
+
+
+
+int PianoChord::getIndexOfBaseNote(const std::string& baseNoteName)
+{
+	auto iteratorToBaseNote =
+		std::find(PianoNote::the88Notes.begin(), PianoNote::the88Notes.end(), baseNoteName);
+
+	return (std::distance(PianoNote::the88Notes.begin(), iteratorToBaseNote));
+}
+
+int PianoChord::getOctaveOfNote(const std::string& noteName)
+{
+	if (noteName.length() == 2) //ex: C3
+	{
+		return noteName.at(1) - '0'; //be wary of ASCII-tomfoolery  
+	}
+
+	else if (noteName.length() == 3)
+	{
+		return noteName.at(2) - '0';
+	}
+}
+
+std::string PianoChord::getShortNameOfNote(const std::string& noteName)
+{
+	if (noteName.length() == 2)
+	{
+		return noteName.substr(0, 1); 
+	}
+	else if (noteName.length() == 3)
+	{
+		return noteName.substr(0, 2);
+	}
+}
+
+PianoChord::PianoChord(const std::string baseNoteName, const ChordType& chordType)
+{
+	//make sure 88 notes are initialized: 
+	PianoNote::initialize(); 
+
+	//make sure baseNote is allowed 
+	if (std::find(PianoNote::the88Notes.begin(), PianoNote::the88Notes.end(), baseNoteName)
+		== PianoNote::the88Notes.end())
+	{
+		throw MyException("base note - YOU'RE not in the list!", __FILE__, __LINE__);
+	}
+
+	if (chordType == ChordType::Major)
+	{
+		getMajorChord(baseNoteName); 
+	}
+
+	else if (chordType == ChordType::minor)
+	{
+		//do it!
+	}
+
+	else if (chordType == ChordType::majorSixth)
+	{
+		getMajor6thChord(baseNoteName); 
+	}
+
+	else if (chordType == ChordType::minorSeventh)
+	{
+
+	}
+	//etc. 
+}

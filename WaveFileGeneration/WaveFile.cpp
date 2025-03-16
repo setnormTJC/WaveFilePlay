@@ -37,46 +37,105 @@ void WaveFile::fillDataWithSquareWave(const int NumSamples, const int amplitude,
 	}
 }
 
-void WaveFile::fillDataWithExponentialDecay(const int NumSamples, const int amplitude, const float frequency)
+
+
+void WaveFile::fillDataWithADSRPianoOvertones(const int NumSamples, const int amplitude, const float frequency)
 {
-	int attackPhaseSampleCount = NumSamples / 10;  //arbitrary-ish, rise to peak "fast"
-	int kAttack = 300; 
+	int attackPhaseSampleCount = NumSamples / 10;  // Arbitrary-ish, rise to peak "fast"
+	int kAttack = 300;
 
-	int newAmplitude = 0; //updated below, of course: 
+	int newAmplitude = 0; // Updated below, of course
 
-	//see screenshot in "chatGPTNotesOnEvelopes.jpg" in this folder for some details on this magic number 300...
+	/*N.B. This overtone signature only applies "well" for notes "close" to C4!*/
+	map<int, float> pianoOvertonesToAmplitudeScalingFactors =
+	{
+		{1, 0.3f}, // First overtone drops by about a factor of 3
+		{2, 0.2f}, // Second overtone is roughly a factor of 5
+		{3, 0.1f}  // Third is roughly a factor of 10
+	};
+	
+
+	// Attack phase: amplitude rises
 	for (int time = 0; time < attackPhaseSampleCount; ++time)
 	{
-		//double exponentPart = pow(M_E, -time * kAttack); //just to reduce "complexity" of arithmetic expression
+		applyADSR(newAmplitude, amplitude, attackPhaseSampleCount, time, kAttack, 4, NumSamples);
 
-		double exponentPart = pow(M_E, -static_cast<double>(time) / attackPhaseSampleCount * kAttack); 
-		//note the "normalization"
-		newAmplitude = amplitude * (1 - exponentPart);
+		// Fundamental contribution
+		theSoundSubchunk.data[time] = newAmplitude * sin(2 * M_PI * frequency * time / theFormatHeader.SampleRate);
 
-		theSoundSubchunk.data[time] = newAmplitude * sin(2 * 3.141592 * frequency * time / theFormatHeader.SampleRate);
+		// Overtones contribution
+		applyOvertones(time, frequency, newAmplitude, pianoOvertonesToAmplitudeScalingFactors);
 	}
 
-	//int KDecay = 10; //again, see the jpg
-	////decay (and sustain?): 
-	//for (int time = attackPhaseSampleCount; time < NumSamples; ++time)
-	//{
-	//	double exponentPart = pow(M_E, -time * KDecay);
-	//	theSoundSubchunk.data[time] = amplitude * exponentPart; 
-	//}
-
-	int KDecay = 4;
-
+	// Decay phase: amplitude decays
 	for (int time = 0; time < NumSamples - attackPhaseSampleCount; ++time)
 	{
-		double exponentPart = pow(M_E, -static_cast<double>(time) / (NumSamples - attackPhaseSampleCount) * KDecay);
-		newAmplitude = amplitude * exponentPart;
+		applyADSR(newAmplitude, amplitude, attackPhaseSampleCount, time, kAttack, 4, NumSamples);
 
-		theSoundSubchunk.data[attackPhaseSampleCount + time] = newAmplitude * sin(2 * 3.141592 * frequency * time / theFormatHeader.SampleRate);
+		// Fundamental contribution
+		theSoundSubchunk.data[attackPhaseSampleCount + time] = newAmplitude * sin(2 * M_PI * frequency * time / theFormatHeader.SampleRate);
 
+		// Overtones contribution
+		applyOvertones(attackPhaseSampleCount + time, frequency, newAmplitude, pianoOvertonesToAmplitudeScalingFactors);
 	}
-	
 }
 
+void WaveFile::fillDataWithADSRPianoOvertones(const int NumSamples, const int amplitude, const float frequency, const int currentSample)
+{
+	int attackPhaseSampleCount = NumSamples / 10;  // Attack phase: rise to peak "fast"
+	int kAttack = 300;
+
+	int newAmplitude = 0;
+
+	// Overtone scaling factors for piano (based on research or Fourier analysis)
+	map<int, float> pianoOvertonesToAmplitudeScalingFactors =
+	{
+		{1, 0.3f}, // First overtone (factor of 3)
+		{2, 0.2f}, // Second overtone (factor of 5)
+		{3, 0.1f}  // Third overtone (factor of 10)
+	};
+
+	// Apply ADSR envelope and overtones in two phases: attack and decay
+	for (int time = 0; time < NumSamples; ++time)
+	{
+		// ADSR Phase (Attack + Decay)
+		applyADSR(newAmplitude, amplitude, attackPhaseSampleCount, time, kAttack, 4, NumSamples);
+
+		// Fundamental contribution
+		theSoundSubchunk.data[currentSample + time] = newAmplitude * sin(2 * M_PI * frequency * time / theFormatHeader.SampleRate);
+
+		// Apply overtone contributions
+		applyOvertones(currentSample + time, frequency, newAmplitude, pianoOvertonesToAmplitudeScalingFactors);
+	}
+}
+
+void WaveFile::applyADSR(int& newAmplitude, int amplitude, int attackPhaseSampleCount, int time, int kAttack, int kDecay, int NumSamples)
+{
+	if (time < attackPhaseSampleCount)
+	{
+		double exponentPart = pow(M_E, -static_cast<double>(time) / attackPhaseSampleCount * kAttack);
+		newAmplitude = amplitude * (1 - exponentPart);  // Attack phase (rise)
+	}
+	else
+	{
+		double exponentPart = pow(M_E, -static_cast<double>(time - attackPhaseSampleCount) / (NumSamples - attackPhaseSampleCount) * kDecay);
+		newAmplitude = amplitude * exponentPart;  // Decay phase (fall)
+	}
+}
+
+void WaveFile::applyOvertones(int time, float frequency, int amplitude, map<int, float>& pianoOvertonesToAmplitudeScalingFactors)
+{
+	// Frequencies for overtones (could be stored in a map for easier adjustments)
+	const float overtoneMultipliers[] = { 2.0f, 3.0f, 4.0f };
+
+	// Loop through each overtone and apply the contribution
+	for (int i = 0; i < 3; ++i)
+	{
+		int overtoneFrequency = frequency * overtoneMultipliers[i];
+		theSoundSubchunk.data[time] += amplitude * pianoOvertonesToAmplitudeScalingFactors[i + 1] *
+			sin(2 * M_PI * overtoneFrequency * time / theFormatHeader.SampleRate);
+	}
+}
 void WaveFile::reverseAudio()
 {
 	//ain't nothin' to it but to do it...
@@ -96,55 +155,13 @@ void WaveFile::modifyVolume(const float scalingFactor)
 	}
 }
 
-void WaveFile::writeSoundDataToCSV(const std::string& CSVfilename)
-{
-	if (CSVfilename.find(".csv") == std::string::npos) throw std::exception("modify the filetype to CSV");
 
-	std::ofstream fout(CSVfilename, std::ios::binary); 
-
-	
-	int counter = 0; //spreadsheet software is a weanie when plotting > 100'000 points, 
-					//so I'm limiting the amount of data written out with this counter
-	for (const auto& soundWaveDataPoint : theSoundSubchunk.data)
-	{
-		if (counter % 10 == 0)
-		{
-			fout << soundWaveDataPoint << "\n";
-		}
-		counter++; 
-	}
-}
 
 std::vector<short> WaveFile::getSoundWave()
 {
 	return theSoundSubchunk.data; 
 }
 
-void WaveFile::writeSoundDataToImagePlot(const std::string& imageFilename)
-{
-	std::vector<short> soundWave = getSoundWave(); 
-	if (soundWave.size() == 0) 
-		throw std::exception("Sound wave data is empty - didst thou forget initialization?");
-
-	unsigned int imageWidth, imageHeight; 
-	imageWidth = 1'000; 
-	imageHeight = 1'000; 
-
-	PlotImage plotImage(imageWidth, imageHeight, Color(ColorEnum::Black));
-	
-	//PlotImage::plotData expects a map of x,y values (unsurprisingly), so make one: 
-	std::map<int, int> timeVersusAmplitude; 
-	int timePoint = 0; 
-	for (const auto& amplitude : soundWave)
-	{
-		timeVersusAmplitude.insert({ timePoint, amplitude });
-		timePoint++; 
-	}
-
-	plotImage.plotData(timeVersusAmplitude, ColorEnum::Green);
-	
-	plotImage.writeImageFile(imageFilename);
-}
 
 
 WaveFile::WaveFile(const int NumSamples, const int amplitude, const float frequency)
@@ -186,8 +203,8 @@ WaveFile::WaveFile(const PianoNote& pianoNote, const WaveType theWaveType)
 		fillDataWithSquareWave(NumSamples, amplitude, frequency); 
 		break; 
 
-	case WaveType::FancyInstrument:
-		fillDataWithExponentialDecay(NumSamples, amplitude, frequency); 
+	case WaveType::Piano:
+		fillDataWithADSRPianoOvertones(NumSamples, amplitude, frequency); 
 		break; 
 
 	default: 
@@ -223,14 +240,13 @@ WaveFile::WaveFile(const std::vector<PianoNote>& melodicNotes, const WaveType th
 		{
 			frequency = PianoNote::notesToFrequencies.at(melodicNotes[i].name);
 		}
-		else frequency = 0.0f; //0 oscillation should? mean no sound (expect A = 0 from client also for that note)
+		else
+		{
+			frequency = 0.0f;
+			amplitude = 0; 
+		}
 
-		//sine-wave only approach in the loop below: 
-		//for (int time = currentSample; time < currentSample + NumSamples; ++time)
-		//{
-		//	theSoundSubchunk.data[time] = amplitude * sin(2 * 3.141592 * frequency * time / theFormatHeader.SampleRate);
-		//}
-		fillDataWithExponentialDecay(NumSamples, amplitude, frequency); 
+		fillDataWithADSRPianoOvertones(NumSamples, amplitude, frequency, currentSample); 
 
 		currentSample += NumSamples; 
 	}
@@ -266,7 +282,17 @@ WaveFile::WaveFile(const std::vector<PianoNote>& harmonicNotes)
 			int amplitude = static_cast<int>(currentHarmonicNote.amplitude);
 			float frequency = PianoNote::notesToFrequencies.at(currentHarmonicNote.name);
 
-			theSoundSubchunk.data[time] += amplitude * sin(2 * 3.141592 * frequency * time / theFormatHeader.SampleRate);
+			//apply ADSR: (fix later)
+			int currentAmplitude = applyADSR(time, totalSamples, amplitude); 
+
+			theSoundSubchunk.data[time] += currentAmplitude * sin(2 * 3.141592 * frequency * time / theFormatHeader.SampleRate);
+
+			// Add overtones (First, second, and third overtones)
+			theSoundSubchunk.data[time] += currentAmplitude * 0.3f * sin(2 * M_PI * frequency * 2 * time / theFormatHeader.SampleRate); // First overtone
+			theSoundSubchunk.data[time] += currentAmplitude * 0.2f * sin(2 * M_PI * frequency * 3 * time / theFormatHeader.SampleRate); // Second overtone
+			theSoundSubchunk.data[time] += currentAmplitude * 0.1f * sin(2 * M_PI * frequency * 4 * time / theFormatHeader.SampleRate); // Third overtone
+
+			//for the magic numbers 0.3, 0.2, 0.1, see `pianoOvertonesToAmplitudeScalingFactors` in a function above
 		}
 	}
 
@@ -274,6 +300,30 @@ WaveFile::WaveFile(const std::vector<PianoNote>& harmonicNotes)
 
 	theRiffHeader.ChunkSize = 4 + (8 + theFormatHeader.Subchunk1Size) + (8 + theSoundSubchunk.Subchunk2Size);
 
+}
+
+
+int WaveFile::applyADSR(int time, int totalSamples, int amplitude)
+{
+	int attackTime = totalSamples / 10;  // Adjust the attack time as per your requirements
+	int decayTime = totalSamples / 5;    // Adjust the decay time as per your requirements
+	int sustainLevel = amplitude / 2;    // Sustain level (can be a fraction of the amplitude)
+
+	// Attack phase: Linear rise
+	if (time < attackTime)
+	{
+		return static_cast<int>(amplitude * (static_cast<float>(time) / attackTime));
+	}
+	// Decay phase: Linear decay to sustain level
+	else if (time < attackTime + decayTime)
+	{
+		return static_cast<int>(amplitude - (amplitude - sustainLevel) * (static_cast<float>(time - attackTime) / decayTime));
+	}
+	// Sustain phase: Constant sustain level
+	else
+	{
+		return sustainLevel;
+	}
 }
 
 WaveFile::WaveFile(const std::string& inputFileName)

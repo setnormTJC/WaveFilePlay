@@ -26,9 +26,6 @@ public:
 
 	void fillTransformDataAndFrequencyMap(); 
 
-	/*Using my bitmap image file class -> work in progress ...*/
-	void displayFTPlot(const std::string& bitmapFilename) const;
-
 	void writeFTMapToCSV(const std::string& csvFilename) const; 
 
 

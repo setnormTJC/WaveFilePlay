@@ -12,23 +12,6 @@
 
 
 
-namespace FourierTransform
-{
-	/*requires this file to be present in current directory: "F = 100_N = 44100_A = 10000.wav"*/
-	void transform1SecondOf100Hz(); 
-
-	std::vector<double> getTransformOfWaveFile(const std::string& filename); 
-
-	/*Calls `getTransformOfWaveFile` to get the vector*/
-	std::map<int, int> getMapOfFrequencyToAmplitude(const std::string& filename); 
-
-	namespace Testing
-	{
-		/*F = 100_N = 44100_A = 10000.wav*/
-		void getFTOfSinglePureSineWave();
-	}
-
-}
 
 namespace SimpleTesting
 {
@@ -66,8 +49,26 @@ namespace MusicMaking
 }
 
 /*Attack, decay, sustain, release envelope*/
-namespace ADSRTesting
+namespace SynthesizerTesting
 {
 	/*The sound here is more "natural" - the buildup to max amplitude and the drop off sounds "better" than pure sine wave*/
 	void playC4();
+
+
+	void demoSynthesizedPianoNote(const std::string& noteName); 
+
+	void demo88SynthesizedPianoNotes();
+
+	void demoMelodicSynthesizedPianoNote(const std::vector<PianoNote>& notes);
+
+}
+
+namespace Utils
+{
+	std::vector<PianoNote> generateSomeNotes(); 
+
+	std::vector<PianoNote> generateC3Major();
+
+	/*F3, A3, C4, E4 (also known as Aminor7)*/
+	std::vector<PianoNote> generateF3Maj7();
 }
