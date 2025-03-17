@@ -202,7 +202,7 @@ void SimpleTesting::demoSeventhChord()
 
 	std::ostringstream chordFileName;
 	//chordFileName << C4.name << E4.name << G4.name << A4.name;
-	chordFileName << C4.name << E4.name << G4.name << B4.name;
+	chordFileName << C4.noteName << E4.noteName << G4.noteName << B4.noteName;
 
 
 	//c7MajorChord.writeSoundDataToCSV(chordFileName.str() + ".csv");
@@ -220,8 +220,8 @@ void MusicMaking::chatGPTTriesLaFilleAuxCheveuxDeLin()
 {
 	//ChatGPT attempting first two measures of La Fille Aux Cheveux de Lin given the link: 
 // https://musescore.com/r_d/scores/5449385:
-	float quarterNoteDuration = 60.0 / 110.0; // Approximately 0.545 seconds
-	float eighthNoteDuration = quarterNoteDuration / 2.0; // Approximately 0.273 seconds
+	float quarterNoteDuration = 60.0f / 110.0f; // Approximately 0.545 seconds
+	float eighthNoteDuration = quarterNoteDuration / 2.0f; // Approximately 0.273 seconds
 
 	std::vector<PianoNote> laFilleMelody = {
 		{"F#4", quarterNoteDuration, PianoNote::Loudness::Mezzo}, // Measure 1, Beat 1
@@ -339,7 +339,7 @@ void SynthesizerTesting::demoMelodicSynthesizedPianoNote(const std::vector<Piano
 	int noteCount = 0; //non-silent note count
 	for (const auto& note : notes)
 	{
-		if (note.name != "")
+		if (note.noteName != "")
 		{
 			noteCount++; 
 		}

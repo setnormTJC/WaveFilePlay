@@ -67,7 +67,7 @@ void demoSixthChordsForTwoOctaves()
 
 			WaveFile wavefile(pianoChord.theChordNotes);
 
-			std::string filename = pianoChord.theChordNotes.at(0).name + "Major6.wav";
+			std::string filename = pianoChord.theChordNotes.at(0).noteName + "Major6.wav";
 			wavefile.writeToWaveFile(filename);
 			system(filename.c_str());
 
@@ -79,20 +79,18 @@ void demoSixthChordsForTwoOctaves()
 
 int main()
 {
+	//MusicMaking::playMysterySong(); 
+
+	//std::cout << "Any key to continue:\n";
+	//std::cin.get(); 
 
 
 	try
 	{
-		//SynthesizerTesting::demoSynthesizedPianoNote("B3");
-/*		auto notes = Utils::generateSomeNotes(); 
-
-		SynthesizerTesting::demoMelodicSynthesizedPianoNote(notes); 
-	*/
-		//MusicMaking::playMysterySong(); 
 
 		PianoNote::initialize();
 
-		int indexOfC3 = 27; 
+		int indexOfC3 = 30; 
 		int indexOfC4 = 39; 
 
 		while (true)
@@ -105,12 +103,12 @@ int main()
 
 				auto chordAndItsInversions = pianoChord.getChordAndItsInversions(); 
 
-				for (const vector<PianoNote>& currentChord : chordAndItsInversions)
+				for (const std::vector<PianoNote>& currentChord : chordAndItsInversions)
 				{
-					WaveFile wavefile(currentChord);
+					WaveFile wavefile(currentChord, WaveFile::WaveType::Piano);
 
-					std::string filename = 
-						baseNoteName + "Major6invertedOver" + currentChord.at(0).name + ".wav";
+					std::string filename = "Arpeggiated"+
+						baseNoteName + "Major6invertedOver" + currentChord.at(0).noteName + ".wav";
 
 					wavefile.writeToWaveFile(filename);
 					system(filename.c_str());

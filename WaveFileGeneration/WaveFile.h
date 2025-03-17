@@ -4,7 +4,8 @@
 #define _USE_MATH_DEFINES //for M_E in music envelope's exponential decay (piano timbre)
 
 #include"PianoNote.h"
-#include"PlotImage.h" //an attempt to visualize sound wave data as bitmap image file (removing need for other spreadsheet software)
+
+//#include"Synthesizer.h"
 
 #include<cmath> 
 #include<fstream>
@@ -66,6 +67,10 @@ class WaveFile
 	void fillDataWithSineWave(const int NumSamples, const int amplitude, const float frequency);
 	void fillDataWithSquareWave(const int NumSamples, const int amplitude, const float frequency);
 	
+	void fillDataWithPianoWave(const int NumSamples, const int amplitude, const float frequency, const int currentSample);
+
+	void simplifiedApplyADSR(int& newAmplitude, int amplitude, int attackPhaseSampleCount, int time, int NumSamples);
+
 	/*Apply attack, decay, sustain, release envelopes (can simulate player's legato, staccato, and the instrument's natural acoustics)*/
 	void applyADSR(int& newAmplitude, int amplitude, int attackPhaseSampleCount, int time, int kAttack, int kDecay, int NumSamples);
 
@@ -73,7 +78,7 @@ class WaveFile
 	int applyADSR(int time, int totalSamples, int amplitude);
 
 	// Function to apply overtone contributions based on the fundamental frequency and overtone scaling
-	void applyOvertones(int time, float frequency, int amplitude, map<int, float>& pianoOvertonesToAmplitudeScalingFactors);
+	void applyOvertones(int time, float frequency, int amplitude, std::map<int, float>& pianoOvertonesToAmplitudeScalingFactors);
 
 	/*a PIANO has envelope similar to exponential decay according to: https://www.muzines.co.uk/articles/back-to-basics/1882*/
 	void fillDataWithADSRPianoOvertones(const int NumSamples, const int amplitude, const float frequency);
@@ -86,10 +91,9 @@ public:
 	enum class WaveType
 	{
 		Sine,
-		Triangular,
 		Square,
 		Saw,
-		Piano // more ambitious -> model the Attack, Sustain, Release, Decay envelope curve
+		Piano 
 	};
 
 	WaveFile() = delete; 
@@ -119,6 +123,8 @@ public:
 	void writeToWaveFile(const std::string& filename);
 
 
+	friend class Synthesizer; 
+
 #pragma region Audio modification and analysis section 
 
 	/*This method calls std::reverse on `SoundSubchunk's` vector of data (the sound wave)*/
@@ -136,7 +142,6 @@ public:
 #pragma endregion
 };
 
-
 /*@param value -> note that I use this for both shorts and ints (shorts are working as intended, so far)*/
 void writeLittleEndian(std::ofstream& fout, int value, int byteSize);
 
@@ -145,4 +150,8 @@ void readLittleEndian(std::ifstream& fin, int& value);
 
 /*Not a particularly intelligent overload*/
 void readLittleEndian(std::ifstream& fin, short& value);
+
+
+
+
 

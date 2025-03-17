@@ -25,8 +25,6 @@ class PianoNote
 {
 private: 
 	
-	static void mapNotesToFrequencies(); 
-
 	static bool initialized; 
 
 public:
@@ -42,15 +40,25 @@ public:
 		Fortissimo = 32'767 / 1
 	};
 
-	std::string name; //ex: A4, C#3, Gb4, etc.
+	std::string noteName; //ex: A4, C#3, Gb4, etc.
 	float durationInSeconds; 
 	Loudness amplitude; 
 
+	/*Tweek as needed*/
+	static constexpr int kAttack = 300;
+	/*Tweek as needed*/
+	static constexpr int kDecay = 4;
 
 	/*These will be restricted to sharps (#), for the moment...N.B. Use PianoNote::initialize() if not creating an object but want to use static member vars of this class!*/
 	static std::vector<std::string> the88Notes;
 
 	static std::map<std::string, double, PianoNoteComparator> notesToFrequencies;
+	
+	/*Piano is "close" to the harmonic series
+	* in ../someWaveAnalysis/plots, amplitude (of C4) on piano 1st overtone is 1/3 amplitude of fundamental, 2nd is 1/4, 3rd is 1/5, etc. 
+	* @returns the map values are dependent of the current values of `name` and `amplitude` 
+	*/
+	//std::map<double, short> overtoneFrequenciesToAmplitudes; 
 
 	/*Allows creation of anonymous objects - as in:std::vector<SongNote> amazingGraceNotes =
 	{
@@ -60,13 +68,15 @@ public:
 	/*@param duration -> in seconds, example: 3/4 time and tempo = 80 bmp implies quarter note duration = (60.0 sec/min)/ (80 bpm) = 0.75 seconds*/
 	PianoNote(const std::string& name, const float durationInSeconds, Loudness amplitude);
 
+	//PianoNote(const std::string& name, const float durationInSeconds, Loudness baseNoteAmplitude, ADSR adsrEnvelop, Overtone overtoneSignature);
+
 	/*This initializes the static member vars - the88Notes and notesToFrequencies
 	* N.B. A private boolean flag is part of this class that prevents wasting time running through this function more than once. 
 	*/
 	static void initialize();
 
-	/*Needed if using std::find on a vector of PianoNotes - this method just compares the note names on the left and right (hand sides)*/
-	//bool operator == (const PianoNote& rhs);
+	static std::map<double, short> mapOvertoneFrequenciesToAmplitudes(const std::string& noteName, const short fundamentalAmplitude);
+	
 
 	friend class PianoChord; 
 
@@ -85,8 +95,6 @@ private:
 
 	/*Ex: returns C for C3, A# for A#6, etc.*/
 	std::string getShortNameOfNote(const std::string& note);
-
-	//std::string getNextNoteNameInChordInversion(const std::string& nextToLastNoteName, const std::string& lastNoteNameWithoutOctave);
 
 	void getMajorChord(const std::string& baseNoteName);
 	void getMajor6thChord(const std::string& baseNoteName);
@@ -127,6 +135,7 @@ public:
 		PerfectOctave = 12
 	};
 	PianoChord() = delete; 
+	
 	/*
 	* @param chordType -> ex: minor, major, minorSeventh, majorSixth,etc
 	*/

@@ -11,8 +11,6 @@
 #include<sstream>
 
 
-
-
 namespace SimpleTesting
 {
 
@@ -27,7 +25,6 @@ namespace SimpleTesting
 	void demoSimpleWaveFileReading();
 
 	void demoMeSpeakingInReverse();
-
 
 	void skywardSwordDemo();
 
@@ -69,6 +66,6 @@ namespace Utils
 
 	std::vector<PianoNote> generateC3Major();
 
-	/*F3, A3, C4, E4 (also known as Aminor7)*/
+	/*F3, A3, C4, E4*/
 	std::vector<PianoNote> generateF3Maj7();
 }

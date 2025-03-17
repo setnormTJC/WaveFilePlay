@@ -5,7 +5,6 @@
 
 FourierTransform::FourierTransform(const std::string& waveFilename)
 {
-
 	WaveFile waveFile(waveFilename);
 
 	soundWave = waveFile.getSoundWave();
@@ -29,9 +28,10 @@ void FourierTransform::fillTransformDataAndFrequencyMap()
 	std::cout << "Generating FT from minFrequency = " << minFrequency << " hz to maxFrequency = "
 		<< maxFrequency << " hz.\n";
 
-	const int N = soundWave.size();
+	const int N = static_cast<int>(soundWave.size());
 
-	//const int binCount = N / 2; // FT result is symmetric, only need the first half
+	//const int binCount = N / 2; // Uncomment for POSSIBLY more accurate FT
+	// FT result is symmetric, only need the first half
 
 	std::vector<double> realPartOfTransform(maxFrequency - minFrequency, 0.0); //the second arg inits all elements to 0.0
 	std::vector<double> imagPartOfTransform(maxFrequency - minFrequency, 0.0);
@@ -39,7 +39,6 @@ void FourierTransform::fillTransformDataAndFrequencyMap()
 	//use the approach below for possibly more accurate FT
 	//std::vector<double> realPartOfTransform(binCount, 0.0); //the second arg inits all elements to 0.0
 	//std::vector<double> imagPartOfTransform(binCount, 0.0);
-
 
 	for (int k = 0; k < realPartOfTransform.size(); ++k) //k is each frequency value in the transform 
 	{
@@ -53,8 +52,6 @@ void FourierTransform::fillTransformDataAndFrequencyMap()
 		}
 	}
 
-	//std::vector<double> transform(maxFrequency - minFrequency, 0.0);
-	//theTransformData.resize(maxFrequency - minFrequency); 
 	theTransformData.assign(maxFrequency - minFrequency, 0.0);
 
 	for (int k = 0; k < theTransformData.size(); ++k)
@@ -66,7 +63,6 @@ void FourierTransform::fillTransformDataAndFrequencyMap()
 		frequenciesToAmplitudes.insert({ k * samplingRate / N, theTransformData[k] });
 		//frequenciesToAmplitudes.insert({ k, theTransformData[k] }); //WRONG!!
 	}
-
 }
 
 
@@ -80,14 +76,8 @@ void FourierTransform::writeFTMapToCSV(const std::string& csvFilename) const
 	for (const auto& [frequency, amplitude] : frequenciesToAmplitudes)
 	{
 		fout << frequency << "," << amplitude << "\n";
-
-		if (amplitude > 1000) //just for temporary visualization 
-		{
-			//std::cout << frequency << "," << amplitude << "\n";
-		}
 	}
 
 	fout.close(); 
-
 
 }

@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="PianoNote">
+    <Position X="4.75" Y="0.75" Width="1.5" />
+    <NestedTypes>
+      <Enum Name="PianoNote::Loudness" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>PianoNote.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAABAAAABAAAAACAAEAAAAEAAAEAAAAAgAAAAIAAAA=</HashCode>
+      <FileName>PianoNote.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PianoChord">
+    <Position X="7.5" Y="1.5" Width="1.5" />
+    <NestedTypes>
+      <Enum Name="PianoChord::ChordType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>PianoNote.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Enum Name="PianoChord::Interval" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>PianoNote.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAIAAIAAAAABAIAAAIAACAAAAAAAAAAEAECAAAgAgA=</HashCode>
+      <FileName>PianoNote.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WaveFile">
+    <Position X="1.75" Y="0.75" Width="1.5" />
+    <NestedTypes>
+      <Enum Name="WaveFile::WaveType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>WaveFile.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAACCAAAAQCtAgAAAAAAAAAAAAQBAIAEAAAAAAgE=</HashCode>
+      <FileName>WaveFile.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

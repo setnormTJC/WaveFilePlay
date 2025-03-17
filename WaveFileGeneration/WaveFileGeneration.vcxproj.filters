@@ -27,19 +27,13 @@
     <ClCompile Include="DemoingWaveFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="adsrEnvelope.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BMPImage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PlotImage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="FourierTransform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MyException.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Synthesizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -56,20 +50,17 @@
     <ClInclude Include="scrappedCode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="adsrEnvelope.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BMPImage.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PlotImage.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FourierTransform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MyException.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Synthesizer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

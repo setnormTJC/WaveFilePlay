@@ -4,6 +4,8 @@
 
 #include<algorithm>
 
+
+#pragma region PianoNote
 /*******************************STATIC stuff*********************/
 std::vector<std::string> PianoNote::the88Notes; 
 std::map<std::string, double, PianoNoteComparator> PianoNote::notesToFrequencies;
@@ -27,60 +29,37 @@ PianoNoteComparator::PianoNoteComparator()
 
 bool PianoNoteComparator::operator()(const std::string& firstNote, const std::string& secondNote) const
 {
+	if (noteOrder.find(firstNote) == noteOrder.end() || noteOrder.find(secondNote) == noteOrder.end())
+		throw MyException("PianoNoteComparator::operator() could not find one of the two notes",
+			__FILE__, __LINE__);
+
 	return noteOrder.at(firstNote) < noteOrder.at(secondNote);
 }
 
 
-/*Using: https://en.wikipedia.org/wiki/Piano_key_frequencies*/
-void PianoNote::mapNotesToFrequencies()
-{
-	//Be wary! floats here give C8 frequency around 3950 Hz (should be 4186)
-	double twelfthRootOf2 = (float)pow(2, (1.0 / 12));
-	/*A (the?) base tuning pitch (Hertz)*/
-	double A4Frequency = 440.0; 
-
-	for (int n = 0; n < the88Notes.size(); ++n)
-	{
-		notesToFrequencies[the88Notes[n]] = (float)(A4Frequency * pow(twelfthRootOf2, (n - 48)));
-	}
-
-	for (const auto& [note, frequency] : notesToFrequencies)
-	{
-		std::cout << std::left << std::setw(5) << note;
-
-		std::cout << std::fixed << std::setprecision(1); //display frequencies to nearest 0.1 Hz (may change this later) 
-		std::cout << std::left << std::setw(7) << frequency;
-		std::cout << "\n";
-	}
-
-}
 
 PianoNote::PianoNote()
 {
-	//the88Notes = generateThe88Notes(); 
-	//mapNotesToFrequencies(); 
-
 	initialize(); 
 }
 
 PianoNote::PianoNote(const std::string& name, const float durationInSeconds, Loudness amplitude)
-	:name(name), durationInSeconds(durationInSeconds), amplitude(amplitude)
+	:noteName(name), durationInSeconds(durationInSeconds), amplitude(amplitude)
 {
-	//the88Notes = generateThe88Notes();
-	//mapNotesToFrequencies();
-
 	initialize(); 
 }
 
 void PianoNote::initialize()
 {
+	/*Using: https://en.wikipedia.org/wiki/Piano_key_frequencies*/
+
 	if (initialized) return; // Ensure this runs only once
 	initialized = true;
 
 	the88Notes = generateThe88Notes();
 
-	double twelfthRootOf2 = pow(2, (1.0 / 12));
-	double A4Frequency = 440.0;
+	const double twelfthRootOf2 = pow(2, (1.0 / 12));
+	constexpr double A4Frequency = 440.0;
 
 	for (int n = 0; n < the88Notes.size(); ++n)
 	{
@@ -88,10 +67,32 @@ void PianoNote::initialize()
 	}
 }
 
-//bool PianoNote::operator==(const PianoNote& rhs)
-//{
-//	return this->name == rhs.name; 
-//}
+std::map<double, short> PianoNote::mapOvertoneFrequenciesToAmplitudes(const std::string& noteName, const short fundamentalAmplitude)
+{
+	//confirm that notesToFrequencies map is initialized and the noteName is not the empty string
+	if (notesToFrequencies.find(noteName) == notesToFrequencies.end())
+		throw MyException("note name not found in notesToFrequencies map", __FILE__, __LINE__);
+
+	double fundamentalFrequency = notesToFrequencies.at(noteName);
+
+	//calculate the first 5 overtone frequencies (multiples of the fundamental): 
+	std::vector<double> overtoneFrequencies; 
+	for (int i = 2; i <= 6; ++i)
+		overtoneFrequencies.push_back(fundamentalFrequency * i);
+
+	//now the amplitudes should (PERHAPS) be 1/3, 1/4, 1/5, etc. 
+	std::vector<short> overtoneAmplitudes; 
+	for (double i = 3; i <= 7; ++i)
+		overtoneAmplitudes.push_back((double)fundamentalAmplitude * (1.0 / i)); //goofy cast
+	
+	std::map<double, short> overtoneFrequenciesToAmplitudes;
+	for (int i = 0; i < overtoneFrequencies.size(); ++i)
+		overtoneFrequenciesToAmplitudes.insert({ overtoneFrequencies[i], overtoneAmplitudes[i] });
+
+	return overtoneFrequenciesToAmplitudes;
+}
+
+
 
 std::vector<std::string> generateThe88Notes()
 {
@@ -134,19 +135,11 @@ std::vector<std::string> generateThe88Notes()
 	//and the final C: 
 	the88Notes.insert(the88Notes.end(), "C8");
 
-	//for (const std::string& note : the88Notes)
-	//{
-	//	std::cout << note << "\n";
-	//}
-
 	return the88Notes; 
 }
+#pragma endregion
 
-//std::string PianoChord::getNextNoteNameInChordInversion(const std::string& nextToLastNoteName, const std::string& lastNoteNameWithoutOctave)
-//{
-//	auto iteratorToNextToLast = std::find()
-//}
-
+#pragma region PianoChord
 void PianoChord::getMajorChord(const std::string& baseNoteName)
 {
 
@@ -191,7 +184,7 @@ std::vector<std::string> PianoChord::getChordNoteNames()
 
 	for (const auto& note: theChordNotes)
 	{
-		chordNoteNames.push_back(note.name);
+		chordNoteNames.push_back(note.noteName);
 	}
 
 	return chordNoteNames;
@@ -210,12 +203,12 @@ std::vector<std::vector<PianoNote>> PianoChord::getChordAndItsInversions()
 	/*1st inversion up through the N - 1th inversion (where N is the number of notes in chord)*/
 	for (int inversionNumber = 1; inversionNumber < theChordNotes.size(); ++inversionNumber)
 	{
-		std::string nameOfCurrentFirstNote = currentInvertedChord.at(0).name;
+		std::string nameOfCurrentFirstNote = currentInvertedChord.at(0).noteName;
 		int octaveOfFirstNote = getOctaveOfNote(nameOfCurrentFirstNote);
 
 		for (int i = 1; i < currentInvertedChord.size(); ++i)
 		{
-			currentInvertedChord.at(i - 1).name = currentInvertedChord.at(i).name;
+			currentInvertedChord.at(i - 1).noteName = currentInvertedChord.at(i).noteName;
 			//no change to duration or loudness ... 
 		}
 
@@ -223,7 +216,7 @@ std::vector<std::vector<PianoNote>> PianoChord::getChordAndItsInversions()
 		std::string newLastNote =
 			getShortNameOfNote(nameOfCurrentFirstNote) + std::to_string(octaveOfFirstNote + 1);
 
-		currentInvertedChord.at(currentInvertedChord.size() - 1).name = newLastNote; 
+		currentInvertedChord.at(currentInvertedChord.size() - 1).noteName = newLastNote; 
 
 		chordAndItsInversions.push_back(currentInvertedChord);
 	}
@@ -238,7 +231,7 @@ int PianoChord::getIndexOfBaseNote(const std::string& baseNoteName)
 	auto iteratorToBaseNote =
 		std::find(PianoNote::the88Notes.begin(), PianoNote::the88Notes.end(), baseNoteName);
 
-	return (std::distance(PianoNote::the88Notes.begin(), iteratorToBaseNote));
+	return static_cast<int>(std::distance(PianoNote::the88Notes.begin(), iteratorToBaseNote));
 }
 
 int PianoChord::getOctaveOfNote(const std::string& noteName)
@@ -252,6 +245,11 @@ int PianoChord::getOctaveOfNote(const std::string& noteName)
 	{
 		return noteName.at(2) - '0';
 	}
+
+	else
+	{
+		throw MyException("note name length is not 2 or 3??", __FILE__, __LINE__);
+	}
 }
 
 std::string PianoChord::getShortNameOfNote(const std::string& noteName)
@@ -263,6 +261,10 @@ std::string PianoChord::getShortNameOfNote(const std::string& noteName)
 	else if (noteName.length() == 3)
 	{
 		return noteName.substr(0, 2);
+	}
+	else
+	{
+		throw MyException("note name length is not 2 or 3??", __FILE__, __LINE__); 
 	}
 }
 
@@ -299,3 +301,5 @@ PianoChord::PianoChord(const std::string baseNoteName, const ChordType& chordTyp
 	}
 	//etc. 
 }
+
+#pragma endregion
