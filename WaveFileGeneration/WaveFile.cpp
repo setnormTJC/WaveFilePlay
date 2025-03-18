@@ -1,3 +1,5 @@
+
+
 #include "WaveFile.h"
 
 #include"MyException.h"
@@ -373,6 +375,19 @@ WaveFile::WaveFile(const int NumSamples, const int amplitude, const float freque
 	theRiffHeader.ChunkSize = 4 + (8 + theFormatHeader.Subchunk1Size) + (8 + theSoundSubchunk.Subchunk2Size);
 }
 
+WaveFile::WaveFile(const PianoNote& pianoNote)
+{
+	std::vector<short> soundWaveData = pianoNote.getSoundWaveData(); 
+
+	//theSoundSubchunk.data.resize(soundWaveData.size());
+	theSoundSubchunk.data = soundWaveData; 
+	
+	theSoundSubchunk.Subchunk2Size = soundWaveData.size() * theFormatHeader.NumChannels * (theFormatHeader.BitsPerSample / 8);
+
+	theRiffHeader.ChunkSize = 4 + (8 + theFormatHeader.Subchunk1Size) + (8 + theSoundSubchunk.Subchunk2Size);
+	
+}
+
 WaveFile::WaveFile(const PianoNote& pianoNote, const WaveType theWaveType)
 {
 	if (PianoNote::notesToFrequencies.find(pianoNote.noteName) == PianoNote::notesToFrequencies.end())
@@ -382,7 +397,7 @@ WaveFile::WaveFile(const PianoNote& pianoNote, const WaveType theWaveType)
 	}
 
 	float frequency = static_cast<float>(PianoNote::notesToFrequencies[pianoNote.noteName]);
-	int amplitude = (int)pianoNote.amplitude;
+	int amplitude = (int)pianoNote.fundamentalAmplitude;
 	int NumSamples = theFormatHeader.SampleRate * pianoNote.durationInSeconds; 
 
 	theSoundSubchunk.data.resize(NumSamples);
@@ -428,7 +443,7 @@ WaveFile::WaveFile(const std::vector<PianoNote>& melodicNotes, const WaveType th
 	for (int i = 0; i < melodicNotes.size(); ++i)
 	{
 		int NumSamples = melodicNotes[i].durationInSeconds * theFormatHeader.SampleRate;
-		int amplitude = static_cast<int>(melodicNotes[i].amplitude);
+		int amplitude = static_cast<int>(melodicNotes[i].fundamentalAmplitude);
 		
 		float frequency;
 		if (melodicNotes[i].noteName != "") //Let this mean SILENCE 
@@ -474,7 +489,7 @@ WaveFile::WaveFile(const std::vector<PianoNote>& harmonicNotes)
 
 		for (const PianoNote& currentHarmonicNote : harmonicNotes)
 		{
-			int amplitude = static_cast<int>(currentHarmonicNote.amplitude);
+			int amplitude = static_cast<int>(currentHarmonicNote.fundamentalAmplitude);
 			float frequency = PianoNote::notesToFrequencies.at(currentHarmonicNote.noteName);
 
 			//apply ADSR: (fix later)

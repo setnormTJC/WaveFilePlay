@@ -33,9 +33,6 @@
     <ClCompile Include="MyException.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Synthesizer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WaveFile.h">
@@ -54,9 +51,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MyException.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Synthesizer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

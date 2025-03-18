@@ -19,7 +19,8 @@ private:
 public: 
 	FourierTransform() = delete; 
 	/*fills the private member var `soundWave` by calling `WaveFile` constructor with waveFilename*/
-	explicit FourierTransform(const std::string& waveFilename); 
+	explicit FourierTransform(const std::string& waveFilename);
+	explicit FourierTransform(std::vector<short>& soundWave);
 	FourierTransform(const FourierTransform& other) = delete; 
 
 	FourierTransform(FourierTransform&& other) = delete;

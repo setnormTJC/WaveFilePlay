@@ -20,7 +20,22 @@ FourierTransform::FourierTransform(const std::string& waveFilename)
 	for (auto& sample : soundWave) {
 		sample = static_cast<short>((sample * 32767) / maxAmplitude);
 	}
+}
 
+FourierTransform::FourierTransform(std::vector<short>& soundWave)
+	:soundWave(soundWave)
+{
+	//AI suggested possible need for normalization - 
+	// uncomment the code below if desired: 
+	
+	//short maxAmplitude = *std::max_element(soundWave.begin(), soundWave.end(),
+	//	[](short a, short b) { return std::abs(a) < std::abs(b); });
+
+	//if (maxAmplitude == 0) return; // Avoid division by zero
+
+	//for (auto& sample : soundWave) {
+	//	sample = static_cast<short>((sample * 32767) / maxAmplitude);
+	//}
 }
 
 void FourierTransform::fillTransformDataAndFrequencyMap()

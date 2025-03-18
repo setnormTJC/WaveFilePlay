@@ -1,8 +1,11 @@
-#include "PianoNote.h"
+#define _USE_MATH_DEFINES //for M_E and M_PI 
 
 #include"MyException.h"
+#include "PianoNote.h"
+#include"FourierTransform.h"
 
 #include<algorithm>
+#include<fstream> 
 
 
 #pragma region PianoNote
@@ -38,15 +41,184 @@ bool PianoNoteComparator::operator()(const std::string& firstNote, const std::st
 
 
 
+
 PianoNote::PianoNote()
 {
 	initialize(); 
 }
 
-PianoNote::PianoNote(const std::string& name, const float durationInSeconds, Loudness amplitude)
-	:noteName(name), durationInSeconds(durationInSeconds), amplitude(amplitude)
+PianoNote::PianoNote(const std::string& noteName, const float durationInSeconds)
+	:noteName(noteName), durationInSeconds(durationInSeconds)
 {
 	initialize(); 
+
+	totalNumberOfSamples = durationInSeconds * samplesPerSecond;
+
+	mapFrequenciesToAmplitudes();
+
+	
+	soundWaveData.assign(totalNumberOfSamples, static_cast<short>(0));
+	fillSoundWaveData();
+
+
+}
+
+PianoNote::PianoNote(const std::string& name, const float durationInSeconds, Loudness amplitude)
+	:noteName(name), durationInSeconds(durationInSeconds), fundamentalAmplitude(amplitude)
+{
+	initialize(); 
+
+}
+
+void PianoNote::mapFrequenciesToAmplitudes()
+{
+	double fundamentalFrequency = notesToFrequencies.at(noteName); 
+
+	//calculate the first 5 overtone frequencies (multiples of the fundamental): 
+	std::vector<double> frequencies;
+	for (int i = 2; i <= 6; ++i)
+		frequencies.push_back(fundamentalFrequency * i);
+
+	//now the amplitudes should (PERHAPS) be 1/3, 1/4, 1/5, etc. 
+	std::vector<short> amplitudes;
+	//for (double i = 3; i <= 7; ++i)
+	for (double i = 2; i <= 6; ++i)
+		amplitudes.push_back(static_cast<short>((short)fundamentalAmplitude * pow((1.0/M_E), i - 1)));
+
+	/*first insert the fundamental and its amplitude*/
+	frequenciesToAmplitudes.insert({ fundamentalFrequency, static_cast<short>(fundamentalAmplitude) });
+	/*Then insert the overtones*/
+	for (int i = 0; i < frequencies.size(); ++i)
+		frequenciesToAmplitudes.insert({ frequencies[i], amplitudes[i] });
+
+}
+
+
+
+void PianoNote::applyADSRToSoundWaveData()
+{
+	int totalNumberOfSamples = soundWaveData.size(); 
+	
+	/*Tweek as needed*/
+	constexpr float attackTimeInSeconds = 0.1f;
+
+
+	/*Tweek as needed*/
+	constexpr int kDecay = 4;
+	constexpr int kRelease = 10; //just a "guess"
+
+	int numberOfSamplesInAttackPhase = attackTimeInSeconds * samplesPerSecond; //should be 4'440 samples in
+	int numberOfSamplesToReachDecayPhase = numberOfSamplesInAttackPhase + (totalNumberOfSamples * 0.45);
+	int numberOfSamplesToReachReleasePhase = totalNumberOfSamples - (totalNumberOfSamples * 0.1);
+
+
+	short peakLevel = soundWaveData[numberOfSamplesInAttackPhase];
+	short sustainLevel = static_cast<short>(peakLevel * 0.5);
+
+	for (int timePoint = 0; timePoint < totalNumberOfSamples; ++timePoint)
+	{
+		if (timePoint < numberOfSamplesInAttackPhase) //attack 
+		{
+			float attackProgress = static_cast<float>(timePoint) / numberOfSamplesInAttackPhase;
+			soundWaveData[timePoint] = static_cast<short>(soundWaveData[timePoint] * attackProgress); // Linear rise
+		}
+
+		else if (timePoint < numberOfSamplesToReachDecayPhase) //decay
+		{
+			float decayProgress = static_cast<float>(timePoint - numberOfSamplesInAttackPhase) /
+				(numberOfSamplesToReachDecayPhase - numberOfSamplesInAttackPhase);
+
+			float decayEnvelope = sustainLevel + (peakLevel - sustainLevel) *
+				exp(-decayProgress * kDecay);
+			
+			soundWaveData[timePoint] = static_cast<short>(decayEnvelope);  
+		}
+
+		else if (timePoint < numberOfSamplesToReachReleasePhase) //sustain
+		{
+			soundWaveData[timePoint] = sustainLevel;
+		}
+
+		else //release
+		{
+			float releaseProgress = static_cast<float>(timePoint - numberOfSamplesToReachReleasePhase) /
+				(totalNumberOfSamples - numberOfSamplesToReachReleasePhase);
+
+			float releaseEnvelope = sustainLevel * exp(-releaseProgress * kRelease);
+			
+			soundWaveData[timePoint] = static_cast<short>(releaseEnvelope);
+		}
+	}
+}
+
+void PianoNote::fillSoundWaveData()
+{
+	for (int timePoint = 0; timePoint < totalNumberOfSamples; ++timePoint)
+	{
+		int overtoneCount = 0; 
+		for (const auto& [frequency, amplitude] : frequenciesToAmplitudes)
+		{
+			soundWaveData[timePoint] = 
+				soundWaveData[timePoint] + 
+					amplitude * sin(2 * M_PI * frequency * timePoint / samplesPerSecond);
+
+			//if (overtoneCount == 0) //uncommenting this block gives back the single sine wave (for sound comparison)
+			//{
+			//	break;
+			//}
+			//overtoneCount++; 
+		}
+	}
+
+	/*temporary - for sanity checks*/
+	//writeSoundWaveDataToCSVAndPlot(); 
+	//writeDFTToCSVAndPlot(); 
+
+	/*NOw apply ADSR - intentionally using separate loops for ease of comprehension (not better efficiency)*/
+	applyADSRToSoundWaveData(); 
+
+	/*Temporary scaling: */
+	//for (int timePoint = 0; timePoint < totalNumberOfSamples; ++timePoint)
+	//{
+	//	soundWaveData[timePoint] = 10 * soundWaveData[timePoint];
+	//}
+}
+
+void PianoNote::writeSoundWaveDataToCSVAndPlot()
+{
+	const std::string csvFilename = "soundwaveData.csv";
+
+	std::ofstream fout(csvFilename);
+
+	int timePoint = 0;
+	for (const short amplitudeAtTimePoint : soundWaveData)
+	{
+		fout << timePoint << "," << amplitudeAtTimePoint << "\n";
+		timePoint++;
+	}
+	fout.close();
+
+	const std::string callToPythonScript = "python plotSoundWave.py " + csvFilename; //note the space ... 
+	system(callToPythonScript.c_str());
+}
+
+void PianoNote::writeDFTToCSVAndPlot()
+{
+	const std::string csvFilename = "FourierTransform.csv";
+
+	/*get the transform first:*/
+	FourierTransform fourierTransform(soundWaveData);
+	fourierTransform.fillTransformDataAndFrequencyMap();
+	fourierTransform.writeFTMapToCSV(csvFilename);
+
+	const std::string callToPythonScript = "python plotFourierTransform.py " + csvFilename; //note the space ... 
+	system(callToPythonScript.c_str());
+
+}
+
+std::vector<short> PianoNote::getSoundWaveData() const
+{
+	return soundWaveData;
 }
 
 void PianoNote::initialize()
@@ -67,30 +239,6 @@ void PianoNote::initialize()
 	}
 }
 
-std::map<double, short> PianoNote::mapOvertoneFrequenciesToAmplitudes(const std::string& noteName, const short fundamentalAmplitude)
-{
-	//confirm that notesToFrequencies map is initialized and the noteName is not the empty string
-	if (notesToFrequencies.find(noteName) == notesToFrequencies.end())
-		throw MyException("note name not found in notesToFrequencies map", __FILE__, __LINE__);
-
-	double fundamentalFrequency = notesToFrequencies.at(noteName);
-
-	//calculate the first 5 overtone frequencies (multiples of the fundamental): 
-	std::vector<double> overtoneFrequencies; 
-	for (int i = 2; i <= 6; ++i)
-		overtoneFrequencies.push_back(fundamentalFrequency * i);
-
-	//now the amplitudes should (PERHAPS) be 1/3, 1/4, 1/5, etc. 
-	std::vector<short> overtoneAmplitudes; 
-	for (double i = 3; i <= 7; ++i)
-		overtoneAmplitudes.push_back((double)fundamentalAmplitude * (1.0 / i)); //goofy cast
-	
-	std::map<double, short> overtoneFrequenciesToAmplitudes;
-	for (int i = 0; i < overtoneFrequencies.size(); ++i)
-		overtoneFrequenciesToAmplitudes.insert({ overtoneFrequencies[i], overtoneAmplitudes[i] });
-
-	return overtoneFrequenciesToAmplitudes;
-}
 
 
 

@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 # Check if the CSV filename argument is passed
 if len(sys.argv) != 2:
-    print("Usage: python pythonFilename.py <csv_filename>")
+    print("example of CORRECT way to call this file: python plotSoundWave.py csvFilename.csv")
     sys.exit(1)
 
 
@@ -18,16 +18,16 @@ csv_filename = sys.argv[1]
 data = np.loadtxt(csv_filename, delimiter=',', skiprows=0)
 
 # Separate the columns into variables
-frequencies = data[:, 0]  # First column: frequencies
+times = data[:, 0]  # First column: frequencies
 amplitudes = data[:, 1]  # Second column: amplitudes
 
 
 
 # Plot the data
-plt.plot(frequencies, amplitudes)
-plt.xlabel('Frequency (Hz)')
+plt.plot(times, amplitudes)
+plt.xlabel('Time (seconds?)')
 plt.ylabel('Amplitude')
-plt.title('Frequency vs. Amplitude')
+plt.title('Sound wave data - ain\'t it lovely?')
 
 
 #uncomment the two lines below if comparing orders of magnitude of frequencies 
@@ -36,7 +36,7 @@ plt.title('Frequency vs. Amplitude')
 
 # plt.xscale('log')
 
-plt.xlim(0, 5000)
+# plt.xlim(0, 5000)
 
 plt.grid(True)
 plt.show()

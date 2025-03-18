@@ -7,6 +7,12 @@
 #include <unordered_map>
 
 
+/*The base (and abstract?) class from which PianoNote, Violin?Note, et. al can inherit*/
+class Note
+{
+	//all notes should have pitches, durations, and amplitudes
+};
+
 struct PianoNoteComparator
 {
 private:
@@ -21,16 +27,43 @@ public:
 /*"PianoNote" means A0 - C8 (88 notes, in semitone intervals) are included
 * N.B. Use PianoNote::initialize() if not creating an object but want to use static member vars of this class!
 */
-class PianoNote
+class PianoNote : public Note
 {
 private: 
 	
 	static bool initialized; 
+	
+	static constexpr int samplesPerSecond = 44'100;
+
+	/*The duration times samplesPerSecond*/
+	int totalNumberOfSamples = 0;
+
+
+	std::vector<short> soundWaveData; 
+
+	std::map<double, short> frequenciesToAmplitudes;
+
+
+	/***************Private funcs********************************/
+
+	/*Maps the fundamental and its overtones to their amplitudes
+	* DEFINITELY needs further tweeking -> at the moment, I am using something like an exponential decay of amplitudes, but overtones don't look perfect
+	*/
+	void mapFrequenciesToAmplitudes();
+
+	void fillSoundWaveData(); 
+
+	void applyADSRToSoundWaveData(); 
+
+	void writeSoundWaveDataToCSVAndPlot(); 
+
+	void writeDFTToCSVAndPlot(); 
+
 
 public:
 
 	/*Be wary of the summing of multiple harmonics - can cause popping*/
-	enum class Loudness : int16_t //int16_t expected by 16 bit WAV
+	enum class Loudness : short //int16_t expected by 16 bit WAV
 	{
 		Silent		=	 0, //ex: for a rest note
 		Pianissimo = 32'767 / 10, 
@@ -40,30 +73,20 @@ public:
 		Fortissimo = 32'767 / 1
 	};
 
-	std::string noteName; //ex: A4, C#3, Gb4, etc.
-	float durationInSeconds; 
-	Loudness amplitude; 
+	std::string noteName = ""; //ex: A4, C#3, Gb4, etc.
+	float durationInSeconds = 0.0f; 
+	Loudness fundamentalAmplitude = Loudness::Mezzo; 
 
-	/*Tweek as needed*/
-	static constexpr int kAttack = 300;
-	/*Tweek as needed*/
-	static constexpr int kDecay = 4;
 
 	/*These will be restricted to sharps (#), for the moment...N.B. Use PianoNote::initialize() if not creating an object but want to use static member vars of this class!*/
 	static std::vector<std::string> the88Notes;
 
 	static std::map<std::string, double, PianoNoteComparator> notesToFrequencies;
 	
-	/*Piano is "close" to the harmonic series
-	* in ../someWaveAnalysis/plots, amplitude (of C4) on piano 1st overtone is 1/3 amplitude of fundamental, 2nd is 1/4, 3rd is 1/5, etc. 
-	* @returns the map values are dependent of the current values of `name` and `amplitude` 
-	*/
-	//std::map<double, short> overtoneFrequenciesToAmplitudes; 
-
-	/*Allows creation of anonymous objects - as in:std::vector<SongNote> amazingGraceNotes =
-	{
-		{"C3", quarterNoteDurationIn3_4Time,	 SongNote::Loudness::Mezzo}, etc.*/
 	PianoNote();
+
+	/*For testing my new approach*/
+	PianoNote(const std::string& noteName, const float durationInSeconds);
 
 	/*@param duration -> in seconds, example: 3/4 time and tempo = 80 bmp implies quarter note duration = (60.0 sec/min)/ (80 bpm) = 0.75 seconds*/
 	PianoNote(const std::string& name, const float durationInSeconds, Loudness amplitude);
@@ -75,8 +98,8 @@ public:
 	*/
 	static void initialize();
 
-	static std::map<double, short> mapOvertoneFrequenciesToAmplitudes(const std::string& noteName, const short fundamentalAmplitude);
 	
+	std::vector<short> getSoundWaveData() const;
 
 	friend class PianoChord; 
 

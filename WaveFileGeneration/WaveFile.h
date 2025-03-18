@@ -99,6 +99,7 @@ public:
 	WaveFile() = delete; 
 	WaveFile(const int NumSamples, const int amplitude, const float frequency);
 	
+	WaveFile(const PianoNote& pianoNote);
 	/*
 	* @param noteName -> ex: C4, Bb7, F#1
 	* @param theWaveType -> select from available enums (triangular, sawtooth, etc.)

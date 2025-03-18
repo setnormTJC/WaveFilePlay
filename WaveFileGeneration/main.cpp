@@ -8,9 +8,9 @@
 #include <random>
 
 /*Requires TimpaniC2.wav file's presence in this cpp file's folder*/
-void getFTOfTimpaniC2()
+void getFTOfC4WithHarmonics()
 {
-	std::string baseFilename = "TimpaniC2";
+	std::string baseFilename = "C4withHarmonics";
 	//wavefile.writeToWaveFile(baseFilename + ".wav");
 
 	FourierTransform ft(baseFilename + ".wav");
@@ -19,7 +19,7 @@ void getFTOfTimpaniC2()
 
 	ft.writeFTMapToCSV(baseFilename + ".csv");
 
-	std::string callPythonPlottingScript = "python plotTheData.py " + baseFilename + ".csv";
+	std::string callPythonPlottingScript = "python plotFourierTransform.py " + baseFilename + ".csv";
 	system(callPythonPlottingScript.c_str());
 }
 
@@ -87,6 +87,15 @@ int main()
 
 	try
 	{
+		//getFTOfA4WithHarmonics(); 
+
+		PianoNote note("C4", 2.0f);
+		WaveFile wavefile(note); 
+		std::string wavefilename = "C4withHarmonics.wav";
+		wavefile.writeToWaveFile(wavefilename);
+		system(wavefilename.c_str());
+
+		getFTOfC4WithHarmonics(); 
 
 		PianoNote::initialize();
 
@@ -105,7 +114,8 @@ int main()
 
 				for (const std::vector<PianoNote>& currentChord : chordAndItsInversions)
 				{
-					WaveFile wavefile(currentChord, WaveFile::WaveType::Piano);
+					//WaveFile wavefile(currentChord, WaveFile::WaveType::Piano);
+					WaveFile wavefile(currentChord);
 
 					std::string filename = "Arpeggiated"+
 						baseNoteName + "Major6invertedOver" + currentChord.at(0).noteName + ".wav";

@@ -135,7 +135,6 @@
     <ClCompile Include="FourierTransform.cpp" />
     <ClCompile Include="MyException.cpp" />
     <ClCompile Include="PianoNote.cpp" />
-    <ClCompile Include="Synthesizer.cpp" />
     <ClCompile Include="WaveFile.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
@@ -145,7 +144,6 @@
     <ClInclude Include="MyException.h" />
     <ClInclude Include="PianoNote.h" />
     <ClInclude Include="scrappedCode.h" />
-    <ClInclude Include="Synthesizer.h" />
     <ClInclude Include="WaveFile.h" />
   </ItemGroup>
   <ItemGroup>
