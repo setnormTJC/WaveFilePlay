@@ -61,13 +61,19 @@ PianoNote::PianoNote(const std::string& noteName, const float durationInSeconds)
 	soundWaveData.assign(totalNumberOfSamples, static_cast<short>(0));
 	fillSoundWaveData();
 
-
 }
 
-PianoNote::PianoNote(const std::string& name, const float durationInSeconds, Loudness amplitude)
-	:noteName(name), durationInSeconds(durationInSeconds), fundamentalAmplitude(amplitude)
+PianoNote::PianoNote(const std::string& name, const float durationInSeconds, Loudness fundamentalAmplitude)
+	:noteName(name), durationInSeconds(durationInSeconds), fundamentalAmplitude(fundamentalAmplitude)
 {
 	initialize(); 
+
+	totalNumberOfSamples = durationInSeconds * samplesPerSecond;
+
+	mapFrequenciesToAmplitudes();
+
+	soundWaveData.assign(totalNumberOfSamples, static_cast<short>(0));
+	fillSoundWaveData();
 
 }
 

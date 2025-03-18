@@ -64,6 +64,8 @@ namespace SynthesizerTesting
 	void demoSixthChordsForTwoOctaves();
 
 	void demoMoreMajorSixthChords();
+
+	void playSomeMiddleishNotes();
 }
 
 namespace Utils

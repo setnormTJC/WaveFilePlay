@@ -277,7 +277,7 @@ void MusicMaking::playMysterySong()
 		PianoNote("A3", eighthNoteDuration + quarterNoteDuration, PianoNote::Loudness::Mezzo), //line
 	};
 
-	WaveFile waveFile(mysteryMelody, WaveFile::WaveType::Piano);
+	WaveFile waveFile(mysteryMelody, WaveFile::WaveType::Sine);
 
 	const char* waveFilename = "mysteryMelody.wav";
 	waveFile.writeToWaveFile(waveFilename);
@@ -291,7 +291,7 @@ void MusicMaking::playMysterySong()
 
 void SynthesizerTesting::playC4()
 {
-	WaveFile waveFile(PianoNote("C4", 2.0, PianoNote::Loudness::Forte), WaveFile::WaveType::Piano);
+	WaveFile waveFile(PianoNote("C4", 2.0, PianoNote::Loudness::Forte), WaveFile::WaveType::Sine);
 
 
 	const char* waveFilename = "C4_withExponentialDecayEnvelope.wav";
@@ -312,7 +312,7 @@ void SynthesizerTesting::playC4()
 void SynthesizerTesting::demoSynthesizedPianoNote(const std::string& noteName)
 {
 	WaveFile waveFile(PianoNote(noteName, 2.0f, PianoNote::Loudness::Forte),
-		WaveFile::WaveType::Piano);
+		WaveFile::WaveType::Sine);
 
 	std::string wavefileName = noteName + "PianoSynthesized.wav";
 
@@ -335,7 +335,7 @@ void SynthesizerTesting::demo88SynthesizedPianoNotes()
 
 void SynthesizerTesting::demoMelodicSynthesizedPianoNote(const std::vector<PianoNote>& notes)
 {
-	WaveFile wavefile(notes, WaveFile::WaveType::Piano); 
+	WaveFile wavefile(notes, WaveFile::WaveType::Sine);
 
 	int noteCount = 0; //non-silent note count
 	for (const auto& note : notes)
@@ -442,6 +442,26 @@ void SynthesizerTesting::demoMoreMajorSixthChords()
 			}
 
 		}
+	}
+}
+
+void SynthesizerTesting::playSomeMiddleishNotes()
+{
+	PianoNote::initialize();
+
+	for (int i = 45; i < 55; ++i)
+	{
+		const std::string noteName = PianoNote::the88Notes.at(i);
+
+		PianoNote note(noteName, 2.0f);
+		WaveFile wavefile(note);
+		std::string wavefilename = noteName + ".wav";
+		wavefile.writeToWaveFile(wavefilename);
+		std::cout << "Playing " << wavefilename << "\n";
+		system(wavefilename.c_str());
+		std::cout << "Any key to continue\n";
+		std::cin.get();
+
 	}
 }
 

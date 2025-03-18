@@ -33,26 +33,28 @@ int main()
 
 	try
 	{
-		//getFTOfA4WithHarmonics(); 
-		PianoNote::initialize(); 
+		PianoNote singleNote("C4", 2.0f, PianoNote::Loudness::Fortissimo);
 
-		for (int i = 45; i < 55; ++i)
+		std::vector<std::vector<PianoNote>> notes =
 		{
-			const std::string noteName = PianoNote::the88Notes.at(i);
+			{singleNote}, //first melodic, single note
+			{PianoNote("C#3", 2.0f, PianoNote::Loudness::Piano)}, //second melodic, single note
+			{PianoNote("D3", 1.0f, PianoNote::Loudness::Mezzo) },
+			{PianoNote("D#3", 2.0f, PianoNote::Loudness::Forte)}, //etc.
+			{
+				PianoNote("E3", 1.0f, PianoNote::Loudness::Mezzo),
+				PianoNote("G3", 1.0f, PianoNote::Loudness::Mezzo),
+				PianoNote("B3", 1.0f, PianoNote::Loudness::Mezzo) //third melodic CHORD
+			}
 
-			PianoNote note(noteName, 2.0f);
-			WaveFile wavefile(note);
-			std::string wavefilename = noteName + ".wav";
-			wavefile.writeToWaveFile(wavefilename);
-			std::cout << "Playing " << wavefilename << "\n";
-			system(wavefilename.c_str());
-			std::cout << "Any key to continue\n";
-			std::cin.get(); 
+		};
 
-		}
+		WaveFile wavefile(notes);
+		std::string wavefileName = "MelodicAndHarmonicNotes.wav";
+		//std::string wavefileName = "SingleNote.wav";
+		wavefile.writeToWaveFile(wavefileName);
 
-		//getFTOfC4WithHarmonics(); 
-
+		system(wavefileName.c_str());
 
 	}
 	

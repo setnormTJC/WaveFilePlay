@@ -82,7 +82,7 @@ public:
 		Piano =		32'767 / 7,
 		Mezzo =		32'767 / 5,
 		Forte =		32'767 / 3, 
-		Fortissimo = 32'767 / 1
+		Fortissimo = 32'767 / 2
 	};
 
 	std::string noteName = ""; //ex: A4, C#3, Gb4, etc.
@@ -97,11 +97,11 @@ public:
 	
 	PianoNote();
 
-	/*For testing my new approach*/
+	/*This overload (likely to be deleted later?) sets default loudness to Mezzo*/
 	PianoNote(const std::string& noteName, const float durationInSeconds);
 
 	/*@param duration -> in seconds, example: 3/4 time and tempo = 80 bmp implies quarter note duration = (60.0 sec/min)/ (80 bpm) = 0.75 seconds*/
-	PianoNote(const std::string& name, const float durationInSeconds, Loudness amplitude);
+	PianoNote(const std::string& name, const float durationInSeconds, Loudness fundamentalAmplitude);
 
 	//PianoNote(const std::string& name, const float durationInSeconds, Loudness baseNoteAmplitude, ADSR adsrEnvelop, Overtone overtoneSignature);
 

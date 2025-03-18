@@ -181,178 +181,6 @@ void WaveFile::fillDataWithSquareWave(const int NumSamples, const int amplitude,
 	}
 }
 
-void WaveFile::fillDataWithPianoWave(const int NumSamples, const int amplitude, const float frequency, const int currentSample)
-{
-	int attackPhaseSampleCount = NumSamples / 10;  // Arbitrary-ish, rise to peak "fast"
-	int newAmplitude = 0; 
-
-	// Apply ADSR envelope and overtones in two phases: attack and decay
-	for (int time = 0; time < NumSamples; ++time)
-	{
-		// ADSR Phase (Attack + Decay)
-		simplifiedApplyADSR(newAmplitude, amplitude, attackPhaseSampleCount, time,NumSamples);
-
-		// Fundamental contribution
-		theSoundSubchunk.data[currentSample + time] = newAmplitude * sin(2 * M_PI * frequency * time / theFormatHeader.SampleRate);
-
-		//auto overtoneFrequenciesToAmplitudes = PianoNote::mapOvertoneFrequenciesToAmplitudes()
-		//for ()
-
-		// Apply overtone contributions
-		//applyOvertones(currentSample + time, frequency, newAmplitude, pianoOvertonesToAmplitudeScalingFactors);
-	}
-
-}
-
-void WaveFile::simplifiedApplyADSR(int& newAmplitude, int amplitude, int attackPhaseSampleCount, int time, int NumSamples)
-{
-
-}
-
-void WaveFile::fillDataWithADSRPianoOvertones(const int NumSamples, const int amplitude, const float frequency)
-{
-	int attackPhaseSampleCount = NumSamples / 10;  // Arbitrary-ish, rise to peak "fast"
-	int kAttack = 300;
-
-	int newAmplitude = 0; // Updated below, of course
-
-	/*N.B. This overtone signature only applies "well" for notes "close" to C4!*/
-	std::map<int, float> pianoOvertonesToAmplitudeScalingFactors =
-	{
-		{1, (1.0 / 3.0)}, // First overtone 
-		{2, (1.0 / 4.0)}, // Second overtone
-		{3, (1.0 / 5.0)},  // Third overtone
-		{4, (1.0 / 6.0)},
-		{5, (1.0 / 7.0)}
-	};
-	
-
-	// Attack phase: amplitude rises
-	for (int time = 0; time < attackPhaseSampleCount; ++time)
-	{
-		applyADSR(newAmplitude, amplitude, attackPhaseSampleCount, time, kAttack, 4, NumSamples);
-
-		// Fundamental contribution
-		theSoundSubchunk.data[time] = newAmplitude * sin(2 * M_PI * frequency * time / theFormatHeader.SampleRate);
-
-		// Overtones contribution
-		applyOvertones(time, frequency, newAmplitude, pianoOvertonesToAmplitudeScalingFactors);
-	}
-
-	// Decay phase: amplitude decays
-	for (int time = 0; time < NumSamples - attackPhaseSampleCount; ++time)
-	{
-		applyADSR(newAmplitude, amplitude, attackPhaseSampleCount, time, kAttack, 4, NumSamples);
-
-		// Fundamental contribution
-		theSoundSubchunk.data[attackPhaseSampleCount + time] = newAmplitude * sin(2 * M_PI * frequency * time / theFormatHeader.SampleRate);
-
-		// Overtones contribution
-		applyOvertones(attackPhaseSampleCount + time, frequency, newAmplitude, pianoOvertonesToAmplitudeScalingFactors);
-	}
-}
-
-void WaveFile::fillDataWithADSRPianoOvertones(const int NumSamples, const int amplitude, const float frequency, const int currentSample)
-{
-	int attackPhaseSampleCount = NumSamples / 10;  // Attack phase: rise to peak "fast"
-	int kAttack = 300;
-
-	int newAmplitude = 0;
-
-	// Overtone scaling factors for piano (based on research or Fourier analysis)
-	std::map<int, float> pianoOvertonesToAmplitudeScalingFactors =
-	{
-		{1, (1.0/3.0)}, // First overtone 
-		{2, (1.0/4.0)}, // Second overtone
-		{3, (1.0/5.0)},  // Third overtone
-		{4, (1.0/6.0)},
-		{5, (1.0/7.0)}
-	};
-
-	int kDecay = 4;
-	// Apply ADSR envelope and overtones in two phases: attack and decay
-	for (int time = 0; time < NumSamples; ++time)
-	{
-		// ADSR Phase (Attack + Decay)
-		applyADSR(newAmplitude, amplitude, attackPhaseSampleCount, time, kAttack, kDecay, NumSamples);
-
-		// Fundamental contribution
-		theSoundSubchunk.data[currentSample + time] = newAmplitude * sin(2 * M_PI * frequency * time / theFormatHeader.SampleRate);
-
-		// Apply overtone contributions
-		applyOvertones(currentSample + time, frequency, newAmplitude, pianoOvertonesToAmplitudeScalingFactors);
-	}
-}
-
-void WaveFile::applyADSR(int& newAmplitude, int amplitude, int attackPhaseSampleCount, int time, int kAttack, int kDecay, int NumSamples)
-{
-	int attackTime = attackPhaseSampleCount; 
-	int decayTime = (attackPhaseSampleCount * 10) / 2;    // Adjust the decay time as per your requirements
-	int sustainLevel = amplitude / 4;    // Sustain level (can be a fraction of the amplitude)
-
-	if (time < attackPhaseSampleCount)
-	{
-		double exponentPart = pow(M_E, -static_cast<double>(time) / attackPhaseSampleCount * kAttack);
-		newAmplitude = amplitude * (1 - exponentPart);  // Attack phase (rise)
-	}
-	//else 
-	//{
-	//	double exponentPart = pow(M_E, -static_cast<double>(time - attackPhaseSampleCount) / (NumSamples - attackPhaseSampleCount) * kDecay);
-	//	newAmplitude = amplitude * exponentPart;  // Decay phase (fall)
-	//}
-
-	else if (time < attackTime + decayTime)
-	{
-		double exponentPart = pow(M_E, -static_cast<double>(time - attackPhaseSampleCount) / (NumSamples - attackPhaseSampleCount) * kDecay);
-		newAmplitude = amplitude * exponentPart;  // Decay phase (fall)
-	}
-
-
-	else
-	{
-		newAmplitude = sustainLevel; 
-	}
-}
-
-int WaveFile::applyADSR(int time, int totalSamples, int amplitude)
-{
-	int attackTime = totalSamples / 10;  // Adjust the attack time as per your requirements
-	int decayTime = totalSamples / 2;    // Adjust the decay time as per your requirements
-	int sustainLevel = amplitude / 4;    // Sustain level (can be a fraction of the amplitude)
-
-	// Attack phase: Linear rise
-	if (time < attackTime)
-	{
-		return static_cast<int>(amplitude * (static_cast<float>(time) / attackTime));
-	}
-	// Decay phase: Linear decay to sustain level
-	else if (time < attackTime + decayTime)
-	{
-		return static_cast<int>(amplitude - (amplitude - sustainLevel) * (static_cast<float>(time - attackTime) / decayTime));
-	}
-	// Sustain phase: Constant sustain level
-	else
-	{
-		return sustainLevel;
-	}
-}
-
-
-void WaveFile::applyOvertones(int time, float frequency, int amplitude, std::map<int, float>& pianoOvertonesToAmplitudeScalingFactors)
-{
-	// Frequencies for overtones (could be stored in a map for easier adjustments)
-	std::vector<float> overtoneMultipliers = { 2.0f, 3.0f, 4.0f, 5.0f, 6.0f };
-
-	// Loop through each overtone and apply the contribution
-	for (int i = 0; i < overtoneMultipliers.size(); ++i)
-	{
-		int overtoneFrequency = frequency * overtoneMultipliers[i];
-		theSoundSubchunk.data[time] += amplitude * pianoOvertonesToAmplitudeScalingFactors[i + 1] *
-			sin(2 * M_PI * overtoneFrequency * time / theFormatHeader.SampleRate);
-	}
-}
-
-
 std::vector<short> WaveFile::getSoundWave()
 {
 	return theSoundSubchunk.data; 
@@ -388,6 +216,32 @@ WaveFile::WaveFile(const PianoNote& pianoNote)
 	
 }
 
+WaveFile::WaveFile(const std::vector<std::vector<PianoNote>>& harmonicAndMelodicNotes)
+{
+	std::vector<short> soundWaveDataForWaveFile; 
+
+	for (const std::vector<PianoNote>& harmonicAndMelodicNote : harmonicAndMelodicNotes)
+	{
+		for (const PianoNote& currentHarmonicOrSingleNote : harmonicAndMelodicNote)
+		{
+			std::vector<short> currentSoundWaveData = currentHarmonicOrSingleNote.getSoundWaveData(); 
+
+			for (const short amplitudeAtTimePoint : currentSoundWaveData)
+			{
+				soundWaveDataForWaveFile.push_back(amplitudeAtTimePoint);
+			}
+		}
+	}
+	theSoundSubchunk.data = soundWaveDataForWaveFile;
+
+	theSoundSubchunk.Subchunk2Size = soundWaveDataForWaveFile.size() * theFormatHeader.NumChannels * (theFormatHeader.BitsPerSample / 8);
+
+	theRiffHeader.ChunkSize = 4 + (8 + theFormatHeader.Subchunk1Size) + (8 + theSoundSubchunk.Subchunk2Size);
+
+}
+
+
+
 WaveFile::WaveFile(const PianoNote& pianoNote, const WaveType theWaveType)
 {
 	if (PianoNote::notesToFrequencies.find(pianoNote.noteName) == PianoNote::notesToFrequencies.end())
@@ -410,11 +264,6 @@ WaveFile::WaveFile(const PianoNote& pianoNote, const WaveType theWaveType)
 
 	case WaveType::Square:
 		fillDataWithSquareWave(NumSamples, amplitude, frequency); 
-		break; 
-
-	case WaveType::Piano:
-		fillDataWithADSRPianoOvertones(NumSamples, amplitude, frequency); 
-		//fillDataWithPianoWave(NumSamples, amplitude, frequency); 
 		break; 
 
 	default: 
@@ -456,7 +305,7 @@ WaveFile::WaveFile(const std::vector<PianoNote>& melodicNotes, const WaveType th
 			amplitude = 0; 
 		}
 
-		fillDataWithADSRPianoOvertones(NumSamples, amplitude, frequency, currentSample); 
+		//fillDataWithADSRPianoOvertones(NumSamples, amplitude, frequency, currentSample); 
 
 		currentSample += NumSamples; 
 	}
@@ -493,14 +342,14 @@ WaveFile::WaveFile(const std::vector<PianoNote>& harmonicNotes)
 			float frequency = PianoNote::notesToFrequencies.at(currentHarmonicNote.noteName);
 
 			//apply ADSR: (fix later)
-			int currentAmplitude = applyADSR(time, totalSamples, amplitude); 
+			//int currentAmplitude = applyADSR(time, totalSamples, amplitude); 
 
-			theSoundSubchunk.data[time] += currentAmplitude * sin(2 * 3.141592 * frequency * time / theFormatHeader.SampleRate);
+			//theSoundSubchunk.data[time] += currentAmplitude * sin(2 * 3.141592 * frequency * time / theFormatHeader.SampleRate);
 
-			// Add overtones (First, second, and third overtones)
-			theSoundSubchunk.data[time] += currentAmplitude * (1.0/3.0) * sin(2 * M_PI * frequency * 2 * time / theFormatHeader.SampleRate); // First overtone
-			theSoundSubchunk.data[time] += currentAmplitude * (1.0 / 4.0) * sin(2 * M_PI * frequency * 3 * time / theFormatHeader.SampleRate); // Second overtone
-			theSoundSubchunk.data[time] += currentAmplitude * (1.0 / 5.0) * sin(2 * M_PI * frequency * 4 * time / theFormatHeader.SampleRate); // Third overtone
+			//// Add overtones (First, second, and third overtones)
+			//theSoundSubchunk.data[time] += currentAmplitude * (1.0/3.0) * sin(2 * M_PI * frequency * 2 * time / theFormatHeader.SampleRate); // First overtone
+			//theSoundSubchunk.data[time] += currentAmplitude * (1.0 / 4.0) * sin(2 * M_PI * frequency * 3 * time / theFormatHeader.SampleRate); // Second overtone
+			//theSoundSubchunk.data[time] += currentAmplitude * (1.0 / 5.0) * sin(2 * M_PI * frequency * 4 * time / theFormatHeader.SampleRate); // Third overtone
 
 			//for the magic numbers 0.3, 0.2, 0.1, see `pianoOvertonesToAmplitudeScalingFactors` in a function above
 		}
