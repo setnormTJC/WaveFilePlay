@@ -58,6 +58,12 @@ namespace SynthesizerTesting
 
 	void demoMelodicSynthesizedPianoNote(const std::vector<PianoNote>& notes);
 
+	/*Come back later and make this better*/
+	void failedShufflePlay(); 
+
+	void demoSixthChordsForTwoOctaves();
+
+	void demoMoreMajorSixthChords();
 }
 
 namespace Utils

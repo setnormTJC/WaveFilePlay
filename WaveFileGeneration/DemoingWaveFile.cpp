@@ -1,4 +1,5 @@
 #include "DemoingWaveFile.h"
+#include <random>
 
 #pragma region SimpleTesting
 void SimpleTesting::demo880HzSineWave()
@@ -349,6 +350,99 @@ void SynthesizerTesting::demoMelodicSynthesizedPianoNote(const std::vector<Piano
 	wavefile.writeToWaveFile(wavefileName);
 
 	system(wavefileName.c_str());
+}
+
+
+void SynthesizerTesting::failedShufflePlay()
+{
+	std::mt19937_64 rng(std::random_device{}());
+
+	while (true)
+	{
+		auto notes = Utils::generateF3Maj7();
+
+		//while (std::next_permutation(notes.begin(), notes.end())) //requires overloading < !
+		for (int i = 0; i < notes.size(); ++i)
+		{
+			WaveFile wavefile(notes);
+
+			std::string filename = "CyclicSyntheticF3Major6.wav";
+
+			wavefile.writeToWaveFile(filename);
+
+			system(filename.c_str());
+			std::cout << "Any key to move on to next permutation of chord:\n";
+			std::cin.get();
+
+			std::shuffle(notes.begin(), notes.end(), rng);
+		}
+	}
+}
+
+void SynthesizerTesting::demoSixthChordsForTwoOctaves()
+{
+
+	{
+		PianoNote::initialize();
+
+		int indexOfC3 = 27;
+		int indexOfC4 = 39;
+
+		while (true)
+		{
+			for (int i = indexOfC3; i <= indexOfC4; ++i)
+			{
+				std::string baseNoteName = PianoNote::the88Notes[i];
+
+				PianoChord pianoChord(baseNoteName, PianoChord::ChordType::majorSixth);
+
+				WaveFile wavefile(pianoChord.theChordNotes);
+
+				std::string filename = pianoChord.theChordNotes.at(0).noteName + "Major6.wav";
+				wavefile.writeToWaveFile(filename);
+				system(filename.c_str());
+
+				std::cout << "Any key to move on to next chord:\n";
+				std::cin.get();
+			}
+		}
+	}
+}
+
+void SynthesizerTesting::demoMoreMajorSixthChords()
+{
+	PianoNote::initialize();
+
+	int indexOfC3 = 30;
+	int indexOfC4 = 39;
+
+	while (true)
+	{
+		for (int i = indexOfC3; i <= indexOfC4; ++i)
+		{
+			std::string baseNoteName = PianoNote::the88Notes[i];
+
+			PianoChord pianoChord(baseNoteName, PianoChord::ChordType::majorSixth);
+
+			auto chordAndItsInversions = pianoChord.getChordAndItsInversions();
+
+			for (const std::vector<PianoNote>& currentChord : chordAndItsInversions)
+			{
+				//WaveFile wavefile(currentChord, WaveFile::WaveType::Piano);
+				WaveFile wavefile(currentChord);
+
+				std::string filename = "Arpeggiated" +
+					baseNoteName + "Major6invertedOver" + currentChord.at(0).noteName + ".wav";
+
+				wavefile.writeToWaveFile(filename);
+				system(filename.c_str());
+
+				std::cout << "Any key to move on to next chord:\n";
+				std::cin.get();
+			}
+
+		}
+	}
 }
 
 std::vector<PianoNote> Utils::generateSomeNotes()

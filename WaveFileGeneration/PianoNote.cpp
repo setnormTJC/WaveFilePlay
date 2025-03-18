@@ -6,6 +6,7 @@
 
 #include<algorithm>
 #include<fstream> 
+#include <random>
 
 
 #pragma region PianoNote
@@ -74,15 +75,18 @@ void PianoNote::mapFrequenciesToAmplitudes()
 {
 	double fundamentalFrequency = notesToFrequencies.at(noteName); 
 
-	//calculate the first 5 overtone frequencies (multiples of the fundamental): 
+	//constexpr int numberOfOvertonesDesired = 5; //a previous setting
+	constexpr int numberOfOvertonesDesired = 8; 
+
+	//calculate the first `numberOfOvertonesDesired` frequencies (multiples of the fundamental): 
 	std::vector<double> frequencies;
-	for (int i = 2; i <= 6; ++i)
+	for (int i = 2; i <= numberOfOvertonesDesired + 1; ++i)
 		frequencies.push_back(fundamentalFrequency * i);
 
-	//now the amplitudes should (PERHAPS) be 1/3, 1/4, 1/5, etc. 
+	//now the amplitudes ROUGHLY decay exponentially - according to FT analysis of digital piano recording. 
 	std::vector<short> amplitudes;
-	//for (double i = 3; i <= 7; ++i)
-	for (double i = 2; i <= 6; ++i)
+	for (double i = 2; i <= numberOfOvertonesDesired + 1; ++i)
+		//A = Afundamental*e^-overtoneNumber -> MIGHT not be the "best" mimic for piano overtones 
 		amplitudes.push_back(static_cast<short>((short)fundamentalAmplitude * pow((1.0/M_E), i - 1)));
 
 	/*first insert the fundamental and its amplitude*/
@@ -95,93 +99,137 @@ void PianoNote::mapFrequenciesToAmplitudes()
 
 
 
-void PianoNote::applyADSRToSoundWaveData()
+void PianoNote::applyType1ADSRtoSoundWave()
 {
 	int totalNumberOfSamples = soundWaveData.size(); 
 	
 	/*Tweek as needed*/
-	constexpr float attackTimeInSeconds = 0.1f;
-
-
-	/*Tweek as needed*/
-	constexpr int kDecay = 4;
-	constexpr int kRelease = 10; //just a "guess"
+	//constexpr float attackTimeInSeconds = 0.1f;
+	float attackTimeInSeconds = durationInSeconds * 0.01;
 
 	int numberOfSamplesInAttackPhase = attackTimeInSeconds * samplesPerSecond; //should be 4'440 samples in
 	int numberOfSamplesToReachDecayPhase = numberOfSamplesInAttackPhase + (totalNumberOfSamples * 0.45);
 	int numberOfSamplesToReachReleasePhase = totalNumberOfSamples - (totalNumberOfSamples * 0.1);
 
-
-	short peakLevel = soundWaveData[numberOfSamplesInAttackPhase];
+	short peakLevel = *std::max_element(soundWaveData.begin(), soundWaveData.end());
 	short sustainLevel = static_cast<short>(peakLevel * 0.5);
 
-	for (int timePoint = 0; timePoint < totalNumberOfSamples; ++timePoint)
+	for (int timePoint = 0; timePoint < numberOfSamplesInAttackPhase; ++timePoint)
 	{
-		if (timePoint < numberOfSamplesInAttackPhase) //attack 
-		{
-			float attackProgress = static_cast<float>(timePoint) / numberOfSamplesInAttackPhase;
-			soundWaveData[timePoint] = static_cast<short>(soundWaveData[timePoint] * attackProgress); // Linear rise
-		}
-
-		else if (timePoint < numberOfSamplesToReachDecayPhase) //decay
-		{
-			float decayProgress = static_cast<float>(timePoint - numberOfSamplesInAttackPhase) /
-				(numberOfSamplesToReachDecayPhase - numberOfSamplesInAttackPhase);
-
-			float decayEnvelope = sustainLevel + (peakLevel - sustainLevel) *
-				exp(-decayProgress * kDecay);
-			
-			soundWaveData[timePoint] = static_cast<short>(decayEnvelope);  
-		}
-
-		else if (timePoint < numberOfSamplesToReachReleasePhase) //sustain
-		{
-			soundWaveData[timePoint] = sustainLevel;
-		}
-
-		else //release
-		{
-			float releaseProgress = static_cast<float>(timePoint - numberOfSamplesToReachReleasePhase) /
-				(totalNumberOfSamples - numberOfSamplesToReachReleasePhase);
-
-			float releaseEnvelope = sustainLevel * exp(-releaseProgress * kRelease);
-			
-			soundWaveData[timePoint] = static_cast<short>(releaseEnvelope);
-		}
+		float attackProgress = static_cast<float>(timePoint) / numberOfSamplesInAttackPhase;
+		soundWaveData[timePoint] = static_cast<short>(soundWaveData[timePoint] * attackProgress); 
 	}
+
+	for (int timePoint = numberOfSamplesInAttackPhase; timePoint < numberOfSamplesToReachDecayPhase; ++timePoint)
+	{
+		float decayProgress = static_cast<float>(timePoint - numberOfSamplesInAttackPhase) /
+			(numberOfSamplesToReachDecayPhase - numberOfSamplesInAttackPhase);
+
+		short targetAmplitude = peakLevel - static_cast<short>(decayProgress * (peakLevel - sustainLevel));
+		
+		soundWaveData[timePoint] = static_cast<short>(soundWaveData[timePoint] * (static_cast<float>(targetAmplitude) / peakLevel));
+	}
+
+	for (int timePoint = numberOfSamplesToReachDecayPhase; timePoint < numberOfSamplesToReachReleasePhase; ++timePoint)
+	{
+		//soundWaveData[timePoint] = sustainLevel; //NO!
+		soundWaveData[timePoint] = static_cast<short>(soundWaveData[timePoint] * (static_cast<float>(sustainLevel) / peakLevel));
+	}
+
+	//"smoothing" period? 
+	soundWaveData[numberOfSamplesToReachReleasePhase] = soundWaveData[numberOfSamplesToReachReleasePhase - 1];
+
+	for (int timePoint = numberOfSamplesToReachReleasePhase + 1; timePoint < totalNumberOfSamples; ++timePoint)
+	{
+		// The release phase starts right where the sustain phase ends
+		float releaseProgress = static_cast<float>(timePoint - numberOfSamplesToReachReleasePhase) /
+			(totalNumberOfSamples - numberOfSamplesToReachReleasePhase);
+
+		// Ensure smooth decay by using sustain level as the baseline for release
+		short targetAmplitude = sustainLevel * pow(1.0f - releaseProgress, 2); //2 means quadratic decay 
+		//std::cout << targetAmplitude << "\n"; 
+		soundWaveData[timePoint] = static_cast<short>(soundWaveData[timePoint] * (static_cast<float>(targetAmplitude) / peakLevel));
+	}
+}
+
+void PianoNote::applyType2ADSRtoSoundWave()
+{
+	int totalNumberOfSamples = soundWaveData.size();
+
+	float attackTimeInSeconds = durationInSeconds * 0.01;
+
+	int numberOfSamplesInAttackPhase = attackTimeInSeconds * samplesPerSecond; //should be 4'440 samples in
+
+	short peakLevel = *std::max_element(soundWaveData.begin(), soundWaveData.end());
+
+	for (int timePoint = 0; timePoint < numberOfSamplesInAttackPhase; ++timePoint)
+	{
+		float attackProgress = static_cast<float>(timePoint) / numberOfSamplesInAttackPhase;
+		soundWaveData[timePoint] = static_cast<short>(soundWaveData[timePoint] * attackProgress);
+	}
+
+	for (int timePoint = numberOfSamplesInAttackPhase; timePoint < totalNumberOfSamples; ++timePoint)
+	{
+		float releaseProgress = static_cast<float>(timePoint - numberOfSamplesInAttackPhase) /
+			(totalNumberOfSamples - numberOfSamplesInAttackPhase);
+
+		// Ensure smooth decay by using sustain level as the baseline for release
+		short targetAmplitude = peakLevel * pow(1.0f - releaseProgress, 2); //2 means quadratic decay 
+		//std::cout << targetAmplitude << "\n"; 
+		soundWaveData[timePoint] = static_cast<short>(soundWaveData[timePoint] * (static_cast<float>(targetAmplitude) / peakLevel));
+	}
+
 }
 
 void PianoNote::fillSoundWaveData()
 {
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	double noiseScalingFactor = 0.01; //0.1 is a BIT fuzzy, 1.0 is "quite" fuzzy 
+	std::uniform_real_distribution<double> phaseDistribution(0, noiseScalingFactor);
+	//re: this phase distribution -> summing pure sine waves can lead to UNEXPECTED cancellation 
+	//...destructive intereference that destroys certain overtones!
+
 	for (int timePoint = 0; timePoint < totalNumberOfSamples; ++timePoint)
 	{
-		int overtoneCount = 0; 
+		//int overtoneCount = 0; 
 		for (const auto& [frequency, amplitude] : frequenciesToAmplitudes)
 		{
-			soundWaveData[timePoint] = 
-				soundWaveData[timePoint] + 
-					amplitude * sin(2 * M_PI * frequency * timePoint / samplesPerSecond);
+			double phaseOffset = phaseDistribution(gen); //again, this is to prevent unintended harmonic cancellation
 
-			//if (overtoneCount == 0) //uncommenting this block gives back the single sine wave (for sound comparison)
-			//{
-			//	break;
-			//}
-			//overtoneCount++; 
+			double sineArgument = (frequency * timePoint / samplesPerSecond) + phaseOffset;
+			double theSinePortion = sin(2 * M_PI * sineArgument);
+			//making these temp vars for my analysis (stepping through in Debug mode) 
+			
+			soundWaveData[timePoint] = std::clamp(
+				static_cast<short>(soundWaveData[timePoint] +
+				amplitude * theSinePortion), 
+				std::numeric_limits<short>::min(), std::numeric_limits<short>::max()); 
 		}
 	}
 
-	/*temporary - for sanity checks*/
-	//writeSoundWaveDataToCSVAndPlot(); 
-	//writeDFTToCSVAndPlot(); 
+	normalize();
 
 	/*NOw apply ADSR - intentionally using separate loops for ease of comprehension (not better efficiency)*/
-	applyADSRToSoundWaveData(); 
+	//applyType1ADSRtoSoundWave(); //MIGHT? apply better to low notes (that persist for longer) 
+	applyType2ADSRtoSoundWave(); 
+	//a "percussive" envelope -> as seen in: https://www.muzines.co.uk/articles/back-to-basics/1882
+	//might be better for high notes (that do not long endure)
 
-	/*Temporary scaling: */
-	//for (int timePoint = 0; timePoint < totalNumberOfSamples; ++timePoint)
-	//{
-	//	soundWaveData[timePoint] = 10 * soundWaveData[timePoint];
-	//}
+	/*Uncomment for visualization*/
+	//writeSoundWaveDataToCSVAndPlot(); 
+	//writeDFTToCSVAndPlot(); 
+}
+
+void PianoNote::normalize()
+{
+	short maxAmplitude = *std::max_element(soundWaveData.begin(), soundWaveData.end());
+	if (maxAmplitude > 0) {
+		double scalingFactor = static_cast<double>(fundamentalAmplitude) / maxAmplitude;
+		for (auto& sample : soundWaveData) {
+			sample = static_cast<short>(sample * scalingFactor);
+		}
+	}
 }
 
 void PianoNote::writeSoundWaveDataToCSVAndPlot()
@@ -224,6 +272,9 @@ std::vector<short> PianoNote::getSoundWaveData() const
 void PianoNote::initialize()
 {
 	/*Using: https://en.wikipedia.org/wiki/Piano_key_frequencies*/
+
+	//std::cout << "NOTE from PianoNote::initialize: \nsamplesPerSecond is currently set to: \n"
+	//	<< samplesPerSecond << "\n";
 
 	if (initialized) return; // Ensure this runs only once
 	initialized = true;

@@ -25,7 +25,7 @@ amplitudes = data[:, 1]  # Second column: amplitudes
 
 # Plot the data
 plt.plot(times, amplitudes)
-plt.xlabel('Time (seconds?)')
+plt.xlabel('Time (44.1K = 1 second)')
 plt.ylabel('Amplitude')
 plt.title('Sound wave data - ain\'t it lovely?')
 

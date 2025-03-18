@@ -34,6 +34,7 @@ private:
 	static bool initialized; 
 	
 	static constexpr int samplesPerSecond = 44'100;
+	//static constexpr int samplesPerSecond = 4'000; //temp setting for easier analysis
 
 	/*The duration times samplesPerSecond*/
 	int totalNumberOfSamples = 0;
@@ -53,7 +54,18 @@ private:
 
 	void fillSoundWaveData(); 
 
-	void applyADSRToSoundWaveData(); 
+	/*See someWaveAnalysis/plots/soundWaves/ADSR-Type1.png for what my "Type1" looks like
+	* The sound wave produced by this envelope is at: someWaveAnalysis/wave/A4withHarmonicsAndType1ADSR.wav
+	*/
+	void applyType1ADSRtoSoundWave(); 
+
+	/*See someWaveAnalysis/plots and wave folder for what "Type 2" looks and sounds like
+	* Seems likely that this is the closest I will get to "piano sound" for a bit
+	*/
+	void applyType2ADSRtoSoundWave(); 
+
+	/*Prevents CLIPPING (underflowing or overflowing short) AND ensures full use of dynamic range*/
+	void normalize(); 
 
 	void writeSoundWaveDataToCSVAndPlot(); 
 
