@@ -25,6 +25,8 @@ public:
 
 	FourierTransform(FourierTransform&& other) = delete;
 
+	void writeSoundWaveToCSV(const std::string& csvFilename) const;
+
 	void fillTransformDataAndFrequencyMap(); 
 
 	void writeFTMapToCSV(const std::string& csvFilename) const; 

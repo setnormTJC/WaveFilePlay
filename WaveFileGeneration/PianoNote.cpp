@@ -34,13 +34,16 @@ PianoNoteComparator::PianoNoteComparator()
 bool PianoNoteComparator::operator()(const std::string& firstNote, const std::string& secondNote) const
 {
 	if (noteOrder.find(firstNote) == noteOrder.end() || noteOrder.find(secondNote) == noteOrder.end())
-		throw MyException("PianoNoteComparator::operator() could not find one of the two notes",
-			__FILE__, __LINE__);
-
+	{
+		//make an EXCEPTION (heh) for the "silent note" -> the empty string ""
+		//if (!(firstNote == "" || secondNote == ""))
+		//{
+			throw MyException("PianoNoteComparator::operator() could not find one of the two notes",
+				__FILE__, __LINE__);
+		//}
+	}
 	return noteOrder.at(firstNote) < noteOrder.at(secondNote);
 }
-
-
 
 
 PianoNote::PianoNote()
@@ -201,9 +204,11 @@ void PianoNote::fillSoundWaveData()
 		//int overtoneCount = 0; 
 		for (const auto& [frequency, amplitude] : frequenciesToAmplitudes)
 		{
-			double phaseOffset = phaseDistribution(gen); //again, this is to prevent unintended harmonic cancellation
+			//double phaseOffset = phaseDistribution(gen); //again, this is to prevent unintended harmonic cancellation
 
-			double sineArgument = (frequency * timePoint / samplesPerSecond) + phaseOffset;
+			//phaseOffset generates FUZZY sound in chords! -> leave it out!
+
+			double sineArgument = (frequency * timePoint / samplesPerSecond);// +phaseOffset;
 			double theSinePortion = sin(2 * M_PI * sineArgument);
 			//making these temp vars for my analysis (stepping through in Debug mode) 
 			

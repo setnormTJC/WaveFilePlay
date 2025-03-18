@@ -4,6 +4,8 @@
 
 #include"MyException.h"
 
+#include<algorithm>
+
 FormatHeader::FormatHeader()
 {
 	ByteRate = SampleRate * NumChannels * (BitsPerSample / 8); 
@@ -219,19 +221,71 @@ WaveFile::WaveFile(const PianoNote& pianoNote)
 WaveFile::WaveFile(const std::vector<std::vector<PianoNote>>& harmonicAndMelodicNotes)
 {
 	std::vector<short> soundWaveDataForWaveFile; 
-
+	/*first get total size needed (partially to prevent frequent resizing with pushback)*/
+	int totalSize = 0; 
 	for (const std::vector<PianoNote>& harmonicAndMelodicNote : harmonicAndMelodicNotes)
 	{
-		for (const PianoNote& currentHarmonicOrSingleNote : harmonicAndMelodicNote)
+		if (!harmonicAndMelodicNote.empty())
 		{
-			std::vector<short> currentSoundWaveData = currentHarmonicOrSingleNote.getSoundWaveData(); 
-
-			for (const short amplitudeAtTimePoint : currentSoundWaveData)
-			{
-				soundWaveDataForWaveFile.push_back(amplitudeAtTimePoint);
-			}
+			totalSize += harmonicAndMelodicNote.at(0).getSoundWaveData().size(); 
 		}
 	}
+
+	//resize:
+	soundWaveDataForWaveFile.assign(totalSize, static_cast<short>(0));
+
+	int writePosition = 0; 
+
+	for (const std::vector<PianoNote>& currentMelodicNote : harmonicAndMelodicNotes)
+	{ 
+		if (currentMelodicNote.size() == 1) 
+		{
+			const std::vector<short>& singleMelodicNoteData = currentMelodicNote.at(0).getSoundWaveData(); 
+
+			for (int timePoint = 0; timePoint < singleMelodicNoteData.size(); ++timePoint)
+			{
+				soundWaveDataForWaveFile[writePosition + timePoint] += singleMelodicNoteData.at(timePoint); 
+			}
+
+			writePosition += singleMelodicNoteData.size(); //move on to next note's (or notes') "time slot"
+		}
+
+		else //it is a chord -> so ADD up individual note contributions at same time point
+		{
+			// Cache all note data once
+			std::vector<std::vector<short>> chordWaveData;
+			for (const PianoNote& note : currentMelodicNote)
+			{
+				chordWaveData.push_back(note.getSoundWaveData());
+			}
+
+			//first, get the duration of the chord - AGAIN, assuming here that all notes of chord have same duration
+			//...for now (for simplicity) 
+			int totalTimePointsForChord = chordWaveData.at(0).size();
+
+			short safetyNetToPreventPopping = 30'000;
+
+			for (int timePoint = 0; timePoint < totalTimePointsForChord; ++timePoint)
+			{
+				short totalAmplitudeFromChordAtTimePoint = 0; 
+				for (const std::vector<short>& noteWaveData : chordWaveData)
+				{
+					totalAmplitudeFromChordAtTimePoint += noteWaveData.at(timePoint); 
+				}
+
+				soundWaveDataForWaveFile[writePosition + timePoint] = 
+					std::clamp(
+					static_cast<int>(soundWaveDataForWaveFile[writePosition + timePoint]) + totalAmplitudeFromChordAtTimePoint,
+					-30000,
+					30000
+				);
+				//soundWaveDataForWaveFile[writePosition + timePoint] += totalAmplitudeFromChordAtTimePoint;
+			}
+
+			writePosition += totalTimePointsForChord;
+		}
+	}
+
 	theSoundSubchunk.data = soundWaveDataForWaveFile;
 
 	theSoundSubchunk.Subchunk2Size = soundWaveDataForWaveFile.size() * theFormatHeader.NumChannels * (theFormatHeader.BitsPerSample / 8);

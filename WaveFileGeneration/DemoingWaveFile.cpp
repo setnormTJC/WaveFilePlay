@@ -465,6 +465,42 @@ void SynthesizerTesting::playSomeMiddleishNotes()
 	}
 }
 
+std::vector<std::vector<PianoNote>> SynthesizerTesting::getSomeChordsAndMelodicNotes()
+{
+	PianoNote longNote("A4", 5.0f, PianoNote::Loudness::Forte);
+
+	PianoNote singleNote("C4", 2.0f, PianoNote::Loudness::Piano);
+	std::vector<PianoNote> firstChord =
+	{
+		singleNote,
+		PianoNote("E4", 2.0f, PianoNote::Loudness::Piano),
+		PianoNote("G4", 2.0f, PianoNote::Loudness::Piano)
+	};
+
+	PianoNote restNote("C8", 0.125f, PianoNote::Loudness::Silent); //for now, just ignore the C8 -> note the silence 
+
+	std::vector<std::vector<PianoNote>> notes =
+	{
+		{longNote },
+		{restNote },
+		{firstChord}, //first melodic, harmonic note
+		{restNote},
+		{PianoNote("C#3", 2.0f, PianoNote::Loudness::Piano)}, //second melodic, single note
+		{restNote},
+		{PianoNote("D3", 1.0f, PianoNote::Loudness::Mezzo) },
+		{restNote},
+		{PianoNote("D#3", 2.0f, PianoNote::Loudness::Forte)}, //etc.
+		{restNote},
+		{
+			PianoNote("E3", 1.0f, PianoNote::Loudness::Piano),
+			PianoNote("G3", 1.0f, PianoNote::Loudness::Piano),
+			PianoNote("B3", 1.0f, PianoNote::Loudness::Piano) //third melodic CHORD
+		}
+	};
+
+	return notes; 
+}
+
 std::vector<PianoNote> Utils::generateSomeNotes()
 {
 	const float duration = 1.0f;
@@ -516,4 +552,27 @@ std::vector<PianoNote> Utils::generateF3Maj7()
 	};
 
 	return notes;
+}
+
+void FT::plotMelodicAndHarmonicSoundWaveAndFT()
+{
+	std::string baseFileName = "MelodicAndHarmonicNotes";
+
+	FourierTransform ft("MelodicAndHarmonicNotes.wav");
+
+
+	ft.writeSoundWaveToCSV("soundwave_" + baseFileName + ".csv");
+	std::ostringstream callPythonSoundWaveScript;
+	callPythonSoundWaveScript << "python plotSoundWave.py " << "soundwave_" << baseFileName << ".csv";
+
+	system(callPythonSoundWaveScript.str().c_str());
+
+	ft.fillTransformDataAndFrequencyMap();
+	ft.writeFTMapToCSV("transform_" + baseFileName + ".csv");
+
+	std::ostringstream callPythonTransformScript;
+	callPythonTransformScript << "python plotSoundWave.py " << "transform_" << baseFileName << ".csv";
+
+	system(callPythonTransformScript.str().c_str());
+
 }

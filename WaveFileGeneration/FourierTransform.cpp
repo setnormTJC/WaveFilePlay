@@ -38,6 +38,23 @@ FourierTransform::FourierTransform(std::vector<short>& soundWave)
 	//}
 }
 
+void FourierTransform::writeSoundWaveToCSV(const std::string& csvFilename) const
+{
+	if (csvFilename.find(".csv") == std::string::npos)
+		throw MyException("filename must contain .csv", __FILE__, __LINE__);
+
+	std::ofstream fout(csvFilename);
+
+	int timePoint = 0; 
+	for (const short amplitudeAtTimePoint : soundWave)
+	{
+		fout << timePoint << "," << amplitudeAtTimePoint << "\n";
+		timePoint++; 
+	}
+
+	fout.close();
+}
+
 void FourierTransform::fillTransformDataAndFrequencyMap()
 {
 	std::cout << "Generating FT from minFrequency = " << minFrequency << " hz to maxFrequency = "

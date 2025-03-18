@@ -33,9 +33,6 @@ private:
 	
 	static bool initialized; 
 	
-	static constexpr int samplesPerSecond = 44'100;
-	//static constexpr int samplesPerSecond = 4'000; //temp setting for easier analysis
-
 	/*The duration times samplesPerSecond*/
 	int totalNumberOfSamples = 0;
 
@@ -88,6 +85,8 @@ public:
 	std::string noteName = ""; //ex: A4, C#3, Gb4, etc.
 	float durationInSeconds = 0.0f; 
 	Loudness fundamentalAmplitude = Loudness::Mezzo; 
+	static constexpr int samplesPerSecond = 44'100;
+
 
 
 	/*These will be restricted to sharps (#), for the moment...N.B. Use PianoNote::initialize() if not creating an object but want to use static member vars of this class!*/

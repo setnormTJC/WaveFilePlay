@@ -4,7 +4,9 @@
 
 #define _USE_MATH_DEFINES //for M_PI in Fourier Transform 
 
+#include"FourierTransform.h"
 #include "WaveFile.h"
+
 
 #include<algorithm> 
 #include<chrono> 
@@ -66,6 +68,16 @@ namespace SynthesizerTesting
 	void demoMoreMajorSixthChords();
 
 	void playSomeMiddleishNotes();
+
+	std::vector<std::vector<PianoNote>> getSomeChordsAndMelodicNotes(); 
+
+}
+
+namespace FT
+{
+	/*Requires the presence of MelodicAndHarmonicNotes.wav*/
+	void plotMelodicAndHarmonicSoundWaveAndFT();
+
 }
 
 namespace Utils

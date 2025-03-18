@@ -33,21 +33,8 @@ int main()
 
 	try
 	{
-		PianoNote singleNote("C4", 2.0f, PianoNote::Loudness::Fortissimo);
 
-		std::vector<std::vector<PianoNote>> notes =
-		{
-			{singleNote}, //first melodic, single note
-			{PianoNote("C#3", 2.0f, PianoNote::Loudness::Piano)}, //second melodic, single note
-			{PianoNote("D3", 1.0f, PianoNote::Loudness::Mezzo) },
-			{PianoNote("D#3", 2.0f, PianoNote::Loudness::Forte)}, //etc.
-			{
-				PianoNote("E3", 1.0f, PianoNote::Loudness::Mezzo),
-				PianoNote("G3", 1.0f, PianoNote::Loudness::Mezzo),
-				PianoNote("B3", 1.0f, PianoNote::Loudness::Mezzo) //third melodic CHORD
-			}
-
-		};
+		auto notes = SynthesizerTesting::getSomeChordsAndMelodicNotes(); 
 
 		WaveFile wavefile(notes);
 		std::string wavefileName = "MelodicAndHarmonicNotes.wav";
