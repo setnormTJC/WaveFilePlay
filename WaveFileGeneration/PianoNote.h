@@ -79,7 +79,8 @@ public:
 		Piano =		32'767 / 7,
 		Mezzo =		32'767 / 5,
 		Forte =		32'767 / 3, 
-		Fortissimo = 32'767 / 2
+		Fortissimo = 32'767 / 2,
+		Fortississimo = (32'767 / 2) + (32'767 / 3)
 	};
 
 	std::string noteName = ""; //ex: A4, C#3, Gb4, etc.
@@ -122,6 +123,13 @@ std::vector<std::string> generateThe88Notes();
 class PianoChord
 {
 private: 
+	std::vector<PianoNote> theChordNotes;
+
+	const float duration = 2.0f;
+	PianoNote::Loudness fundamentalAmplitude = PianoNote::Loudness::Mezzo;
+	int indexOfBaseNote = 0;  
+
+
 	int getIndexOfBaseNote(const std::string& baseNoteName);
 	
 	/*Ex: returns 3 for C3, 6 for A#6, etc.*/
@@ -132,15 +140,16 @@ private:
 
 	void getMajorChord(const std::string& baseNoteName);
 	void getMajor6thChord(const std::string& baseNoteName);
+	void getMinorChord(const std::string& baseNoteName);
+	void getDiminishedChord(const std::string& baseNoteName);
+	void getPowerChord(const std::string& baseNoteName);
+	void getOctaveChord(const std::string& baseNoteName);
 
 	std::vector<std::string> getChordNoteNames(); 
+
 public: 
-	const float duration = 2.0f;
-	PianoNote::Loudness loudness = PianoNote::Loudness::Mezzo;
 
-
-	std::vector<PianoNote> theChordNotes;
-
+	std::vector<PianoNote> getChord(); 
 	std::vector<std::vector<PianoNote>> getChordAndItsInversions(); 
 
 	enum class ChordType
@@ -148,7 +157,10 @@ public:
 		minor = 1, 
 		Major = 2, 
 		minorSeventh = 3, 
-		majorSixth = 4
+		MajorSixth = 4,
+		diminished = 5, 
+		PowerChord = 6, //the "power chord" is root + fifth (ex: C, G)
+		Octave = 7 //ex: C5, C6 (fairly common to see this)
 		//etc. as desired 
 	};
 
@@ -173,5 +185,14 @@ public:
 	/*
 	* @param chordType -> ex: minor, major, minorSeventh, majorSixth,etc
 	*/
-	PianoChord(const std::string baseNoteName, const ChordType& chordType); 
+	explicit PianoChord(const std::string baseNoteName, const ChordType& chordType, const float duration, const PianoNote::Loudness fundamentalAmplitude); 
+
+	/*Custom constructor for "atypical" chords - ex: C3, G3, E5, E6 (chord spanning multiple octaves in bass and treble clefs)
+	* @param -> the note names, duration (for all), and fundamental amplitude (again, applied to ALL - for now)
+	*/
+	explicit PianoChord(const std::vector<std::string> noteNames, const float durationOfAll, const PianoNote::Loudness fundamentalAmplitudeOfAll);
+	
+	PianoChord(const PianoChord& rhs) = delete; 
+
+	PianoChord& operator = (const PianoChord&& rhs) = delete;
 };

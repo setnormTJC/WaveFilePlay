@@ -7,21 +7,7 @@
 #include"MyException.h"
 #include <random>
 
-/*Requires TimpaniC2.wav file's presence in this cpp file's folder*/
-void getFTOfC4WithHarmonics()
-{
-	std::string baseFilename = "C4withHarmonics";
-	//wavefile.writeToWaveFile(baseFilename + ".wav");
 
-	FourierTransform ft(baseFilename + ".wav");
-
-	ft.fillTransformDataAndFrequencyMap();
-
-	ft.writeFTMapToCSV(baseFilename + ".csv");
-
-	std::string callPythonPlottingScript = "python plotFourierTransform.py " + baseFilename + ".csv";
-	system(callPythonPlottingScript.c_str());
-}
 
 int main()
 {
@@ -31,14 +17,16 @@ int main()
 	//std::cin.get(); 
 
 
-	try
+	try 
 	{
+		constexpr int tempo = 96; //bpm
+		std::vector < std::vector<PianoNote>> mysterySongNotes = MusicMaking::getMysterySongNotes(tempo); 
 
-		auto notes = SynthesizerTesting::getSomeChordsAndMelodicNotes(); 
 
-		WaveFile wavefile(notes);
-		std::string wavefileName = "MelodicAndHarmonicNotes.wav";
-		//std::string wavefileName = "SingleNote.wav";
+		WaveFile wavefile(mysterySongNotes);
+
+		std::string wavefileName = "mysterySong.wav";
+
 		wavefile.writeToWaveFile(wavefileName);
 
 		system(wavefileName.c_str());

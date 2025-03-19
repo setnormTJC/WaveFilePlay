@@ -352,37 +352,77 @@ std::vector<std::string> generateThe88Notes()
 #pragma region PianoChord
 void PianoChord::getMajorChord(const std::string& baseNoteName)
 {
-
 	//first note: 
-	PianoNote baseNote(baseNoteName, duration, loudness);
+	//PianoNote baseNote(baseNoteName, duration, fundamentalAmplitude);
 
 	/********Second note stuff************************/
-	int indexOfFirstNote = getIndexOfBaseNote(baseNoteName);
-	int indexOfSecondNote = indexOfFirstNote + (int)Interval::MajorThird; 
+	int indexOfSecondNote = indexOfBaseNote + (int)Interval::MajorThird; 
 
 	//add out of bounds check later, if desired 
 	std::string secondNoteName = PianoNote::the88Notes.at(indexOfSecondNote);
 
-	PianoNote secondNote(secondNoteName, duration, loudness); 
+	PianoNote secondNote(secondNoteName, duration, fundamentalAmplitude); 
+	theChordNotes.push_back(secondNote);
 
 	/********Third note stuff************************/
-	int indexOfThirdNote = indexOfFirstNote + (int)Interval::PerfectFifth; 
+	int indexOfThirdNote = indexOfBaseNote + (int)Interval::PerfectFifth; 
 	
-	PianoNote thirdNote(PianoNote::the88Notes.at(indexOfThirdNote), duration, loudness); 
+	PianoNote thirdNote(PianoNote::the88Notes.at(indexOfThirdNote), duration, fundamentalAmplitude); 
 
-	theChordNotes = { baseNote, secondNote, thirdNote };
+	theChordNotes.push_back(thirdNote);
 }
 
 void PianoChord::getMajor6thChord(const std::string& baseNoteName)
 {
 	getMajorChord(baseNoteName); 
 
-	int indexOfBaseNote = getIndexOfBaseNote(baseNoteName);
+	//int indexOfBaseNote = getIndexOfBaseNote(baseNoteName);
 	int semitoneDistanceToFourthNote =  (int)Interval::MajorSixth;
 	int indexOfFourthNote = indexOfBaseNote + semitoneDistanceToFourthNote;
 
-	theChordNotes.push_back(PianoNote(PianoNote::the88Notes.at(indexOfFourthNote), duration, loudness));
+	theChordNotes.push_back(PianoNote(PianoNote::the88Notes.at(indexOfFourthNote), duration, fundamentalAmplitude));
 
+}
+
+void PianoChord::getMinorChord(const std::string& baseNoteName)
+{
+	//first note ... first 
+	//theChordNotes.push_back(PianoNote("baseNoteName", duration, fundamentalAmplitude));
+	//int indexOfBaseNote = getIndexOfBaseNote(baseNoteName); 
+
+	//second note 
+	int indexOfSecondNote = (int)Interval::MinorThird + indexOfBaseNote;
+	theChordNotes.push_back(PianoNote(PianoNote::the88Notes.at(indexOfSecondNote), duration, fundamentalAmplitude));
+
+	//third note 
+	int indexOfThirdNote = (int)Interval::PerfectFifth + indexOfBaseNote;
+	theChordNotes.push_back(PianoNote(PianoNote::the88Notes.at(indexOfThirdNote), duration, fundamentalAmplitude));
+
+}
+
+void PianoChord::getDiminishedChord(const std::string& baseNoteName)
+{
+	//second note 
+	int indexOfSecondNote = (int)Interval::MinorThird + indexOfBaseNote;
+	theChordNotes.push_back(PianoNote(PianoNote::the88Notes.at(indexOfSecondNote), duration, fundamentalAmplitude));
+
+	//third note 
+	int indexOfThirdNote = (int)Interval::Tritone + indexOfBaseNote;
+	theChordNotes.push_back(PianoNote(PianoNote::the88Notes.at(indexOfThirdNote), duration, fundamentalAmplitude));
+
+}
+
+void PianoChord::getPowerChord(const std::string& baseNoteName)
+{
+	int indexOfSecondNote = (int)Interval::PerfectFifth + indexOfBaseNote; 
+	theChordNotes.push_back(PianoNote(PianoNote::the88Notes.at(indexOfSecondNote), duration, fundamentalAmplitude));
+
+}
+
+void PianoChord::getOctaveChord(const std::string& baseNoteName)
+{
+	int indexOfSecondNote = (int)Interval::PerfectOctave + indexOfBaseNote;
+	theChordNotes.push_back(PianoNote(PianoNote::the88Notes.at(indexOfSecondNote), duration, fundamentalAmplitude));
 }
 
 std::vector<std::string> PianoChord::getChordNoteNames()
@@ -398,6 +438,11 @@ std::vector<std::string> PianoChord::getChordNoteNames()
 	}
 
 	return chordNoteNames;
+}
+
+std::vector<PianoNote> PianoChord::getChord()
+{
+	return theChordNotes; 
 }
 
 std::vector<std::vector<PianoNote>> PianoChord::getChordAndItsInversions()
@@ -478,7 +523,9 @@ std::string PianoChord::getShortNameOfNote(const std::string& noteName)
 	}
 }
 
-PianoChord::PianoChord(const std::string baseNoteName, const ChordType& chordType)
+PianoChord::PianoChord(const std::string baseNoteName, const ChordType& chordType, const float duration,
+	const PianoNote::Loudness fundamentalAmplitude)
+		:duration(duration), fundamentalAmplitude(fundamentalAmplitude)
 {
 	//make sure 88 notes are initialized: 
 	PianoNote::initialize(); 
@@ -490,26 +537,60 @@ PianoChord::PianoChord(const std::string baseNoteName, const ChordType& chordTyp
 		throw MyException("base note - YOU'RE not in the list!", __FILE__, __LINE__);
 	}
 
-	if (chordType == ChordType::Major)
+	indexOfBaseNote = getIndexOfBaseNote(baseNoteName);
+	
+	/*baseNote will ALWAYS? be in the chord, I think ... */
+	theChordNotes.push_back(PianoNote(baseNoteName, duration, fundamentalAmplitude));
+
+	switch (chordType)
 	{
+	case ChordType::Major:
 		getMajorChord(baseNoteName); 
-	}
+		break;
 
-	else if (chordType == ChordType::minor)
-	{
-		//do it!
-	}
+	case ChordType::minor:
+		getMinorChord(baseNoteName);
+		break;
 
-	else if (chordType == ChordType::majorSixth)
-	{
+	case ChordType::MajorSixth: 
 		getMajor6thChord(baseNoteName); 
+		break; 
+
+	case ChordType::diminished: 
+		getDiminishedChord(baseNoteName); 
+		break; 
+
+	case ChordType::PowerChord:
+		getPowerChord(baseNoteName); 
+		break; 
+
+	case ChordType::Octave:
+		getOctaveChord(baseNoteName); 
+		break; 
+
+	default: 
+		std::cout << "Not a supported chord type\n";
+		break; 
 	}
 
-	else if (chordType == ChordType::minorSeventh)
+}
+
+PianoChord::PianoChord(const std::vector<std::string> noteNames, const float durationOfAll, const PianoNote::Loudness fundamentalAmplitudeOfAll)
+{
+	//make sure 88 notes are initialized: 
+	PianoNote::initialize();
+
+	for (const std::string theCurrentNoteName : noteNames)
 	{
+		//make sure currentNoteName is allowed 
+		if (std::find(PianoNote::the88Notes.begin(), PianoNote::the88Notes.end(), theCurrentNoteName)
+			== PianoNote::the88Notes.end())
+		{
+			throw MyException("current note - YOU'RE not in the list!", __FILE__, __LINE__);
+		}
 
+		theChordNotes.push_back(PianoNote(theCurrentNoteName, durationOfAll, fundamentalAmplitudeOfAll));
 	}
-	//etc. 
 }
 
 #pragma endregion

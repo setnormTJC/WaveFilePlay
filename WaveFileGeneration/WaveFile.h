@@ -69,7 +69,7 @@ class WaveFile
 	
 
 public: 
-	/*Default constructor sets NumSamples to 44'100, frequency = 440.0 Hz, and amplitude 1.0*/
+	/*I only support Sine and Square, at the moment*/
 	enum class WaveType
 	{
 		Sine,
@@ -80,23 +80,14 @@ public:
 	WaveFile() = delete; 
 	WaveFile(const int NumSamples, const int amplitude, const float frequency);
 	
-	WaveFile(const PianoNote& pianoNote);
 	/*
 	* @param noteName -> ex: C4, Bb7, F#1
 	* @param theWaveType -> select from available enums (triangular, sawtooth, etc.)
 	*/
 	WaveFile(const PianoNote& pianoNote, const WaveType theWaveType);
-	
-	/*The fanciest constructor overload (so far)
-	* @param - melodicNotes -> N.B. to specify a REST note (silence), set PianoNote::Name = "" (the empty string)
-	*/
-	WaveFile(const std::vector<PianoNote>& melodicNotes, const WaveType theWaveType);
-	
-	/*Defaults to a Piano wave type*/
-	WaveFile(const std::vector<PianoNote>& harmonicNotes);
 
 	/*One constructor to rule them all...
-	* @param harmonicAndMelodicNotes-> intending the outer vector to be the harmony, inner vector CAN be a chord, or it might just be a SINGLE note 
+	* @param harmonicAndMelodicNotes-> outer vector is harmony, inner vector CAN be a chord, or it might just be a SINGLE note 
 	*/
 	WaveFile(const std::vector<std::vector<PianoNote>>& harmonicAndMelodicNotes);
 
@@ -121,9 +112,6 @@ public:
 	void modifyVolume(const float scalingFactor);
 	
 	std::vector<short> getSoundWave(); 
-
-
-	
 #pragma endregion
 };
 

@@ -5,6 +5,7 @@
 #define _USE_MATH_DEFINES //for M_PI in Fourier Transform 
 
 #include"FourierTransform.h"
+#include"MyException.h"
 #include "WaveFile.h"
 
 
@@ -45,6 +46,12 @@ namespace MusicMaking
 
 	/*VAGUELY recognizable*/
 	void playMysterySong();
+
+	/*from: https://musescore.com/user/16242231/scores/3424496*/
+	std::vector<std::vector<PianoNote>> getMysterySongNotes(const int tempo); 
+
+	/*At third octave*/
+	void playCMajorScaleChords(); 
 }
 
 /*Attack, decay, sustain, release envelope*/
@@ -75,8 +82,14 @@ namespace SynthesizerTesting
 
 namespace FT
 {
+
+	/*Requires TimpaniC2.wav file's presence in this cpp file's folder*/
+	void getFTOfC4WithHarmonics();
+
+
 	/*Requires the presence of MelodicAndHarmonicNotes.wav*/
 	void plotMelodicAndHarmonicSoundWaveAndFT();
+
 
 }
 
@@ -88,4 +101,8 @@ namespace Utils
 
 	/*F3, A3, C4, E4*/
 	std::vector<PianoNote> generateF3Maj7();
+
+	/*Doing this for octave number 3 (three)*/
+	std::vector<std::vector<PianoNote>> generateCMajorScaleChords();
+
 }
