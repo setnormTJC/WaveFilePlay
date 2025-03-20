@@ -113,6 +113,7 @@ public:
 	
 	std::vector<short> getSoundWaveData() const;
 
+	int getNumSamples() const; 
 
 	friend class PianoChord; 
 

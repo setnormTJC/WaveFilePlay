@@ -280,6 +280,12 @@ std::vector<short> PianoNote::getSoundWaveData() const
 	return soundWaveData;
 }
 
+int PianoNote::getNumSamples() const
+{
+	return static_cast<int>(soundWaveData.size()); //cast to not fool with size_t tomfoolery  
+}
+
+
 void PianoNote::initialize()
 {
 	/*Using: https://en.wikipedia.org/wiki/Piano_key_frequencies*/

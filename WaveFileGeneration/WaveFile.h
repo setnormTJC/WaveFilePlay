@@ -67,6 +67,15 @@ class WaveFile
 	void fillDataWithSineWave(const int NumSamples, const int amplitude, const float frequency);
 	void fillDataWithSquareWave(const int NumSamples, const int amplitude, const float frequency);
 	
+	/*
+	*  @param position The starting index in the buffer where the chord should be written.
+	* @returns maxChordLength -> in the event that some notes of the chord last longer than others
+	*/
+	int writeChordToBuffer(const std::vector<PianoNote>& chord, std::vector<short>& buffer, int position); 
+
+	void writeSingleNoteToBuffer(const std::vector<short>& singleNoteData, std::vector<short>& buffer, int& writePosition);
+
+	int getMaxNoteLength(const std::vector<PianoNote>& melodyPart);
 
 public: 
 	/*I only support Sine and Square, at the moment*/
@@ -87,9 +96,9 @@ public:
 	WaveFile(const PianoNote& pianoNote, const WaveType theWaveType);
 
 	/*One constructor to rule them all...
-	* @param harmonicAndMelodicNotes-> outer vector is harmony, inner vector CAN be a chord, or it might just be a SINGLE note 
+	* @param songNotes-> outer vector is harmony, inner vector CAN be a chord, or it might just be a SINGLE note 
 	*/
-	WaveFile(const std::vector<std::vector<PianoNote>>& harmonicAndMelodicNotes);
+	WaveFile(const std::vector<std::vector<PianoNote>>& songNotes);
 
 	/*Creates a WaveFile object by reading an input file (whose extension MUST be .wav)*/
 	WaveFile(const std::string& inputFileName);

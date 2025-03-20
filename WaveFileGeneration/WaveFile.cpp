@@ -183,6 +183,64 @@ void WaveFile::fillDataWithSquareWave(const int NumSamples, const int amplitude,
 	}
 }
 
+int WaveFile::writeChordToBuffer(const std::vector<PianoNote>& chord, std::vector<short>& buffer, int position)
+{
+	// Cache all note data once
+	std::vector<std::vector<short>> chordWaveData;
+	int maxChordLength = 0;
+
+	//cache wave data and get longest duration note in chord: 
+	for (const auto& note : chord)
+	{
+		chordWaveData.push_back(note.getSoundWaveData());
+		maxChordLength = std::max(maxChordLength, note.getNumSamples());
+	}
+
+	for (int timePoint = 0; timePoint < maxChordLength; ++timePoint)
+	{
+		short totalAmplitudeFromChordAtTimePoint = 0;
+		for (const auto& noteWaveData : chordWaveData)
+		{
+			if (timePoint < noteWaveData.size())
+			{
+				totalAmplitudeFromChordAtTimePoint += noteWaveData[timePoint];
+			}
+		}
+
+		buffer[position + timePoint] = std::clamp(
+			static_cast<short>(buffer[position + timePoint] + totalAmplitudeFromChordAtTimePoint),
+			static_cast<short>(-25000),
+			static_cast<short>(25000)
+		);
+	}
+	return maxChordLength; // Return so the caller knows how far to advance
+}
+
+void WaveFile::writeSingleNoteToBuffer(const std::vector<short>& singleNoteData, std::vector<short>& buffer, int& writePosition)
+{
+	for (int timePoint = 0; timePoint < singleNoteData.size(); ++timePoint)
+	{
+		buffer[writePosition + timePoint] =
+			std::clamp(
+				static_cast<short>(buffer[writePosition + timePoint]) + singleNoteData.at(timePoint),
+				-25000,
+				25000
+			);
+	}
+
+	writePosition += singleNoteData.size(); // Move to the next note's "time slot"
+}
+
+int WaveFile::getMaxNoteLength(const std::vector<PianoNote>& melodyPart)
+{
+	int maxNoteLength = 0;
+	for (const auto& note : melodyPart)
+	{
+		maxNoteLength = std::max(maxNoteLength, static_cast<int>(note.getNumSamples()));
+	}
+	return maxNoteLength;
+}
+
 std::vector<short> WaveFile::getSoundWave()
 {
 	return theSoundSubchunk.data; 
@@ -206,7 +264,7 @@ WaveFile::WaveFile(const int NumSamples, const int amplitude, const float freque
 }
 
 
-WaveFile::WaveFile(const std::vector<std::vector<PianoNote>>& harmonicAndMelodicNotes)
+WaveFile::WaveFile(const std::vector<std::vector<PianoNote>>& songNotes)
 {
 	std::vector<short> soundWaveDataForWaveFile; 
 	/*first get total size needed (partially to prevent frequent resizing with pushback)*/
@@ -214,96 +272,41 @@ WaveFile::WaveFile(const std::vector<std::vector<PianoNote>>& harmonicAndMelodic
 	int totalSize = 0; 
 	int currentPosition = 0; 
 
-	for (const std::vector<PianoNote>& harmonicAndMelodicNote : harmonicAndMelodicNotes)
+	for (const std::vector<PianoNote>& currentMelodicSegment : songNotes)
 	{
-		if (!harmonicAndMelodicNote.empty())
+		if (!currentMelodicSegment.empty())
 		{
-			int maxNoteLength = 0; 
-			for (const auto& note : harmonicAndMelodicNote)
-			{
-				maxNoteLength = std::max(maxNoteLength, static_cast<int>(note.getSoundWaveData().size()));
-			}
-
+			int maxNoteLength = getMaxNoteLength(currentMelodicSegment);
 			currentPosition += maxNoteLength; 
 
-			//totalSize = std::max(totalSize, currentPosition);
 			totalSize = currentPosition;
 		}
-
 	}
 
 	//resize:
 	soundWaveDataForWaveFile.assign(totalSize, static_cast<short>(0));
 
-	int writePosition = 0; 
+	int writePosition = 0; //must keep track of the writing position (time point to write data at) 
 
-	for (const std::vector<PianoNote>& currentMelodicNote : harmonicAndMelodicNotes)
+	//WRITE
+	for (const std::vector<PianoNote>& currentMelodicSegment : songNotes)
 	{ 
-		if (currentMelodicNote.size() == 1) 
+		if (currentMelodicSegment.size() == 1) 
 		{
-			const std::vector<short>& singleMelodicNoteData = currentMelodicNote.at(0).getSoundWaveData(); 
-
-			for (int timePoint = 0; timePoint < singleMelodicNoteData.size(); ++timePoint)
-			{
-				soundWaveDataForWaveFile[writePosition + timePoint] =
-					std::clamp(
-						static_cast<short>
-						(soundWaveDataForWaveFile[writePosition + timePoint]) + singleMelodicNoteData.at(timePoint),
-						-25000,
-						25000
-					);
-			}
-
-			writePosition += singleMelodicNoteData.size(); //move on to next note's (or notes') "time slot"
+			const std::vector<short>& singleMelodicNoteData = currentMelodicSegment.at(0).getSoundWaveData();
+			writeSingleNoteToBuffer(singleMelodicNoteData, soundWaveDataForWaveFile, writePosition);
 		}
 
-		else //it is a chord -> so ADD up individual note contributions at same time point
+		else //it is a chord
 		{
-			// Cache all note data once
-			std::vector<std::vector<short>> chordWaveData;
-			for (const PianoNote& note : currentMelodicNote)
-			{
-				chordWaveData.push_back(note.getSoundWaveData());
-			}
-
-			//find length of LONGEST note in chord: 
-			int maxChordLength = 0; 
-			for (const auto& noteWaveData : chordWaveData)
-			{
-				if (noteWaveData.size() > maxChordLength)
-				{
-					maxChordLength = noteWaveData.size(); 
-				}
-			}
-						
-			for (int timePoint = 0; timePoint < maxChordLength; ++timePoint)
-			{
-				short totalAmplitudeFromChordAtTimePoint = 0; 
-				for (const std::vector<short>& noteWaveData : chordWaveData)
-				{
-					if (timePoint < noteWaveData.size()) //only write the note's data if its time is not yet past 
-					{
-						totalAmplitudeFromChordAtTimePoint += noteWaveData.at(timePoint); 
-					}
-				}
-
-				soundWaveDataForWaveFile[writePosition + timePoint] = 
-					std::clamp(
-					static_cast<short>(soundWaveDataForWaveFile[writePosition + timePoint]) + totalAmplitudeFromChordAtTimePoint,
-					-25000,
-					25000
-				);
-				//soundWaveDataForWaveFile[writePosition + timePoint] += totalAmplitudeFromChordAtTimePoint;
-			}
-
+			int maxChordLength = writeChordToBuffer(currentMelodicSegment, soundWaveDataForWaveFile, writePosition); 
 			writePosition += maxChordLength;
 		}
 	}
 
+	//Update WAV file header info
 	theSoundSubchunk.data = soundWaveDataForWaveFile;
-
 	theSoundSubchunk.Subchunk2Size = soundWaveDataForWaveFile.size() * theFormatHeader.NumChannels * (theFormatHeader.BitsPerSample / 8);
-
 	theRiffHeader.ChunkSize = 4 + (8 + theFormatHeader.Subchunk1Size) + (8 + theSoundSubchunk.Subchunk2Size);
 
 }

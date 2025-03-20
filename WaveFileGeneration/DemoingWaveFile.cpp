@@ -305,109 +305,136 @@ void MusicMaking::playMysterySong()
 
 std::vector<std::vector<PianoNote>> MusicMaking::getMysterySongNotes(const int tempo)
 {
-	float sixteenthNoteDuration = (60.0f / tempo) / 4.0f;
-	float eighthNoteDuration = (60.0f / tempo) / 2.0f; //as in 60 seconds per minute 
-	float dottedEighthNoteDuration = eighthNoteDuration * 1.5;
-	float quarterNoteDuration =  60.0f / tempo; 
+	float sixteenth = (60.0f / tempo) / 4.0f;
+	float eighth = (60.0f / tempo) / 2.0f; //as in 60 seconds per minute 
+	float dottedEighth = eighth * 1.5;
+	float quarter =  60.0f / tempo; 
 	//units: second PER beat! (where a "beat" is a quarter note in 4/4 time)
-	float halfNoteNoteDuration = quarterNoteDuration * 2; 
-	float dottedHalfNoteDuration = quarterNoteDuration * 3; 
-	float wholeNoteDuration = 4 * quarterNoteDuration; 
+	float half = quarter * 2; 
+	float dottedHalf = quarter * 3; 
+	float whole = 4 * quarter; 
 
 
 	/*m1 means first measure */
-	PianoChord m1secondTrebleChord("B4", PianoChord::ChordType::Octave, quarterNoteDuration, PianoNote::Loudness::Forte);
+	PianoChord m1TrebleAndBassChord
+	(
+		{
+			PianoNote("C3", whole, PianoNote::Loudness::Forte), //stronger, because it lasts longer ...:)
+			PianoNote("G3", whole, PianoNote::Loudness::Forte),
+			PianoNote("E5", dottedHalf, PianoNote::Loudness::Mezzo),
+			PianoNote("E6", dottedHalf, PianoNote::Loudness::Mezzo)
+		}
+	);
+	PianoChord m1secondTrebleChord("B4", PianoChord::ChordType::Octave, quarter, PianoNote::Loudness::Forte);
 
 	/*m2 means second measure*/
-	PianoChord m2trebleAndBassChord({"E3", "G3", "G4", "G5"}, wholeNoteDuration, PianoNote::Loudness::Mezzo);
+	PianoChord m2trebleAndBassChord({"E3", "G3", "G4", "G5"}, whole, PianoNote::Loudness::Mezzo);
 
 	/*m3 means THIRD measure (surprise!)*/
-	PianoChord m3trebleAndBassChord({"D3", "F#3", "A4", "A5"}, halfNoteNoteDuration, PianoNote::Loudness::Mezzo);
-	PianoChord m3secondTrebleChord("G4", PianoChord::ChordType::Octave, quarterNoteDuration, PianoNote::Loudness::Forte);
-	PianoChord m3thirdTrebleChord("F#4", PianoChord::ChordType::Octave, quarterNoteDuration, PianoNote::Loudness::Forte);
+	PianoChord m3trebleAndBassChord
+	(
+		{
+			PianoNote("D3", whole, PianoNote::Loudness::Forte),
+			PianoNote("F#3", whole, PianoNote::Loudness::Forte),
+			PianoNote("A4", half, PianoNote::Loudness::Mezzo),
+			PianoNote("A5", half, PianoNote::Loudness::Mezzo)
+		}
+	);
+	PianoChord m3secondTrebleChord("G4", PianoChord::ChordType::Octave, quarter, PianoNote::Loudness::Forte);
+	PianoChord m3thirdTrebleChord("F#4", PianoChord::ChordType::Octave, quarter, PianoNote::Loudness::Forte);
 
 	/*fourth measure*/
 
-	PianoChord m4trebleAndBaseChord({ "B3", "E4", "E5" }, eighthNoteDuration, PianoNote::Loudness::Mezzo);
+	PianoChord m4trebleAndBaseChord
+	(
+		//{
+		//	PianoNote("B3", eighth, PianoNote::Loudness::Forte),
+		//	PianoNote("E4", whole, PianoNote::Loudness::Forte),
+		//	PianoNote("E5",  whole, PianoNote::Loudness::Forte)
+		//}
+		{"B3", "E4", "E5" }, eighth, PianoNote::Loudness::Mezzo
+	);
 	std::vector<PianoNote> m4Melody =
 	{
-		PianoNote("C4", eighthNoteDuration, PianoNote::Loudness::Forte),
-		PianoNote("D4", eighthNoteDuration, PianoNote::Loudness::Forte),
-		PianoNote("C4", eighthNoteDuration, PianoNote::Loudness::Forte),
+		PianoNote("C4", eighth, PianoNote::Loudness::Forte),
+		PianoNote("D4", eighth, PianoNote::Loudness::Forte),
+		PianoNote("C4", eighth, PianoNote::Loudness::Forte),
 
-		PianoNote("B4", eighthNoteDuration, PianoNote::Loudness::Forte),
-		PianoNote("C4", eighthNoteDuration, PianoNote::Loudness::Forte),
-		PianoNote("B4", quarterNoteDuration, PianoNote::Loudness::Forte)
+		PianoNote("B4", eighth, PianoNote::Loudness::Forte),
+		PianoNote("C4", eighth, PianoNote::Loudness::Forte),
+		PianoNote("B4", quarter, PianoNote::Loudness::Forte)
 	};
 
 	/*m5*/
-	PianoChord m5TrebleAndBassChord({ "C2", "E4", "G4", "C5", "E5" }, dottedEighthNoteDuration, PianoNote::Loudness::Mezzo);
+	PianoChord m5TrebleAndBassChord({ "C2", "E4", "G4", "C5", "E5" }, dottedEighth, PianoNote::Loudness::Mezzo);
 	//git low, git low, git low!
 	std::vector<PianoNote> m5Melody =
 	{
-		PianoNote("C2", sixteenthNoteDuration + quarterNoteDuration, PianoNote::Loudness::Forte), // and? two
+		PianoNote("C2", sixteenth + quarter, PianoNote::Loudness::Forte), // and? two
 
-		PianoNote("C2", eighthNoteDuration, PianoNote::Loudness::Forte), //3 
-		PianoNote("C2", eighthNoteDuration, PianoNote::Loudness::Forte), //and 
+		PianoNote("C2", eighth, PianoNote::Loudness::Forte), //3 
+		PianoNote("C2", eighth, PianoNote::Loudness::Forte), //and 
 
-		PianoNote("C2", quarterNoteDuration, PianoNote::Loudness::Forte) //4!
+		PianoNote("C2", quarter, PianoNote::Loudness::Forte) //4!
 	};
 
 	/*m6*/
-	PianoChord m6TrebleAndBassChord({ "E2", "B3", "E4", "G4", "A4" }, dottedEighthNoteDuration, PianoNote::Loudness::Mezzo);
+	PianoChord m6TrebleAndBassChord({ "E2", "B3", "E4", "G4", "A4" }, dottedEighth, PianoNote::Loudness::Mezzo);
 	std::vector<PianoNote> m6Melody =
 	{
-		PianoNote("E2", sixteenthNoteDuration + quarterNoteDuration, PianoNote::Loudness::Fortissimo), // and? two
+		PianoNote("E2", sixteenth + quarter, PianoNote::Loudness::Fortissimo), // and? two
 
-		PianoNote("E2", eighthNoteDuration, PianoNote::Loudness::Fortissimo), //3 
-		PianoNote("E2", eighthNoteDuration, PianoNote::Loudness::Fortissimo), //and 
+		PianoNote("E2", eighth, PianoNote::Loudness::Fortissimo), //3 
+		PianoNote("E2", eighth, PianoNote::Loudness::Fortissimo), //and 
 
-		PianoNote("E2", quarterNoteDuration, PianoNote::Loudness::Fortissimo) //4!
+		PianoNote("E2", quarter, PianoNote::Loudness::Fortissimo) //4!
 	};
 
 	/*m7*/
-	PianoChord m7TrebleAndBassChord({ "D2", "G3", "D4", "F#4" }, dottedEighthNoteDuration, PianoNote::Loudness::Mezzo);
+	PianoChord m7TrebleAndBassChord({ "D2", "G3", "D4", "F#4" }, dottedEighth, PianoNote::Loudness::Mezzo);
 	std::vector<PianoNote> m7Melody =
 	{
-		PianoNote("D2", sixteenthNoteDuration + quarterNoteDuration, PianoNote::Loudness::Fortissimo), 
+		PianoNote("D2", sixteenth + quarter, PianoNote::Loudness::Fortissimo), 
 
-		PianoNote("D2", eighthNoteDuration, PianoNote::Loudness::Fortissimo),  
-		PianoNote("D2", eighthNoteDuration, PianoNote::Loudness::Fortissimo),  
+		PianoNote("D2", eighth, PianoNote::Loudness::Fortissimo),  
+		PianoNote("D2", eighth, PianoNote::Loudness::Fortissimo),  
 
-		PianoNote("D2", quarterNoteDuration, PianoNote::Loudness::Fortissimo)
+		PianoNote("D2", quarter, PianoNote::Loudness::Fortissimo)
 	};
 
 	/*m8*/
-	PianoChord m8TrebleAndBassChord({ "C2", "G3", "C4", "E4" }, dottedEighthNoteDuration, PianoNote::Loudness::Mezzo);
+	PianoChord m8TrebleAndBassChord({ "C2", "G3", "C4", "E4" }, dottedEighth, PianoNote::Loudness::Mezzo);
 	std::vector<PianoNote> m8Melody =
 	{
-		PianoNote("C2", sixteenthNoteDuration + quarterNoteDuration, PianoNote::Loudness::Fortississimo), 
+		PianoNote("C2", sixteenth + quarter, PianoNote::Loudness::Fortississimo), 
 		//adding "crescendo-y" volume before vocals kick in 
 
-		PianoNote("C2", eighthNoteDuration, PianoNote::Loudness::Fortississimo),
-		PianoNote("C2", eighthNoteDuration, PianoNote::Loudness::Fortississimo),
+		PianoNote("C2", eighth, PianoNote::Loudness::Fortississimo),
+		PianoNote("C2", eighth, PianoNote::Loudness::Fortississimo),
 
-		PianoNote("C2", quarterNoteDuration, PianoNote::Loudness::Fortississimo)
+		PianoNote("C2", quarter, PianoNote::Loudness::Fortississimo)
 	};
 
+
+
 	/*m9*/
-	PianoChord m9TrebleAndBassChord({ "G2", "G3", "B3" }, quarterNoteDuration, PianoNote::Loudness::Mezzo); 
+	PianoChord m9TrebleAndBassChord({ "G2", "G3", "B3" }, quarter, PianoNote::Loudness::Mezzo); 
 	//"feet"
 	std::vector<PianoNote> m9Melody =
 	{
-		PianoNote("B3", quarterNoteDuration, PianoNote::Loudness::Forte), //"don't"
-		PianoNote("A3", quarterNoteDuration, PianoNote::Loudness::Forte), //"fail"
-		PianoNote("B3", eighthNoteDuration, PianoNote::Loudness::Forte), //"me"
-		PianoNote("A3", eighthNoteDuration + quarterNoteDuration, PianoNote::Loudness::Forte) //"now"
+		PianoNote("B3", quarter, PianoNote::Loudness::Forte), //"don't"
+		PianoNote("A3", quarter, PianoNote::Loudness::Forte), //"fail"
+		PianoNote("B3", eighth, PianoNote::Loudness::Forte), //"me"
+		PianoNote("A3", eighth + quarter, PianoNote::Loudness::Forte) //"now"
 	};
 
 	/*m9*/
-	PianoChord m10TrebleAndBassChord({ "D2", "F#3"}, quarterNoteDuration + quarterNoteDuration, PianoNote::Loudness::Mezzo);
+	PianoChord m10TrebleAndBassChord({ "D2", "F#3"}, quarter + quarter, PianoNote::Loudness::Mezzo);
 	//NOTE: not the correct duration above!
 
 	std::vector<std::vector<PianoNote>> mysterySongNotes =
 	{
-		{PianoChord({"C3", "G3", "E5", "E6"}, dottedHalfNoteDuration, PianoNote::Loudness::Mezzo).getChord()},
+		{m1TrebleAndBassChord.getChord()},
 		{m1secondTrebleChord.getChord()}, 
 
 		{m2trebleAndBassChord.getChord()}, 
@@ -505,8 +532,6 @@ void MusicMaking::demoDifferingChordNoteDurationsInAMelody()
 			PianoNote("D4", 2.0f, PianoNote::Loudness::Mezzo)
 		}
 	};
-
-	//PianoChord chordWithDifferentNoteDurations(notes);
 
 	WaveFile wavefile(notes);
 
