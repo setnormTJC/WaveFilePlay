@@ -48,6 +48,8 @@ namespace MusicMaking
 	void playMysterySong();
 
 	/*from: https://musescore.com/user/16242231/scores/3424496
+	*N.B. The sheet music indicates 96 bpm tempo, BUT my synchronization with the YouTube video suggests 88 bpm is better 
+	("Back to the Future" homage?) 
 	* @returns a PAIR of 2D arrays of (piano) notes -> the FIRST of the pair is the treble clef notes, the second is the bass clef
 	*/
 	std::pair<std::vector<std::vector<PianoNote>>, std::vector<std::vector<PianoNote>>> getMysterySongNotes(const int tempo);

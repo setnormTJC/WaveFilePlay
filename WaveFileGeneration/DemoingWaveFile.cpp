@@ -408,125 +408,270 @@ std::pair<std::vector<std::vector<PianoNote>>, std::vector<std::vector<PianoNote
 	}
 
 	/*m5*/
-	PianoChord m5TrebleAndBassChord({ "C2", "E4", "G4", "C5", "E5" }, dottedEighth, PianoNote::Loudness::Mezzo);
+	PianoChord m5TrebleChord
+	(
+		{"E4", "G4", "C5", "E5"}, whole, PianoNote::Loudness::Mezzo
+	);
+
+	trebleNotes.push_back(m5TrebleChord.getChord());
+
 	//git low, git low, git low!
-	std::vector<PianoNote> m5Melody =
+	std::vector<std::vector<PianoNote>> m5BassMelody =
 	{
-		PianoNote("C2", sixteenth + quarter, PianoNote::Loudness::Forte), // and? two
+		{PianoNote("C2", dottedEighth, PianoNote::Loudness::Mezzo)},
+		{PianoNote("C2", sixteenth + quarter, PianoNote::Loudness::Forte)}, // and? two
 
-		PianoNote("C2", eighth, PianoNote::Loudness::Forte), //3 
-		PianoNote("C2", eighth, PianoNote::Loudness::Forte), //and 
+		{PianoNote("C2", eighth, PianoNote::Loudness::Forte)}, //3 
+		{PianoNote("C2", eighth, PianoNote::Loudness::Forte)}, //and 
 
-		PianoNote("C2", quarter, PianoNote::Loudness::Forte) //4!
+		{PianoNote("C2", quarter, PianoNote::Loudness::Fortissimo)} //4!
 	};
+
+	for (const std::vector<PianoNote>& m5melodyNote : m5BassMelody)
+	{
+		bassNotes.push_back(m5melodyNote);
+	}
 
 	/*m6*/
-	PianoChord m6TrebleAndBassChord({ "E2", "B3", "E4", "G4", "A4" }, dottedEighth, PianoNote::Loudness::Mezzo);
-	std::vector<PianoNote> m6Melody =
+	PianoChord m6TrebleChord
+	(
+		{ "B3", "E4", "G4", "A4" }, whole, PianoNote::Loudness::Mezzo
+	);
+
+	trebleNotes.push_back(m6TrebleChord.getChord());
+
+	std::vector<std::vector<PianoNote>> m6BassMelody =
 	{
-		PianoNote("E2", sixteenth + quarter, PianoNote::Loudness::Fortissimo), // and? two
+		{PianoNote("E2", dottedEighth, PianoNote::Loudness::Mezzo)},
+		{PianoNote("E2", sixteenth + quarter, PianoNote::Loudness::Forte)}, // and? two
 
-		PianoNote("E2", eighth, PianoNote::Loudness::Fortissimo), //3 
-		PianoNote("E2", eighth, PianoNote::Loudness::Fortissimo), //and 
+		{PianoNote("E2", eighth, PianoNote::Loudness::Forte)}, //3 
+		{PianoNote("E2", eighth, PianoNote::Loudness::Forte)}, //and 
 
-		PianoNote("E2", quarter, PianoNote::Loudness::Fortissimo) //4!
+		{PianoNote("E2", quarter, PianoNote::Loudness::Fortissimo)} //4!
 	};
+
+	for (const std::vector<PianoNote>& m6melodyNote : m6BassMelody)
+	{
+		bassNotes.push_back(m6melodyNote);
+	}
 
 	/*m7*/
-	PianoChord m7TrebleAndBassChord({ "D2", "G3", "D4", "F#4" }, dottedEighth, PianoNote::Loudness::Mezzo);
-	std::vector<PianoNote> m7Melody =
+	PianoChord m7TrebleChord
+	(
+		{ "G3", "D4", "F#4" }, whole, PianoNote::Loudness::Mezzo
+	);
+
+	trebleNotes.push_back(m7TrebleChord.getChord());
+
+	std::vector<std::vector<PianoNote>> m7BassMelody =
 	{
-		PianoNote("D2", sixteenth + quarter, PianoNote::Loudness::Fortissimo), 
+		{PianoNote("D2", dottedEighth, PianoNote::Loudness::Mezzo)},
+		{PianoNote("D2", sixteenth + quarter, PianoNote::Loudness::Forte)}, // and? two
 
-		PianoNote("D2", eighth, PianoNote::Loudness::Fortissimo),  
-		PianoNote("D2", eighth, PianoNote::Loudness::Fortissimo),  
+		{PianoNote("D2", eighth, PianoNote::Loudness::Forte)}, //3 
+		{PianoNote("D2", eighth, PianoNote::Loudness::Forte)}, //and 
 
-		PianoNote("D2", quarter, PianoNote::Loudness::Fortissimo)
+		{PianoNote("D2", quarter, PianoNote::Loudness::Fortissimo)} //4!
 	};
+
+	for (const std::vector<PianoNote>& m7melodyNote : m7BassMelody)
+	{
+		bassNotes.push_back(m7melodyNote);
+	}
 
 	/*m8*/
-	PianoChord m8TrebleAndBassChord({ "C2", "G3", "C4", "E4" }, dottedEighth, PianoNote::Loudness::Mezzo);
-	std::vector<PianoNote> m8Melody =
+	PianoChord m8TrebleChord
+	(
+		{ "G3", "C4", "E4" }, whole, PianoNote::Loudness::Mezzo
+	);
+
+	trebleNotes.push_back(m8TrebleChord.getChord());
+
+	std::vector<std::vector<PianoNote>> m8BassMelody =
 	{
-		PianoNote("C2", sixteenth + quarter, PianoNote::Loudness::Fortississimo), 
-		//adding "crescendo-y" volume before vocals kick in 
+		{PianoNote("C2", dottedEighth, PianoNote::Loudness::Mezzo)},
+		{PianoNote("C2", sixteenth + quarter, PianoNote::Loudness::Forte)}, // and? two
 
-		PianoNote("C2", eighth, PianoNote::Loudness::Fortississimo),
-		PianoNote("C2", eighth, PianoNote::Loudness::Fortississimo),
+		{PianoNote("C2", eighth, PianoNote::Loudness::Forte)}, //3 
+		{PianoNote("C2", eighth, PianoNote::Loudness::Forte)}, //and 
 
-		PianoNote("C2", quarter, PianoNote::Loudness::Fortississimo)
+		{PianoNote("C2", quarter, PianoNote::Loudness::Fortissimo)} //4!
 	};
 
-
-
-	/*m9*/
-	PianoChord m9TrebleAndBassChord({ "G2", "G3", "B3" }, quarter, PianoNote::Loudness::Mezzo); 
-	//"feet"
-	std::vector<PianoNote> m9Melody =
+	for (const std::vector<PianoNote>& m8melodyNote : m8BassMelody)
 	{
-		PianoNote("B3", quarter, PianoNote::Loudness::Forte), //"don't"
-		PianoNote("A3", quarter, PianoNote::Loudness::Forte), //"fail"
-		PianoNote("B3", eighth, PianoNote::Loudness::Forte), //"me"
-		PianoNote("A3", eighth + quarter, PianoNote::Loudness::Forte) //"now"
+		bassNotes.push_back(m8melodyNote);
+	}
+
+
+	/*measures 9 AND 10 (due to slur use)*/
+	std::vector<std::vector<PianoNote>> m9AND10VocalMelody =
+	{
+		{PianoNote("B3", quarter, PianoNote::Loudness::Forte)}, //feet 
+		{PianoNote("B3", quarter, PianoNote::Loudness::Forte)}, //don't
+		{PianoNote("A3", quarter, PianoNote::Loudness::Forte)}, //fail
+		{ PianoNote("B3", eighth, PianoNote::Loudness::Forte)}, //me
+
+		{ PianoNote("A3", eighth + quarter, PianoNote::Loudness::Forte) }, //now ... //SLURS into next measure!
+		{ PianoNote("A0", quarter + half, PianoNote::Loudness::Silent) } //REST -> not the silence ! (ignore A0)
 	};
 
-	/*m9*/
-	PianoChord m10TrebleAndBassChord({ "D2", "F#3"}, quarter + quarter, PianoNote::Loudness::Mezzo);
-	//NOTE: not the correct duration above!
-
-	std::vector<std::vector<PianoNote>> mysterySongNotes =
+	for (const std::vector<PianoNote>& m9AND10melodyNote : m9AND10VocalMelody)
 	{
-		//{m1TrebleAndBassChord.getChord()},
-		//{m1secondTrebleChord.getChord()}, 
+		trebleNotes.push_back(m9AND10melodyNote);
+	}
 
-		//{m2trebleAndBassChord.getChord()}, 
-		
-		//{m3trebleAndBassChord.getChord()},
-		//{m3secondTrebleChord.getChord()},
-		//{m3thirdTrebleChord.getChord()},
+	PianoChord m9Accompaniment 
+	//simplifying this (compared to MuseScore version) for now ... 
+	// (MuseScore has THREE tracks - vocal, treble, bass) 
+	(
+		{ "G3", "G2"}, whole, PianoNote::Loudness::Mezzo
+	);
+	bassNotes.push_back(m9Accompaniment.getChord());
 
-		//{m4trebleAndBaseChord.getChord()},
-		//{m4Melody[0]},
-		//{m4Melody[1]},
-		//{m4Melody[2]},
-		//{m4Melody[3]},
-		//{m4Melody[4]},
-		//{m4Melody[5]},
+	PianoChord m10Accompaniment //simplifying this (compared to MuseScore version) for now ...
+	(
+		{ "D2", "F#3" }, whole, PianoNote::Loudness::Mezzo
+	);
+	bassNotes.push_back(m10Accompaniment.getChord());
 
-		{m5TrebleAndBassChord.getChord()}, 
-		{m5Melody[0]}, 
-		{m5Melody[1]},
-		{m5Melody[2]},
-		{m5Melody[3]},
-		//{m5Melody[4]},
 
-		{m6TrebleAndBassChord.getChord()},
-		{m6Melody[0]},
-		{m6Melody[1]},
-		{m6Melody[2]},
-		{m6Melody[3]},
+	/*measures 11 AND 12 (again, due to slur use)*/
+	std::vector<std::vector<PianoNote>> m11AND12VocalMelody =
+	{
+		{PianoNote("B3", eighth, PianoNote::Loudness::Forte)}, //take 
+		{PianoNote("B3", eighth, PianoNote::Loudness::Forte)}, //me
+		{PianoNote("B3", eighth, PianoNote::Loudness::Forte)}, //to
+		{ PianoNote("B3", eighth, PianoNote::Loudness::Forte)}, //the
 
-		{m7TrebleAndBassChord.getChord()},
-		{m7Melody[0]},
-		{m7Melody[1]},
-		{m7Melody[2]},
-		{m7Melody[3]},
+		{ PianoNote("A3", eighth, PianoNote::Loudness::Forte)}, //fi-
+		{ PianoNote("B3", quarter, PianoNote::Loudness::Forte)}, //-NISH
 
-		{m8TrebleAndBassChord.getChord()},
-		{m8Melody[0]},
-		{m8Melody[1]},
-		{m8Melody[2]},
-		{m8Melody[3]},
-
-		{m9TrebleAndBassChord.getChord()}, 
-		{m9Melody[0]},
-		{m9Melody[1]},
-		{m9Melody[2]},
-		{m9Melody[3]},
-
-		{m10TrebleAndBassChord.getChord()},
+		{ PianoNote("A3", eighth + quarter, PianoNote::Loudness::Forte) }, //line ... SLURS into next measure!
+		{ PianoNote("A0", quarter, PianoNote::Loudness::Silent) }, //REST -> not the silence ! (ignore A0)
+		{PianoNote("A3", eighth, PianoNote::Loudness::Forte)}, //all
+		{PianoNote("B3", eighth, PianoNote::Loudness::Forte)}, //my
+		{PianoNote("A3", eighth, PianoNote::Loudness::Forte)}, //heart
+		{ PianoNote("G3", eighth, PianoNote::Loudness::Forte)}, //it (lower)
 
 	};
+
+	for (const std::vector<PianoNote>& m11AND12melodyNote : m11AND12VocalMelody)
+	{
+		trebleNotes.push_back(m11AND12melodyNote);
+	}
+
+	PianoChord m11Accompaniment
+		//simplifying this (compared to MuseScore version) for now ... 
+		// (MuseScore has THREE tracks - vocal, treble, bass) 
+		(
+			{ "G3", "G2" }, whole, PianoNote::Loudness::Mezzo
+		);
+	bassNotes.push_back(m11Accompaniment.getChord());
+
+	PianoChord m12Accompaniment //simplifying this (compared to MuseScore version) for now ...
+	(
+		{ "D2", "F#3" }, whole, PianoNote::Loudness::Mezzo
+	);
+	bassNotes.push_back(m12Accompaniment.getChord());
+
+
+	/*m13 and 14*/
+	std::vector<std::vector<PianoNote>> m13AND14VocalMelody =
+	{
+		{PianoNote("B3", quarter, PianoNote::Loudness::Forte)}, //breaks
+		{PianoNote("E3", eighth, PianoNote::Loudness::Forte)}, //ev- (LOW vocal)
+		{PianoNote("E3", eighth, PianoNote::Loudness::Forte)}, //-ery
+		{ PianoNote("G3", eighth, PianoNote::Loudness::Forte)}, //step
+
+		{ PianoNote("A3", eighth, PianoNote::Loudness::Forte)}, //that
+		{ PianoNote("G3", eighth, PianoNote::Loudness::Forte)}, //I
+
+		{ PianoNote("B3", eighth + quarter, PianoNote::Loudness::Forte) }, //take ... SLURS into next measure!
+		{ PianoNote("B3", eighth, PianoNote::Loudness::Forte) }, //but
+		{PianoNote("B3", eighth, PianoNote::Loudness::Forte)}, //I'm
+		{PianoNote("B3", eighth, PianoNote::Loudness::Forte)}, //hop-
+		{PianoNote("A3", eighth, PianoNote::Loudness::Forte)}, //-ing
+		{ PianoNote("A3", eighth, PianoNote::Loudness::Forte)}, //at
+		{ PianoNote("G3", eighth, PianoNote::Loudness::Forte)}, //the
+
+	};
+
+	for (const std::vector<PianoNote>& m13AND14melodyNote : m13AND14VocalMelody)
+	{
+		trebleNotes.push_back(m13AND14melodyNote);
+	}
+
+	PianoChord m13part1Accompaniment
+		(
+			{ "C2","G3" }, half, PianoNote::Loudness::Mezzo
+		);
+	bassNotes.push_back(m13part1Accompaniment.getChord());
+
+	PianoChord m13part2Accompaniment
+	(
+		{ "C2","E3" }, half, PianoNote::Loudness::Mezzo
+	);
+	bassNotes.push_back(m13part2Accompaniment.getChord());
+
+
+	PianoChord m14part1Accompaniment 
+	(
+		{ "E2", "G3"}, half, PianoNote::Loudness::Mezzo
+	);
+	bassNotes.push_back(m14part1Accompaniment.getChord());
+
+	PianoChord m14part2Accompaniment //simplifying this (compared to MuseScore version) for now ...
+	(
+		{ "E2", "E3" }, half, PianoNote::Loudness::Mezzo
+	);
+	bassNotes.push_back(m14part2Accompaniment.getChord());
+
+
+	/*m15*/
+	std::vector<std::vector<PianoNote>> m15VocalMelody =
+	{
+		{PianoNote("A3", quarter, PianoNote::Loudness::Forte)}, //gates
+		{PianoNote("A3", eighth, PianoNote::Loudness::Forte)}, //they'll
+		{PianoNote("A3", eighth, PianoNote::Loudness::Forte)}, //tell
+		{ PianoNote("A3", eighth, PianoNote::Loudness::Forte)}, //me
+
+		{ PianoNote("B3", eighth, PianoNote::Loudness::Forte)}, //that
+		{ PianoNote("G3", eighth, PianoNote::Loudness::Forte)}, //you're (low)
+
+		{ PianoNote("G3", eighth, PianoNote::Loudness::Forte) }, //MI- (continued as -INE in next measure)
+	};
+
+	for (const std::vector<PianoNote>& m15melodyNote : m15VocalMelody)
+	{
+		trebleNotes.push_back(m15melodyNote);
+	}
+
+	PianoChord m15Accompaniment
+	(
+		{ "D2","A3" }, whole, PianoNote::Loudness::Mezzo
+	);
+	bassNotes.push_back(m15Accompaniment.getChord());
+
+	/*m16*/
+	std::vector<std::vector<PianoNote>> m16VocalMelody =
+	{
+		{PianoNote("E3", quarter, PianoNote::Loudness::Forte)}, //-INE (continuing from mi-ine) (QUITE LOW) 
+		{PianoNote("A0", quarter + half, PianoNote::Loudness::Silent)} //REST
+	};
+
+	for (const std::vector<PianoNote>& m16melodyNote : m16VocalMelody)
+	{
+		trebleNotes.push_back(m16melodyNote);
+	}
+
+	PianoChord m16Accompaniment
+	(
+		{ "D2","A3", "C4"}, whole, PianoNote::Loudness::Mezzo
+	);
+	bassNotes.push_back(m16Accompaniment.getChord());
+
 
 
 	trebleAndBassNotes = { trebleNotes, bassNotes };

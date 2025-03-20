@@ -14,7 +14,7 @@ int main()
 
 	try 
 	{
-		constexpr int tempo = 96; //bpm
+		constexpr int tempo = 88; //
 		auto mysterySongNotes = MusicMaking::getMysterySongNotes(tempo); 
 		
 		WaveFile wavefile(mysterySongNotes.first); //construct with the treble track first 
