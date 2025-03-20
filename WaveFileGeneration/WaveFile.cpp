@@ -106,6 +106,7 @@ void WaveFile::writeToWaveFile(const std::string& filename)
 }
 
 
+
 void writeLittleEndian(std::ofstream& fout, int value, int byteSize)
 {
 	for (int i = 0; i < byteSize; ++i)
@@ -308,6 +309,61 @@ WaveFile::WaveFile(const std::vector<std::vector<PianoNote>>& songNotes)
 	theSoundSubchunk.data = soundWaveDataForWaveFile;
 	theSoundSubchunk.Subchunk2Size = soundWaveDataForWaveFile.size() * theFormatHeader.NumChannels * (theFormatHeader.BitsPerSample / 8);
 	theRiffHeader.ChunkSize = 4 + (8 + theFormatHeader.Subchunk1Size) + (8 + theSoundSubchunk.Subchunk2Size);
+
+}
+
+void WaveFile::addTrack(const std::vector<std::vector<PianoNote>>& newTrack)
+{
+	/*First, confirm that newTrack has same duration as "top" track (the one passed to constructor)*/
+	int totalSize = 0;
+	int currentPosition = 0;
+
+	for (const std::vector<PianoNote>& currentMelodicSegment : newTrack)
+	{
+		if (!currentMelodicSegment.empty())
+		{
+			int maxNoteLength = getMaxNoteLength(currentMelodicSegment);
+			currentPosition += maxNoteLength;
+
+			totalSize = currentPosition;
+		}
+	}
+
+	if (totalSize != theSoundSubchunk.data.size())
+	{
+		throw MyException
+		("in `addTrack`, newTrack's size must match the size of TOP track (used to create this wavefile object)", 
+			__FILE__, __LINE__);
+	}
+
+
+	std::vector<short> soundWaveDataForWaveFile = theSoundSubchunk.data; //get the "top" track
+
+	int writePosition = 0; 
+
+	//WRITE
+	for (const std::vector<PianoNote>& currentMelodicSegment : newTrack)
+	{
+		if (currentMelodicSegment.size() == 1)
+		{
+			const std::vector<short>& singleMelodicNoteData = currentMelodicSegment.at(0).getSoundWaveData();
+			
+			//writeSingleNoteToBuffer DOES seem to be successfully ADDING to previous content at writePosition!
+			writeSingleNoteToBuffer(singleMelodicNoteData, soundWaveDataForWaveFile, writePosition);
+		}
+
+		else //it is a chord
+		{
+			int maxChordLength = writeChordToBuffer(currentMelodicSegment, soundWaveDataForWaveFile, writePosition);
+			//writeChordToBuffer DOES seem to be successfully ADDING to previous content at writePosition!
+			writePosition += maxChordLength;
+		}
+	}
+
+	theSoundSubchunk.data = soundWaveDataForWaveFile; //update the data in the subchunk
+	//shouldn't be any need to update the two field below ... 
+	//theSoundSubchunk.Subchunk2Size = soundWaveDataForWaveFile.size() * theFormatHeader.NumChannels * (theFormatHeader.BitsPerSample / 8);
+	//theRiffHeader.ChunkSize = 4 + (8 + theFormatHeader.Subchunk1Size) + (8 + theSoundSubchunk.Subchunk2Size);
 
 }
 
