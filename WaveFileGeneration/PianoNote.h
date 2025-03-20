@@ -113,6 +113,7 @@ public:
 	
 	std::vector<short> getSoundWaveData() const;
 
+
 	friend class PianoChord; 
 
 };
@@ -192,6 +193,9 @@ public:
 	*/
 	explicit PianoChord(const std::vector<std::string> noteNames, const float durationOfAll, const PianoNote::Loudness fundamentalAmplitudeOfAll);
 	
+	/*For notes that begin at the same time but END at different times*/
+	explicit PianoChord(const std::vector<PianoNote>& notesWithDifferingDurations);
+
 	PianoChord(const PianoChord& rhs) = delete; 
 
 	PianoChord& operator = (const PianoChord&& rhs) = delete;

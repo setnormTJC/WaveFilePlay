@@ -210,13 +210,26 @@ WaveFile::WaveFile(const std::vector<std::vector<PianoNote>>& harmonicAndMelodic
 {
 	std::vector<short> soundWaveDataForWaveFile; 
 	/*first get total size needed (partially to prevent frequent resizing with pushback)*/
+	
 	int totalSize = 0; 
+	int currentPosition = 0; 
+
 	for (const std::vector<PianoNote>& harmonicAndMelodicNote : harmonicAndMelodicNotes)
 	{
 		if (!harmonicAndMelodicNote.empty())
 		{
-			totalSize += harmonicAndMelodicNote.at(0).getSoundWaveData().size(); 
+			int maxNoteLength = 0; 
+			for (const auto& note : harmonicAndMelodicNote)
+			{
+				maxNoteLength = std::max(maxNoteLength, static_cast<int>(note.getSoundWaveData().size()));
+			}
+
+			currentPosition += maxNoteLength; 
+
+			//totalSize = std::max(totalSize, currentPosition);
+			totalSize = currentPosition;
 		}
+
 	}
 
 	//resize:
@@ -232,7 +245,13 @@ WaveFile::WaveFile(const std::vector<std::vector<PianoNote>>& harmonicAndMelodic
 
 			for (int timePoint = 0; timePoint < singleMelodicNoteData.size(); ++timePoint)
 			{
-				soundWaveDataForWaveFile[writePosition + timePoint] += singleMelodicNoteData.at(timePoint); 
+				soundWaveDataForWaveFile[writePosition + timePoint] =
+					std::clamp(
+						static_cast<short>
+						(soundWaveDataForWaveFile[writePosition + timePoint]) + singleMelodicNoteData.at(timePoint),
+						-25000,
+						25000
+					);
 			}
 
 			writePosition += singleMelodicNoteData.size(); //move on to next note's (or notes') "time slot"
@@ -247,30 +266,37 @@ WaveFile::WaveFile(const std::vector<std::vector<PianoNote>>& harmonicAndMelodic
 				chordWaveData.push_back(note.getSoundWaveData());
 			}
 
-			//first, get the duration of the chord - AGAIN, assuming here that all notes of chord have same duration
-			//...for now (for simplicity) 
-			int totalTimePointsForChord = chordWaveData.at(0).size();
-
-			short safetyNetToPreventPopping = 30'000;
-
-			for (int timePoint = 0; timePoint < totalTimePointsForChord; ++timePoint)
+			//find length of LONGEST note in chord: 
+			int maxChordLength = 0; 
+			for (const auto& noteWaveData : chordWaveData)
+			{
+				if (noteWaveData.size() > maxChordLength)
+				{
+					maxChordLength = noteWaveData.size(); 
+				}
+			}
+						
+			for (int timePoint = 0; timePoint < maxChordLength; ++timePoint)
 			{
 				short totalAmplitudeFromChordAtTimePoint = 0; 
 				for (const std::vector<short>& noteWaveData : chordWaveData)
 				{
-					totalAmplitudeFromChordAtTimePoint += noteWaveData.at(timePoint); 
+					if (timePoint < noteWaveData.size()) //only write the note's data if its time is not yet past 
+					{
+						totalAmplitudeFromChordAtTimePoint += noteWaveData.at(timePoint); 
+					}
 				}
 
 				soundWaveDataForWaveFile[writePosition + timePoint] = 
 					std::clamp(
-					static_cast<int>(soundWaveDataForWaveFile[writePosition + timePoint]) + totalAmplitudeFromChordAtTimePoint,
+					static_cast<short>(soundWaveDataForWaveFile[writePosition + timePoint]) + totalAmplitudeFromChordAtTimePoint,
 					-25000,
 					25000
 				);
 				//soundWaveDataForWaveFile[writePosition + timePoint] += totalAmplitudeFromChordAtTimePoint;
 			}
 
-			writePosition += totalTimePointsForChord;
+			writePosition += maxChordLength;
 		}
 	}
 

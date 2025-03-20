@@ -19,17 +19,11 @@ int main()
 
 	try 
 	{
-		constexpr int tempo = 96; //bpm
-		std::vector < std::vector<PianoNote>> mysterySongNotes = MusicMaking::getMysterySongNotes(tempo); 
+		//constexpr int tempo = 96; //bpm
+		//std::vector < std::vector<PianoNote>> mysterySongNotes = MusicMaking::getMysterySongNotes(tempo); 
 
 
-		WaveFile wavefile(mysterySongNotes);
-
-		std::string wavefileName = "mysterySong.wav";
-
-		wavefile.writeToWaveFile(wavefileName);
-
-		system(wavefileName.c_str());
+		MusicMaking::demoDifferingChordNoteDurationsInAMelody(); 
 
 	}
 	

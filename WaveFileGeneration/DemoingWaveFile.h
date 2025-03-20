@@ -52,6 +52,9 @@ namespace MusicMaking
 
 	/*At third octave*/
 	void playCMajorScaleChords(); 
+
+
+	void demoDifferingChordNoteDurationsInAMelody();
 }
 
 /*Attack, decay, sustain, release envelope*/

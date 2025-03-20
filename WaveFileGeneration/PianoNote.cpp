@@ -593,4 +593,12 @@ PianoChord::PianoChord(const std::vector<std::string> noteNames, const float dur
 	}
 }
 
+PianoChord::PianoChord(const std::vector<PianoNote>& notesWithDifferingDurations)
+{
+	PianoNote::initialize; 
+
+	theChordNotes = notesWithDifferingDurations;
+
+}
+
 #pragma endregion

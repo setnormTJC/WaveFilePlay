@@ -459,7 +459,6 @@ std::vector<std::vector<PianoNote>> MusicMaking::getMysterySongNotes(const int t
 
 	};
 
-
 	return mysterySongNotes; 
 
 }
@@ -484,6 +483,38 @@ void MusicMaking::playCMajorScaleChords()
 
 	system(reversedWavefileName.c_str());
 
+}
+
+void MusicMaking::demoDifferingChordNoteDurationsInAMelody()
+{
+	std::vector<std::vector<PianoNote>> notes =
+	{
+		{PianoNote("A2", 2.0f, PianoNote::Loudness::Forte)}, //first melodic note is a SINGLE note
+		{
+			PianoNote("C3", 5.0f, PianoNote::Loudness::Mezzo),
+			PianoNote("E3", 3.0f, PianoNote::Loudness::Mezzo),
+			PianoNote("G3", 2.0f, PianoNote::Loudness::Mezzo),
+			PianoNote("B3", 10.0f, PianoNote::Loudness::Mezzo)
+		},
+		{PianoNote("D5", 3.0f, PianoNote::Loudness::Forte)}, //third melodic note is also a SINGLE note
+
+		{
+			PianoNote("F3", 8.0f, PianoNote::Loudness::Mezzo),
+			PianoNote("A3", 7.0f, PianoNote::Loudness::Mezzo),
+			PianoNote("C4", 2.0f, PianoNote::Loudness::Mezzo),
+			PianoNote("D4", 2.0f, PianoNote::Loudness::Mezzo)
+		}
+	};
+
+	//PianoChord chordWithDifferentNoteDurations(notes);
+
+	WaveFile wavefile(notes);
+
+	std::string wavefileName = "blockChordWithDifferentNoteDurations.wav";
+
+	wavefile.writeToWaveFile(wavefileName);
+
+	system(wavefileName.c_str());
 }
 
 
