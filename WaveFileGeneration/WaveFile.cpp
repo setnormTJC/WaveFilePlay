@@ -324,20 +324,47 @@ void WaveFile::addTrack(const std::vector<std::vector<PianoNote>>& newTrack)
 		{
 			int maxNoteLength = getMaxNoteLength(currentMelodicSegment);
 			currentPosition += maxNoteLength;
-
 			totalSize = currentPosition;
 		}
 	}
 
-	if (totalSize != theSoundSubchunk.data.size())
-	{
-		throw MyException
-		("in `addTrack`, newTrack's size must match the size of TOP track (used to create this wavefile object)", 
-			__FILE__, __LINE__);
-	}
-
+	int currentTrackDuration = theSoundSubchunk.data.size();
+	int newTrackDuration = totalSize; 
 
 	std::vector<short> soundWaveDataForWaveFile = theSoundSubchunk.data; //get the "top" track
+
+
+
+	/*Padding business*/
+		// Define a threshold for perceptible misalignment in samples (e.g., 5ms worth of samples)
+	const int misalignmentThreshold = static_cast<int>(0.005 * 44'100);  // 5ms threshold, converted to samples
+
+	// Check if the misalignment is "perceptibly large"
+	if (std::abs(newTrackDuration - currentTrackDuration) > misalignmentThreshold)
+	{
+		throw MyException("Sample misalignment between tracks is perceptibly large. "
+			"Check that all tracks are correctly aligned.",
+			__FILE__, __LINE__);
+	}
+	
+	
+	if (newTrackDuration < currentTrackDuration)
+	{
+		// Add padding (silent data) to the new track's buffer
+		int numberOfSamplesToTrim = currentTrackDuration - newTrackDuration; 
+
+		soundWaveDataForWaveFile.erase
+			(soundWaveDataForWaveFile.end() - numberOfSamplesToTrim,
+			soundWaveDataForWaveFile.end());
+
+	}
+
+	else if (newTrackDuration > currentTrackDuration)
+	{
+		int paddingRequired = newTrackDuration - currentTrackDuration;
+
+		soundWaveDataForWaveFile.insert(soundWaveDataForWaveFile.end(), paddingRequired, static_cast<short>(0));
+	}
 
 	int writePosition = 0; 
 
@@ -360,10 +387,11 @@ void WaveFile::addTrack(const std::vector<std::vector<PianoNote>>& newTrack)
 		}
 	}
 
-	theSoundSubchunk.data = soundWaveDataForWaveFile; //update the data in the subchunk
-	//shouldn't be any need to update the two field below ... 
-	//theSoundSubchunk.Subchunk2Size = soundWaveDataForWaveFile.size() * theFormatHeader.NumChannels * (theFormatHeader.BitsPerSample / 8);
-	//theRiffHeader.ChunkSize = 4 + (8 + theFormatHeader.Subchunk1Size) + (8 + theSoundSubchunk.Subchunk2Size);
+	theSoundSubchunk.data = soundWaveDataForWaveFile; // The sound data with added padding and/or second track
+
+	// Update Info header (because padding MIGHT have been added)
+	theSoundSubchunk.Subchunk2Size = soundWaveDataForWaveFile.size() * theFormatHeader.NumChannels * (theFormatHeader.BitsPerSample / 8);
+	theRiffHeader.ChunkSize = 4 + (8 + theFormatHeader.Subchunk1Size) + (8 + theSoundSubchunk.Subchunk2Size);
 
 }
 

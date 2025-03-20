@@ -106,8 +106,8 @@ public:
 	/*Creates a WaveFile object by reading an input file (whose extension MUST be .wav)*/
 	WaveFile(const std::string& inputFileName);
 
-	WaveFile(const WaveFile& other) = delete; 
-	WaveFile(const WaveFile&& other) = delete; 
+	//WaveFile(const WaveFile& other) = delete; 
+	//WaveFile(const WaveFile&& other) = delete; 
 
 	/*@param filename -> MUST include .WAV*/
 	void writeToWaveFile(const std::string& filename);

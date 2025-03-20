@@ -303,67 +303,109 @@ void MusicMaking::playMysterySong()
 
 }
 
-std::vector<std::vector<PianoNote>> MusicMaking::getMysterySongNotes(const int tempo)
+std::pair<std::vector<std::vector<PianoNote>>, std::vector<std::vector<PianoNote>>> MusicMaking::getMysterySongNotes(const int tempo)
 {
-	float sixteenth = (60.0f / tempo) / 4.0f;
-	float eighth = (60.0f / tempo) / 2.0f; //as in 60 seconds per minute 
-	float dottedEighth = eighth * 1.5;
-	float quarter =  60.0f / tempo; 
+	std::pair<std::vector<std::vector<PianoNote>>, std::vector<std::vector<PianoNote>>> trebleAndBassNotes; 
+	std::vector<std::vector<PianoNote>> trebleNotes; 
+	std::vector<std::vector<PianoNote>> bassNotes;
+
+	double sixteenth = (60.0f / tempo) / 4.0f;
+	double eighth = (60.0f / tempo) / 2.0f; //as in 60 seconds per minute 
+	double dottedEighth = eighth * 1.5;
+	double quarter =  60.0f / tempo; 
 	//units: second PER beat! (where a "beat" is a quarter note in 4/4 time)
-	float half = quarter * 2; 
-	float dottedHalf = quarter * 3; 
-	float whole = 4 * quarter; 
+	double half = quarter * 2; 
+	double dottedHalf = quarter * 3; 
+	double whole = 4 * quarter; 
 
 
 	/*m1 means first measure */
-	PianoChord m1TrebleAndBassChord
+	PianoChord m1BassChord
 	(
 		{
 			PianoNote("C3", whole, PianoNote::Loudness::Forte), //stronger, because it lasts longer ...:)
-			PianoNote("G3", whole, PianoNote::Loudness::Forte),
+			PianoNote("G3", whole, PianoNote::Loudness::Forte)
+		}
+	);
+	PianoChord m1TrebleChord
+	(
+		{
 			PianoNote("E5", dottedHalf, PianoNote::Loudness::Mezzo),
 			PianoNote("E6", dottedHalf, PianoNote::Loudness::Mezzo)
 		}
 	);
+
 	PianoChord m1secondTrebleChord("B4", PianoChord::ChordType::Octave, quarter, PianoNote::Loudness::Forte);
 
+	bassNotes.push_back(m1BassChord.getChord());
+	trebleNotes.push_back(m1TrebleChord.getChord());
+	trebleNotes.push_back(m1secondTrebleChord.getChord());
+
 	/*m2 means second measure*/
-	PianoChord m2trebleAndBassChord({"E3", "G3", "G4", "G5"}, whole, PianoNote::Loudness::Mezzo);
+	PianoChord m2BassChord
+	(
+		{
+			PianoNote("E3", whole,  PianoNote::Loudness::Mezzo),
+			PianoNote("G3", whole, PianoNote::Loudness::Mezzo)
+		}
+	);
+
+	PianoChord m2TrebleChord(
+		{
+			PianoNote("G4", whole,  PianoNote::Loudness::Mezzo),
+			PianoNote("G5", whole, PianoNote::Loudness::Mezzo)
+		}
+	);
+	bassNotes.push_back(m2BassChord.getChord());
+	trebleNotes.push_back(m2TrebleChord.getChord());
 
 	/*m3 means THIRD measure (surprise!)*/
-	PianoChord m3trebleAndBassChord
+	PianoChord m3BassChord
 	(
 		{
 			PianoNote("D3", whole, PianoNote::Loudness::Forte),
-			PianoNote("F#3", whole, PianoNote::Loudness::Forte),
+			PianoNote("F#3", whole, PianoNote::Loudness::Forte)
+		}
+	);
+	PianoChord m3firstTrebleChord
+	(
+		{
 			PianoNote("A4", half, PianoNote::Loudness::Mezzo),
 			PianoNote("A5", half, PianoNote::Loudness::Mezzo)
 		}
 	);
+
 	PianoChord m3secondTrebleChord("G4", PianoChord::ChordType::Octave, quarter, PianoNote::Loudness::Forte);
 	PianoChord m3thirdTrebleChord("F#4", PianoChord::ChordType::Octave, quarter, PianoNote::Loudness::Forte);
 
+	bassNotes.push_back(m3BassChord.getChord());
+	trebleNotes.push_back(m3firstTrebleChord.getChord());
+	trebleNotes.push_back(m3secondTrebleChord.getChord());
+	trebleNotes.push_back(m3thirdTrebleChord.getChord());
+
 	/*fourth measure*/
 
-	PianoChord m4trebleAndBaseChord
-	(
-		//{
-		//	PianoNote("B3", eighth, PianoNote::Loudness::Forte),
-		//	PianoNote("E4", whole, PianoNote::Loudness::Forte),
-		//	PianoNote("E5",  whole, PianoNote::Loudness::Forte)
-		//}
-		{"B3", "E4", "E5" }, eighth, PianoNote::Loudness::Mezzo
-	);
-	std::vector<PianoNote> m4Melody =
-	{
-		PianoNote("C4", eighth, PianoNote::Loudness::Forte),
-		PianoNote("D4", eighth, PianoNote::Loudness::Forte),
-		PianoNote("C4", eighth, PianoNote::Loudness::Forte),
+	PianoChord m4TrebleChord("E4", PianoChord::ChordType::Octave, whole, PianoNote::Loudness::Mezzo);
+	//slurs across measures! -> fix in future!
 
-		PianoNote("B4", eighth, PianoNote::Loudness::Forte),
-		PianoNote("C4", eighth, PianoNote::Loudness::Forte),
-		PianoNote("B4", quarter, PianoNote::Loudness::Forte)
+
+	std::vector<std::vector<PianoNote>> m4BassMelody =
+	{
+		{PianoNote("B3", eighth, PianoNote::Loudness::Forte)},
+		{PianoNote("C4", eighth, PianoNote::Loudness::Forte) },
+		{PianoNote("D4", eighth, PianoNote::Loudness::Forte)},
+		{PianoNote("C4", eighth, PianoNote::Loudness::Forte)},
+
+		{PianoNote("B4", eighth, PianoNote::Loudness::Forte)},
+		{PianoNote("C4", eighth, PianoNote::Loudness::Forte)},
+		{PianoNote("B4", quarter, PianoNote::Loudness::Forte) }
 	};
+	
+	trebleNotes.push_back(m4TrebleChord.getChord());
+	for (const std::vector<PianoNote>& m4melodyNote : m4BassMelody)
+	{
+		bassNotes.push_back(m4melodyNote);
+	}
 
 	/*m5*/
 	PianoChord m5TrebleAndBassChord({ "C2", "E4", "G4", "C5", "E5" }, dottedEighth, PianoNote::Loudness::Mezzo);
@@ -434,22 +476,22 @@ std::vector<std::vector<PianoNote>> MusicMaking::getMysterySongNotes(const int t
 
 	std::vector<std::vector<PianoNote>> mysterySongNotes =
 	{
-		{m1TrebleAndBassChord.getChord()},
-		{m1secondTrebleChord.getChord()}, 
+		//{m1TrebleAndBassChord.getChord()},
+		//{m1secondTrebleChord.getChord()}, 
 
-		{m2trebleAndBassChord.getChord()}, 
+		//{m2trebleAndBassChord.getChord()}, 
 		
-		{m3trebleAndBassChord.getChord()},
-		{m3secondTrebleChord.getChord()},
-		{m3thirdTrebleChord.getChord()},
+		//{m3trebleAndBassChord.getChord()},
+		//{m3secondTrebleChord.getChord()},
+		//{m3thirdTrebleChord.getChord()},
 
-		{m4trebleAndBaseChord.getChord()},
-		{m4Melody[0]},
-		{m4Melody[1]},
-		{m4Melody[2]},
-		{m4Melody[3]},
-		{m4Melody[4]},
-		{m4Melody[5]},
+		//{m4trebleAndBaseChord.getChord()},
+		//{m4Melody[0]},
+		//{m4Melody[1]},
+		//{m4Melody[2]},
+		//{m4Melody[3]},
+		//{m4Melody[4]},
+		//{m4Melody[5]},
 
 		{m5TrebleAndBassChord.getChord()}, 
 		{m5Melody[0]}, 
@@ -486,7 +528,10 @@ std::vector<std::vector<PianoNote>> MusicMaking::getMysterySongNotes(const int t
 
 	};
 
-	return mysterySongNotes; 
+
+	trebleAndBassNotes = { trebleNotes, bassNotes };
+
+	return trebleAndBassNotes; 
 
 }
 
@@ -540,6 +585,92 @@ void MusicMaking::demoDifferingChordNoteDurationsInAMelody()
 	wavefile.writeToWaveFile(wavefileName);
 
 	system(wavefileName.c_str());
+}
+
+void MusicMaking::demoTwoSeparateTracks()
+{
+	/*m1 means first measure */
+	PianoChord m1TrebleChord
+	(
+		{
+			PianoNote("C3", 1.0f, PianoNote::Loudness::Mezzo), //stronger, because it lasts longer ...:)
+		}
+		);
+	PianoChord m1secondTrebleChord
+	(
+		{
+			PianoNote("B4",  2.0f, PianoNote::Loudness::Mezzo)
+		}
+	);
+
+	/*m2 means second measure*/
+	PianoChord m2trebleChord({ "G5" }, 3.0f, PianoNote::Loudness::Mezzo);
+
+	std::vector < std::vector<PianoNote>> trebleNotes =
+	{
+		m1TrebleChord.getChord(),
+		m1secondTrebleChord.getChord(),
+		m2trebleChord.getChord()
+	};
+
+
+
+
+	WaveFile wavefile(trebleNotes);
+
+	std::string wavefileName = "attemptAt2Tracks.wav";
+	system(wavefileName.c_str());
+
+	std::cout << "Just played the treble layer (track) - now press any key to play both treble and bass:\n";
+	std::cin.get();
+
+
+
+	/*Now add dat bass:*/
+	PianoChord m1BassChord
+	(
+		{
+			PianoNote("E1", 1.0f, PianoNote::Loudness::Mezzo), //randomish bass notes
+			PianoNote("B2", 1.0f, PianoNote::Loudness::Mezzo),
+			PianoNote("F2", 1.0f, PianoNote::Loudness::Mezzo),
+			PianoNote("A2", 1.0f, PianoNote::Loudness::Mezzo)
+		}
+	);
+
+	PianoChord m1secondBassChord
+	(
+		{
+			PianoNote("F1", 1.0f, PianoNote::Loudness::Mezzo),
+			PianoNote("B3", 1.0f, PianoNote::Loudness::Mezzo),
+			PianoNote("E4", 2.0f, PianoNote::Loudness::Mezzo),
+			PianoNote("G4", 2.0f, PianoNote::Loudness::Mezzo)
+		}
+	);
+
+	/*m2 means second measure*/
+	PianoChord m2BassChord
+	(
+		{
+			PianoNote("C5", 3.0f, PianoNote::Loudness::Mezzo),
+			PianoNote("E5", 3.0f, PianoNote::Loudness::Mezzo)
+		}
+	);
+
+	std::vector < std::vector<PianoNote>> bassNotes =
+	{
+		m1BassChord.getChord(),
+		m1secondBassChord.getChord(),
+		m2BassChord.getChord()
+	};
+
+	/*The interesting bit of code here: */
+	wavefile.addTrack(bassNotes);
+
+	//write the UPDATED wave file (with the bass layered in) 
+	wavefile.writeToWaveFile(wavefileName);
+
+	system(wavefileName.c_str());
+
 }
 
 

@@ -47,14 +47,19 @@ namespace MusicMaking
 	/*VAGUELY recognizable*/
 	void playMysterySong();
 
-	/*from: https://musescore.com/user/16242231/scores/3424496*/
-	std::vector<std::vector<PianoNote>> getMysterySongNotes(const int tempo); 
+	/*from: https://musescore.com/user/16242231/scores/3424496
+	* @returns a PAIR of 2D arrays of (piano) notes -> the FIRST of the pair is the treble clef notes, the second is the bass clef
+	*/
+	std::pair<std::vector<std::vector<PianoNote>>, std::vector<std::vector<PianoNote>>> getMysterySongNotes(const int tempo);
 
 	/*At third octave*/
 	void playCMajorScaleChords(); 
 
 
 	void demoDifferingChordNoteDurationsInAMelody();
+
+	/*treble and bass*/
+	void demoTwoSeparateTracks(); 
 }
 
 /*Attack, decay, sustain, release envelope*/
