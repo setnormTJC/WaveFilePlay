@@ -323,7 +323,7 @@ std::pair<std::vector<std::vector<PianoNote>>, std::vector<std::vector<PianoNote
 	PianoChord m1BassChord
 	(
 		{
-			PianoNote("C3", whole, PianoNote::Loudness::Forte), //stronger, because it lasts longer ...:)
+			PianoNote("C3", whole, PianoNote::Loudness::Forte), 
 			PianoNote("G3", whole, PianoNote::Loudness::Forte)
 		}
 	);
@@ -337,9 +337,9 @@ std::pair<std::vector<std::vector<PianoNote>>, std::vector<std::vector<PianoNote
 
 	PianoChord m1secondTrebleChord("B4", PianoChord::ChordType::Octave, quarter, PianoNote::Loudness::Forte);
 
-	bassNotes.push_back(m1BassChord.getChord());
-	trebleNotes.push_back(m1TrebleChord.getChord());
-	trebleNotes.push_back(m1secondTrebleChord.getChord());
+	bassNotes.push_back(m1BassChord.getChordNotes());
+	trebleNotes.push_back(m1TrebleChord.getChordNotes());
+	trebleNotes.push_back(m1secondTrebleChord.getChordNotes());
 
 	/*m2 means second measure*/
 	PianoChord m2BassChord
@@ -356,8 +356,8 @@ std::pair<std::vector<std::vector<PianoNote>>, std::vector<std::vector<PianoNote
 			PianoNote("G5", whole, PianoNote::Loudness::Mezzo)
 		}
 	);
-	bassNotes.push_back(m2BassChord.getChord());
-	trebleNotes.push_back(m2TrebleChord.getChord());
+	bassNotes.push_back(m2BassChord.getChordNotes());
+	trebleNotes.push_back(m2TrebleChord.getChordNotes());
 
 	/*m3 means THIRD measure (surprise!)*/
 	PianoChord m3BassChord
@@ -378,10 +378,10 @@ std::pair<std::vector<std::vector<PianoNote>>, std::vector<std::vector<PianoNote
 	PianoChord m3secondTrebleChord("G4", PianoChord::ChordType::Octave, quarter, PianoNote::Loudness::Forte);
 	PianoChord m3thirdTrebleChord("F#4", PianoChord::ChordType::Octave, quarter, PianoNote::Loudness::Forte);
 
-	bassNotes.push_back(m3BassChord.getChord());
-	trebleNotes.push_back(m3firstTrebleChord.getChord());
-	trebleNotes.push_back(m3secondTrebleChord.getChord());
-	trebleNotes.push_back(m3thirdTrebleChord.getChord());
+	bassNotes.push_back(m3BassChord.getChordNotes());
+	trebleNotes.push_back(m3firstTrebleChord.getChordNotes());
+	trebleNotes.push_back(m3secondTrebleChord.getChordNotes());
+	trebleNotes.push_back(m3thirdTrebleChord.getChordNotes());
 
 	/*fourth measure*/
 
@@ -401,7 +401,7 @@ std::pair<std::vector<std::vector<PianoNote>>, std::vector<std::vector<PianoNote
 		{PianoNote("B4", quarter, PianoNote::Loudness::Forte) }
 	};
 	
-	trebleNotes.push_back(m4TrebleChord.getChord());
+	trebleNotes.push_back(m4TrebleChord.getChordNotes());
 	for (const std::vector<PianoNote>& m4melodyNote : m4BassMelody)
 	{
 		bassNotes.push_back(m4melodyNote);
@@ -413,7 +413,7 @@ std::pair<std::vector<std::vector<PianoNote>>, std::vector<std::vector<PianoNote
 		{"E4", "G4", "C5", "E5"}, whole, PianoNote::Loudness::Mezzo
 	);
 
-	trebleNotes.push_back(m5TrebleChord.getChord());
+	trebleNotes.push_back(m5TrebleChord.getChordNotes());
 
 	//git low, git low, git low!
 	std::vector<std::vector<PianoNote>> m5BassMelody =
@@ -438,7 +438,7 @@ std::pair<std::vector<std::vector<PianoNote>>, std::vector<std::vector<PianoNote
 		{ "B3", "E4", "G4", "A4" }, whole, PianoNote::Loudness::Mezzo
 	);
 
-	trebleNotes.push_back(m6TrebleChord.getChord());
+	trebleNotes.push_back(m6TrebleChord.getChordNotes());
 
 	std::vector<std::vector<PianoNote>> m6BassMelody =
 	{
@@ -462,7 +462,7 @@ std::pair<std::vector<std::vector<PianoNote>>, std::vector<std::vector<PianoNote
 		{ "G3", "D4", "F#4" }, whole, PianoNote::Loudness::Mezzo
 	);
 
-	trebleNotes.push_back(m7TrebleChord.getChord());
+	trebleNotes.push_back(m7TrebleChord.getChordNotes());
 
 	std::vector<std::vector<PianoNote>> m7BassMelody =
 	{
@@ -486,7 +486,7 @@ std::pair<std::vector<std::vector<PianoNote>>, std::vector<std::vector<PianoNote
 		{ "G3", "C4", "E4" }, whole, PianoNote::Loudness::Mezzo
 	);
 
-	trebleNotes.push_back(m8TrebleChord.getChord());
+	trebleNotes.push_back(m8TrebleChord.getChordNotes());
 
 	std::vector<std::vector<PianoNote>> m8BassMelody =
 	{
@@ -528,13 +528,13 @@ std::pair<std::vector<std::vector<PianoNote>>, std::vector<std::vector<PianoNote
 	(
 		{ "G3", "G2"}, whole, PianoNote::Loudness::Mezzo
 	);
-	bassNotes.push_back(m9Accompaniment.getChord());
+	bassNotes.push_back(m9Accompaniment.getChordNotes());
 
 	PianoChord m10Accompaniment //simplifying this (compared to MuseScore version) for now ...
 	(
 		{ "D2", "F#3" }, whole, PianoNote::Loudness::Mezzo
 	);
-	bassNotes.push_back(m10Accompaniment.getChord());
+	bassNotes.push_back(m10Accompaniment.getChordNotes());
 
 
 	/*measures 11 AND 12 (again, due to slur use)*/
@@ -568,13 +568,13 @@ std::pair<std::vector<std::vector<PianoNote>>, std::vector<std::vector<PianoNote
 		(
 			{ "G3", "G2" }, whole, PianoNote::Loudness::Mezzo
 		);
-	bassNotes.push_back(m11Accompaniment.getChord());
+	bassNotes.push_back(m11Accompaniment.getChordNotes());
 
 	PianoChord m12Accompaniment //simplifying this (compared to MuseScore version) for now ...
 	(
 		{ "D2", "F#3" }, whole, PianoNote::Loudness::Mezzo
 	);
-	bassNotes.push_back(m12Accompaniment.getChord());
+	bassNotes.push_back(m12Accompaniment.getChordNotes());
 
 
 	/*m13 and 14*/
@@ -607,26 +607,26 @@ std::pair<std::vector<std::vector<PianoNote>>, std::vector<std::vector<PianoNote
 		(
 			{ "C2","G3" }, half, PianoNote::Loudness::Mezzo
 		);
-	bassNotes.push_back(m13part1Accompaniment.getChord());
+	bassNotes.push_back(m13part1Accompaniment.getChordNotes());
 
 	PianoChord m13part2Accompaniment
 	(
 		{ "C2","E3" }, half, PianoNote::Loudness::Mezzo
 	);
-	bassNotes.push_back(m13part2Accompaniment.getChord());
+	bassNotes.push_back(m13part2Accompaniment.getChordNotes());
 
 
 	PianoChord m14part1Accompaniment 
 	(
 		{ "E2", "G3"}, half, PianoNote::Loudness::Mezzo
 	);
-	bassNotes.push_back(m14part1Accompaniment.getChord());
+	bassNotes.push_back(m14part1Accompaniment.getChordNotes());
 
 	PianoChord m14part2Accompaniment //simplifying this (compared to MuseScore version) for now ...
 	(
 		{ "E2", "E3" }, half, PianoNote::Loudness::Mezzo
 	);
-	bassNotes.push_back(m14part2Accompaniment.getChord());
+	bassNotes.push_back(m14part2Accompaniment.getChordNotes());
 
 
 	/*m15*/
@@ -652,7 +652,7 @@ std::pair<std::vector<std::vector<PianoNote>>, std::vector<std::vector<PianoNote
 	(
 		{ "D2","A3" }, whole, PianoNote::Loudness::Mezzo
 	);
-	bassNotes.push_back(m15Accompaniment.getChord());
+	bassNotes.push_back(m15Accompaniment.getChordNotes());
 
 	/*m16*/
 	std::vector<std::vector<PianoNote>> m16VocalMelody =
@@ -670,7 +670,7 @@ std::pair<std::vector<std::vector<PianoNote>>, std::vector<std::vector<PianoNote
 	(
 		{ "D2","A3", "C4"}, whole, PianoNote::Loudness::Mezzo
 	);
-	bassNotes.push_back(m16Accompaniment.getChord());
+	bassNotes.push_back(m16Accompaniment.getChordNotes());
 
 
 
@@ -753,9 +753,9 @@ void MusicMaking::demoTwoSeparateTracks()
 
 	std::vector < std::vector<PianoNote>> trebleNotes =
 	{
-		m1TrebleChord.getChord(),
-		m1secondTrebleChord.getChord(),
-		m2trebleChord.getChord()
+		m1TrebleChord.getChordNotes(),
+		m1secondTrebleChord.getChordNotes(),
+		m2trebleChord.getChordNotes()
 	};
 
 
@@ -803,9 +803,9 @@ void MusicMaking::demoTwoSeparateTracks()
 
 	std::vector < std::vector<PianoNote>> bassNotes =
 	{
-		m1BassChord.getChord(),
-		m1secondBassChord.getChord(),
-		m2BassChord.getChord()
+		m1BassChord.getChordNotes(),
+		m1secondBassChord.getChordNotes(),
+		m2BassChord.getChordNotes()
 	};
 
 	/*The interesting bit of code here: */
@@ -1116,8 +1116,8 @@ std::vector<std::vector<PianoNote>> Utils::generateCMajorScaleChords()
 
 	chords =
 	{
-		firstChord.getChord(), secondChord.getChord(), thirdChord.getChord(), fourthChord.getChord(),
-		fifthChord.getChord(), sixthChord.getChord(), seventhChord.getChord(), eighthChord.getChord()
+		firstChord.getChordNotes(), secondChord.getChordNotes(), thirdChord.getChordNotes(), fourthChord.getChordNotes(),
+		fifthChord.getChordNotes(), sixthChord.getChordNotes(), seventhChord.getChordNotes(), eighthChord.getChordNotes()
 	};
 
 	return chords; 

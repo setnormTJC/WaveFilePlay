@@ -151,8 +151,9 @@ private:
 
 public: 
 
-	std::vector<PianoNote> getChord(); 
+	std::vector<PianoNote> getChordNotes() const; 
 	std::vector<std::vector<PianoNote>> getChordAndItsInversions(); 
+
 
 	enum class ChordType
 	{
@@ -197,7 +198,7 @@ public:
 	/*For notes that begin at the same time but END at different times*/
 	explicit PianoChord(const std::vector<PianoNote>& notesWithDifferingDurations);
 
-	PianoChord(const PianoChord& rhs) = delete; 
+	//PianoChord(const PianoChord& rhs) = delete; 
 
-	PianoChord& operator = (const PianoChord&& rhs) = delete;
+	//PianoChord& operator = (const PianoChord&& rhs) = delete;
 };
