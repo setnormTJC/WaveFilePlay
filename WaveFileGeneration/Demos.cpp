@@ -43,7 +43,7 @@ void SimpleTesting::playAll88Notes_withHalfSecondDuration()
 {
 	PianoNote::initialize(); // fills the88Notes and notesToFrequencies
 
-	const float duration = 1.0f; // seconds
+	const float duration = 0.5f; // seconds
 
 	// Create a vector of measures, each containing one note
 	std::vector<std::vector<PianoNote>> allNotes;

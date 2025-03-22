@@ -295,7 +295,11 @@ void PianoNote::fillSoundWaveData()
 
 	/*NOw apply ADSR - intentionally using separate loops for ease of comprehension (not better efficiency)*/
 	//applyType1ADSRtoSoundWave(); //MIGHT? apply better to low notes (that persist for longer) 
+	
+	
 	applyType2ADSRtoSoundWave(); 
+	
+	
 	//a "percussive" envelope -> as seen in: https://www.muzines.co.uk/articles/back-to-basics/1882
 	//might be better for high notes (that do not long endure)
 

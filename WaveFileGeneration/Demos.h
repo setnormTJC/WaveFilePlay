@@ -118,3 +118,8 @@ namespace Utils
 	std::vector<std::vector<PianoNote>> generateCMajorScaleChords();
 
 }
+
+namespace Chords
+{
+
+}

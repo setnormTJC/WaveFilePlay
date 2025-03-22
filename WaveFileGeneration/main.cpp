@@ -16,9 +16,8 @@ int main()
 
 	try
 	{
-		//FT::plotFTOfC2(); 
-		//MysterySong::getAndPlayFullSong(); 
-		//SimpleTesting::playAll88Notes_withHalfSecondDuration(); 
+		
+
 	}
 	
 	catch (const MyException& e)

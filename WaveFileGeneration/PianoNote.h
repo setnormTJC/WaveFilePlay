@@ -61,12 +61,11 @@ private:
 	*/
 	void mapHighFrequenciesToAmplitudes();
 
-
-
 	void fillSoundWaveData(); 
 
-	/*See someWaveAnalysis/plots/soundWaves/ADSR-Type1.png for what my "Type1" looks like
-	* The sound wave produced by this envelope is at: someWaveAnalysis/wave/A4withHarmonicsAndType1ADSR.wav
+	/*This envelope sounds VERY much like a Bass guitar at "low" pitches, and at "high" pitches, it sounds kinda flute-y
+	* see: all88Notes_withType1ADSR.wav
+	Also see someWaveAnalysis/plots/soundWaves/ADSR-Type1.png for what my "Type1" looks like
 	*/
 	void applyType1ADSRtoSoundWave(); 
 
