@@ -396,9 +396,9 @@ std::pair<std::vector<std::vector<PianoNote>>, std::vector<std::vector<PianoNote
 		{PianoNote("D4", eighth, PianoNote::Loudness::Forte)},
 		{PianoNote("C4", eighth, PianoNote::Loudness::Forte)},
 
-		{PianoNote("B4", eighth, PianoNote::Loudness::Forte)},
+		{PianoNote("B3", eighth, PianoNote::Loudness::Forte)},
 		{PianoNote("C4", eighth, PianoNote::Loudness::Forte)},
-		{PianoNote("B4", quarter, PianoNote::Loudness::Forte) }
+		{PianoNote("B3", quarter, PianoNote::Loudness::Forte) }
 	};
 	
 	trebleNotes.push_back(m4TrebleChord.getChordNotes());

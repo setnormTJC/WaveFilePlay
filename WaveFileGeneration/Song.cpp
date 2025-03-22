@@ -76,11 +76,57 @@ void Song::addToTrack(const Song::Track track, const std::vector<PianoNote>& dat
 {
 	std::vector<std::vector<PianoNote>>& trackMeasures = tracks[track];
 
-	/*for (const PianoNote& note : dataToAdd)
-	//{*/
-		trackMeasures.push_back(dataToAdd);
-	//}
+	trackMeasures.push_back(dataToAdd);
+
+	/*Less important map stuff below*/
+	switch (track) //switching tracks (like a choo-choo train)
+	{
+	case Track::Vocal:
+		trackNumbersToNames[static_cast<int>(track)] = "Vocal track";
+		break;
+
+	case Track::Treble:
+		trackNumbersToNames[static_cast<int>(track)] = "Treble track";
+		break;
+
+	case Track::Bass:
+		trackNumbersToNames[static_cast<int>(track)] = "Bass track";
+		break;
+
+	default: 
+		throw MyException("attempted to add unsupported track type", __FILE__, __LINE__);
+	}
 }
+
+std::vector<float> Song::getTrackDurations()
+{
+	std::vector<float> durations; 
+	for (const auto& notes : tracks)
+	{
+		float totalDuration = 0.0f;
+		for (const auto& thing1 : notes) //good variable name here
+		{
+			totalDuration += thing1.at(0).durationInSeconds;
+		}
+		durations.push_back(totalDuration); 
+	}
+	return durations; 
+}
+
+std::vector<std::string> Song::getTrackNames()
+{
+	if (trackNumbersToNames.size() == 0)
+		throw MyException("track numbers to names map is empty!", __FILE__, __LINE__);
+
+	std::vector<std::string> trackNames; 
+	for (const auto& [trackNumber, trackName] : trackNumbersToNames)
+	{
+		trackNames.push_back(trackName);
+	}
+
+	return trackNames;
+}
+
 
 
 

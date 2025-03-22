@@ -30,7 +30,7 @@ public:
 
 	enum Track
 	{
-		//Vocal (later)
+		Vocal,
 		Treble, 
 		Bass
 	};
@@ -48,12 +48,14 @@ public:
 
 	void addToTrack(const Song::Track track, const std::vector<PianoNote>& dataToAdd);
 
+	std::vector<float> getTrackDurations(); 
+	/*ex: track 0 is vocals, track 1 is treble, etc.*/
+	std::vector<std::string> getTrackNames(); 
 private: 
 	std::string songName; 
 	int tempoBPM; 
-	//will be calculated based on TimeSignature and tempo
-	//float quarterNoteDuration;
 	TimeSignature timeSignature; 
+	/*How to put this to good use?*/
 	int numberOfMeasures; 
 
 	/*Maps "common" notes to their durations - Ex: "quarter" note at 60 bpm tempo gets mapped to 1.0f seconds*/
@@ -62,8 +64,7 @@ private:
 	/*Ex: treble, bass, vocal, guitar, drum, etc., etc.*/
 	std::vector<std::vector<std::vector<PianoNote>>> tracks; 
 
-	/*SLUR tracking! notes "often" linger past a measure boundary*/
-	std::vector<std::pair<PianoNote*, PianoNote*>> slurs;
+	std::map<int, std::string> trackNumbersToNames;
 
 	/*Only called by the constructor*/
 	void mapNoteTypesToDurations(const int tempoBPM, const TimeSignature timeSignature);
