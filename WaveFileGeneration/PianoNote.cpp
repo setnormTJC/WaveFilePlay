@@ -51,40 +51,85 @@ PianoNote::PianoNote()
 	initialize(); 
 }
 
-PianoNote::PianoNote(const std::string& noteName, const float durationInSeconds)
-	:noteName(noteName), durationInSeconds(durationInSeconds)
+//PianoNote::PianoNote(const std::string& noteName, const float durationInSeconds)
+//	:noteName(noteName), durationInSeconds(durationInSeconds)
+//{
+//	initialize(); 
+//
+//	totalNumberOfSamples = durationInSeconds * samplesPerSecond;
+//
+//	mapMidFrequenciesToAmplitudes();
+//
+//	
+//	soundWaveData.assign(totalNumberOfSamples, static_cast<short>(0));
+//	fillSoundWaveData();
+//
+//}
+
+PianoNote::PianoNote(const std::string& noteName, const float durationInSeconds, Loudness fundamentalAmplitude)
+	:noteName(noteName), durationInSeconds(durationInSeconds), fundamentalAmplitude(fundamentalAmplitude)
 {
 	initialize(); 
 
 	totalNumberOfSamples = durationInSeconds * samplesPerSecond;
 
-	mapFrequenciesToAmplitudes();
+	int octaveOfNote = getOctaveOfNote(noteName); 
 
+	if (octaveOfNote <= 2)
+	{
+		mapLowFrequenciesToAmplitudes(); 
+	}
+	else if (octaveOfNote <= 5) //NOTE: the "overtone discontinuity" is OBVIOUS in chromatic scale!
+	{
+		mapMidFrequenciesToAmplitudes();
+	}
+	else
+	{
+		mapHighFrequenciesToAmplitudes(); //FIX me!!!!!!
+	}
+
+	soundWaveData.assign(totalNumberOfSamples, static_cast<short>(0));
+	fillSoundWaveData();
+
+}
+
+void PianoNote::mapLowFrequenciesToAmplitudes()
+{
+	double fundamentalFrequency = notesToFrequencies.at(noteName);
+
+	constexpr int numberOfOvertonesDesired = 6; //I gave midrange notes EIGHT overtones ... 
+
+	//again, the amplitudes I use here will be (roughly) based on "C2.png" file contents...
+	std::vector<double> frequencies;
+	for (int i = 2; i <= numberOfOvertonesDesired + 1; ++i)
+		frequencies.push_back(fundamentalFrequency * i);
+
+	std::vector<short> amplitudes(numberOfOvertonesDesired + 1); //+ 1 because including fundamental 
 	
-	soundWaveData.assign(totalNumberOfSamples, static_cast<short>(0));
-	fillSoundWaveData();
+	/*"hard-coded" approach below - not sure how to "fit" this amplitude pattern to a loop*/
+	amplitudes =
+	{
+		static_cast<short>(fundamentalAmplitude),
+		static_cast<short>((short)fundamentalAmplitude / 2), //first overtone is ROUGHLY half 
+		static_cast<short>(fundamentalAmplitude), //INTERESTINGLY, second overtone has SAME amplitude!
+		static_cast<short>((short)fundamentalAmplitude / 2), //third is ALSO roughly half ...
+		static_cast<short>((short)fundamentalAmplitude / 1.5f), //fourth is roughly 2/3 amplitude of fundamental
+		static_cast<short>((short)fundamentalAmplitude / 4), 
+		static_cast<short>((short)fundamentalAmplitude/8)
+	};
+
+	/*first insert the fundamental and its amplitude*/
+	frequenciesToAmplitudes.insert({ fundamentalFrequency, static_cast<short>(fundamentalAmplitude) });
+	/*Then insert the overtones*/
+	for (int i = 0; i < frequencies.size(); ++i)
+		frequenciesToAmplitudes.insert({ frequencies[i], amplitudes[i] });
 
 }
 
-PianoNote::PianoNote(const std::string& name, const float durationInSeconds, Loudness fundamentalAmplitude)
-	:noteName(name), durationInSeconds(durationInSeconds), fundamentalAmplitude(fundamentalAmplitude)
-{
-	initialize(); 
-
-	totalNumberOfSamples = durationInSeconds * samplesPerSecond;
-
-	mapFrequenciesToAmplitudes();
-
-	soundWaveData.assign(totalNumberOfSamples, static_cast<short>(0));
-	fillSoundWaveData();
-
-}
-
-void PianoNote::mapFrequenciesToAmplitudes()
+void PianoNote::mapMidFrequenciesToAmplitudes()
 {
 	double fundamentalFrequency = notesToFrequencies.at(noteName); 
 
-	//constexpr int numberOfOvertonesDesired = 5; //a previous setting
 	constexpr int numberOfOvertonesDesired = 8; 
 
 	//calculate the first `numberOfOvertonesDesired` frequencies (multiples of the fundamental): 
@@ -92,7 +137,7 @@ void PianoNote::mapFrequenciesToAmplitudes()
 	for (int i = 2; i <= numberOfOvertonesDesired + 1; ++i)
 		frequencies.push_back(fundamentalFrequency * i);
 
-	//now the amplitudes ROUGHLY decay exponentially - according to FT analysis of digital piano recording. 
+	//now the amplitudes ROUGHLY decay exponentially - according to FT analysis of digital piano recording (C4.png). 
 	std::vector<short> amplitudes;
 	for (double i = 2; i <= numberOfOvertonesDesired + 1; ++i)
 		//A = Afundamental*e^-overtoneNumber -> MIGHT not be the "best" mimic for piano overtones 
@@ -106,6 +151,31 @@ void PianoNote::mapFrequenciesToAmplitudes()
 
 }
 
+void PianoNote::mapHighFrequenciesToAmplitudes()
+{
+	double fundamentalFrequency = notesToFrequencies.at(noteName);
+
+	constexpr int numberOfOvertonesDesired = 2; //I gave midrange notes EIGHT overtones ... 
+
+	//again, the amplitudes I use here will be (roughly) based on "C2.png" file contents...
+	std::vector<double> frequencies;
+	for (int i = 2; i <= numberOfOvertonesDesired + 1; ++i)
+		frequencies.push_back(fundamentalFrequency * i);
+
+	std::vector<short> amplitudes(numberOfOvertonesDesired + 1); //+ 1 because including fundamental 
+	amplitudes =
+	{
+		static_cast<short>(fundamentalAmplitude),
+		static_cast<short>((short)fundamentalAmplitude / 5), //first drops off by ABOUT a factor of 5
+		static_cast<short>((short)fundamentalAmplitude / 20) //very rough estimate here ...
+	};
+
+	/*first insert the fundamental and its amplitude*/
+	frequenciesToAmplitudes.insert({ fundamentalFrequency, static_cast<short>(fundamentalAmplitude) });
+	/*Then insert the overtones*/
+	for (int i = 0; i < frequencies.size(); ++i)
+		frequenciesToAmplitudes.insert({ frequencies[i], amplitudes[i] });
+}
 
 
 void PianoNote::applyType1ADSRtoSoundWave()
@@ -190,6 +260,8 @@ void PianoNote::applyType2ADSRtoSoundWave()
 
 }
 
+
+
 void PianoNote::fillSoundWaveData()
 {
 	std::random_device rd;
@@ -273,6 +345,24 @@ void PianoNote::writeDFTToCSVAndPlot()
 	const std::string callToPythonScript = "python plotFourierTransform.py " + csvFilename; //note the space ... 
 	system(callToPythonScript.c_str());
 
+}
+
+int PianoNote::getOctaveOfNote(const std::string& noteName)
+{
+	if (noteName.length() == 2) //ex: C3
+	{
+		return noteName.at(1) - '0'; //be wary of ASCII-tomfoolery  
+	}
+
+	else if (noteName.length() == 3)
+	{
+		return noteName.at(2) - '0';
+	}
+
+	else
+	{
+		throw MyException("note name length is not 2 or 3??", __FILE__, __LINE__);
+	}
 }
 
 std::vector<short> PianoNote::getSoundWaveData() const

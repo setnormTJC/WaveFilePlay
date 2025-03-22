@@ -127,6 +127,38 @@ std::vector<std::string> Song::getTrackNames()
 	return trackNames;
 }
 
+std::pair<float, float> Song::findMinAndMaxFrequenciesInSong()
+{
+	if (tracks.size() == 0)
+		throw MyException("Cannot find minimum frequency because `tracks` is empty", __FILE__, __LINE__);
+
+	float minFrequency = 9'999.0f; //arbitrary "large" number  
+	float maxFrequency = 0.0; 
+
+	for (const auto& track : tracks)
+	{
+		for (const auto& notes : track)
+		{
+			for (const auto& note : notes)
+			{
+				float noteFrequency = static_cast<float>(note.notesToFrequencies.at(note.noteName));
+				if (noteFrequency < minFrequency 
+					&& note.noteName != "A0") //silly "band-aid" fix -> I am currently using "AO" as placeholder 
+											//for rest notes 
+				{
+					minFrequency = noteFrequency; 
+				}
+
+				if (noteFrequency > maxFrequency)
+				{
+					maxFrequency = noteFrequency;
+				}
+			}
+		}
+	}
+	return { minFrequency, maxFrequency };
+}
+
 
 
 

@@ -100,9 +100,6 @@ public:
 	*/
 	WaveFile(const std::vector<std::vector<PianoNote>>& songNotes);
 
-	WaveFile(std::vector<std::vector<PianoNote>> trebleNotes,
-		std::vector<std::vector<PianoNote>> bassNotes);
-
 	/*Creates a WaveFile object by reading an input file (whose extension MUST be .wav)*/
 	WaveFile(const std::string& inputFileName);
 
@@ -110,7 +107,7 @@ public:
 	//WaveFile(const WaveFile&& other) = delete; 
 
 	/*@param filename -> MUST include .WAV*/
-	void writeToWaveFile(const std::string& filename);
+	void writeToWaveFile(const std::string& outputFilename);
 
 	/*Anticipate calling this AFTER `WaveFile(const std::vector<std::vector<PianoNote>>& songNotes)`*/
 	void addTrack(const std::vector < std::vector<PianoNote>>& newTrack);

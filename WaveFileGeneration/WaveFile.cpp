@@ -15,7 +15,7 @@ FormatHeader::FormatHeader()
 
 WaveFile::WaveFile(const std::string& inputFileName)
 {
-	if (inputFileName.find(".wav") == std::string::npos) throw std::exception("input file MUST be .WAV");
+	if (inputFileName.find(".wav") == std::string::npos) throw MyException("input file MUST be .WAV", __FILE__, __LINE__);
 
 	std::ifstream fin{ inputFileName, std::ios::binary };
 
@@ -328,7 +328,7 @@ void WaveFile::addTrack(const std::vector<std::vector<PianoNote>>& newTrack)
 		}
 	}
 
-	int currentTrackDuration = theSoundSubchunk.data.size();
+	int currentTrackDuration = static_cast<int>(theSoundSubchunk.data.size());
 	int newTrackDuration = totalSize; 
 
 	std::vector<short> soundWaveDataForWaveFile = theSoundSubchunk.data; //get the "top" track
@@ -407,7 +407,7 @@ WaveFile::WaveFile(const PianoNote& pianoNote, const WaveType theWaveType)
 
 	float frequency = static_cast<float>(PianoNote::notesToFrequencies[pianoNote.noteName]);
 	int amplitude = (int)pianoNote.fundamentalAmplitude;
-	int NumSamples = theFormatHeader.SampleRate * pianoNote.durationInSeconds; 
+	int NumSamples = static_cast<int>(theFormatHeader.SampleRate * pianoNote.durationInSeconds);
 
 	theSoundSubchunk.data.resize(NumSamples);
 

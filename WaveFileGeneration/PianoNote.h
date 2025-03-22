@@ -44,10 +44,24 @@ private:
 
 	/***************Private funcs********************************/
 
-	/*Maps the fundamental and its overtones to their amplitudes
-	* DEFINITELY needs further tweeking -> at the moment, I am using something like an exponential decay of amplitudes, but overtones don't look perfect
+
+	/*"Low" means from octave 0 to octave 2
+	* Based on FT analysis of C2, the first few overtone amplitudes do NOT drop off from the fundamental as quickly as mid-range notes
+	*See: someWaveAnalysis/plots/transforms/piano C2.png
 	*/
-	void mapFrequenciesToAmplitudes();
+	void mapLowFrequenciesToAmplitudes(); 
+
+	/*Maps the fundamental and its overtones to their amplitudes
+	* "Mid" is somewhat arbitrary and means from octaves 3 to 5
+	*/
+	void mapMidFrequenciesToAmplitudes();
+
+	/*"High" means from octave 0 to octave 2
+	* Based on FT analysis of C6, amplitudes of overtones decrease more sharply than for mid-range notes
+	*/
+	void mapHighFrequenciesToAmplitudes();
+
+
 
 	void fillSoundWaveData(); 
 
@@ -68,7 +82,7 @@ private:
 
 	void writeDFTToCSVAndPlot(); 
 
-
+	int getOctaveOfNote(const std::string& noteName); 
 public:
 
 	/*Be wary of the summing of multiple harmonics - can cause popping*/
@@ -98,10 +112,10 @@ public:
 	PianoNote();
 
 	/*This overload (likely to be deleted later?) sets default loudness to Mezzo*/
-	PianoNote(const std::string& noteName, const float durationInSeconds);
+	//PianoNote(const std::string& noteName, const float durationInSeconds);
 
 	/*@param duration -> in seconds, example: 3/4 time and tempo = 80 bmp implies quarter note duration = (60.0 sec/min)/ (80 bpm) = 0.75 seconds*/
-	PianoNote(const std::string& name, const float durationInSeconds, Loudness fundamentalAmplitude);
+	PianoNote(const std::string& noteName, const float durationInSeconds, Loudness fundamentalAmplitude);
 
 	//PianoNote(const std::string& name, const float durationInSeconds, Loudness baseNoteAmplitude, ADSR adsrEnvelop, Overtone overtoneSignature);
 
@@ -134,8 +148,6 @@ private:
 
 	int getIndexOfBaseNote(const std::string& baseNoteName);
 	
-	/*Ex: returns 3 for C3, 6 for A#6, etc.*/
-	int getOctaveOfNote(const std::string& noteName);
 
 	/*Ex: returns C for C3, A# for A#6, etc.*/
 	std::string getShortNameOfNote(const std::string& note);
@@ -153,6 +165,9 @@ public:
 
 	std::vector<PianoNote> getChordNotes() const; 
 	std::vector<std::vector<PianoNote>> getChordAndItsInversions(); 
+
+	/*Ex: returns 3 for C3, 6 for A#6, etc.*/
+	int getOctaveOfNote(const std::string& noteName);
 
 
 	enum class ChordType

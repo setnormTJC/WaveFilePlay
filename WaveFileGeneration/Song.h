@@ -51,6 +51,10 @@ public:
 	std::vector<float> getTrackDurations(); 
 	/*ex: track 0 is vocals, track 1 is treble, etc.*/
 	std::vector<std::string> getTrackNames(); 
+
+	/*For funsies*/
+	std::pair<float, float> findMinAndMaxFrequenciesInSong(); 
+
 private: 
 	std::string songName; 
 	int tempoBPM; 

@@ -488,60 +488,60 @@ std::vector<std::vector<PianoNote>> MysterySong::getMysterySongBassTrack(const S
 	{
 		/*Measure 5:*/
 		{PianoNote("C2", dottedEighth, Loudness::Mezzo)}, //1
-		{PianoNote("C2", sixteenth + quarter, Loudness::Forte)}, // and? two
-		{PianoNote("C2", eighth, Loudness::Forte)}, //3 
-		{PianoNote("C2", eighth, Loudness::Forte)}, //and 
-		{PianoNote("C2", quarter, Loudness::Fortissimo)}, //4!
+		{PianoNote("C2", sixteenth + quarter, Loudness::Mezzo)}, // and? two
+		{PianoNote("C2", eighth, Loudness::Mezzo)}, //3 
+		{PianoNote("C2", eighth, Loudness::Mezzo)}, //and 
+		{PianoNote("C2", quarter, Loudness::Mezzo)}, //4!
 
 		//Measure 6: 
 		{PianoNote("E2", dottedEighth, Loudness::Mezzo)},
-		{PianoNote("E2", sixteenth + quarter, Loudness::Forte)},
-		{PianoNote("E2", eighth, Loudness::Forte)},
-		{PianoNote("E2", eighth, Loudness::Forte)},
-		{PianoNote("E2", quarter, Loudness::Fortissimo)},
+		{PianoNote("E2", sixteenth + quarter, Loudness::Mezzo)},
+		{PianoNote("E2", eighth, Loudness::Mezzo)},
+		{PianoNote("E2", eighth, Loudness::Mezzo)},
+		{PianoNote("E2", quarter, Loudness::Mezzo)},
 
 		//7
 		{PianoNote("D2", dottedEighth, Loudness::Mezzo) },
-		{PianoNote("D2", sixteenth + quarter, Loudness::Forte)},
-		{PianoNote("D2", eighth, Loudness::Forte)},
-		{PianoNote("D2", eighth, Loudness::Forte)},
-		{PianoNote("D2", quarter, Loudness::Fortissimo)},
+		{PianoNote("D2", sixteenth + quarter, Loudness::Mezzo)},
+		{PianoNote("D2", eighth, Loudness::Mezzo)},
+		{PianoNote("D2", eighth, Loudness::Mezzo)},
+		{PianoNote("D2", quarter, Loudness::Mezzo)},
 
 		//8
 		{PianoNote("C2", dottedEighth, Loudness::Mezzo)},
-		{PianoNote("C2", sixteenth + quarter, Loudness::Forte)},
-		{PianoNote("C2", eighth, Loudness::Forte)},
-		{PianoNote("C2", eighth, Loudness::Forte)},
-		{PianoNote("C2", quarter,Loudness::Fortissimo)}
+		{PianoNote("C2", sixteenth + quarter, Loudness::Mezzo)},
+		{PianoNote("C2", eighth, Loudness::Mezzo)},
+		{PianoNote("C2", eighth, Loudness::Mezzo)},
+		{PianoNote("C2", quarter,Loudness::Mezzo)}
 	};
 
 	std::vector<std::vector<PianoNote>> measures9Through12 =
 	{
 		//9:
 		{PianoNote("G2", dottedEighth, Loudness::Mezzo)},
-		{PianoNote("G2", sixteenth + quarter, Loudness::Forte)},
-		{PianoNote("G2", eighth, Loudness::Forte)},
-		{PianoNote("G2", eighth, Loudness::Forte)},
-		{PianoNote("G2", quarter,Loudness::Fortissimo)},
+		{PianoNote("G2", sixteenth + quarter, Loudness::Mezzo)},
+		{PianoNote("G2", eighth, Loudness::Mezzo)},
+		{PianoNote("G2", eighth, Loudness::Mezzo)},
+		{PianoNote("G2", quarter,Loudness::Mezzo)},
 		//10:
 		{PianoNote("D2", dottedEighth, Loudness::Mezzo)},
-		{PianoNote("D2", sixteenth + quarter, Loudness::Forte)},
-		{PianoNote("D2", eighth, Loudness::Forte)},
-		{PianoNote("D2", eighth, Loudness::Forte)},
-		{PianoNote("D2", quarter,Loudness::Fortissimo)},
+		{PianoNote("D2", sixteenth + quarter, Loudness::Mezzo)},
+		{PianoNote("D2", eighth, Loudness::Mezzo)},
+		{PianoNote("D2", eighth, Loudness::Mezzo)},
+		{PianoNote("D2", quarter,Loudness::Mezzo)},
 
 		//11:
 		{PianoNote("G2", dottedEighth, Loudness::Mezzo)},
-		{PianoNote("G2", sixteenth + quarter, Loudness::Forte)},
-		{PianoNote("G2", eighth, Loudness::Forte)},
-		{PianoNote("G2", eighth, Loudness::Forte)},
-		{PianoNote("G2", quarter,Loudness::Fortissimo)},
+		{PianoNote("G2", sixteenth + quarter, Loudness::Mezzo)},
+		{PianoNote("G2", eighth, Loudness::Mezzo)},
+		{PianoNote("G2", eighth, Loudness::Mezzo)},
+		{PianoNote("G2", quarter,Loudness::Mezzo)},
 		//12
 		{PianoNote("D2", dottedEighth, Loudness::Mezzo)},
-		{PianoNote("D2", sixteenth + quarter, Loudness::Forte)},
-		{PianoNote("D2", eighth, Loudness::Forte)},
-		{PianoNote("D2", eighth, Loudness::Forte)},
-		{PianoNote("D2", quarter,Loudness::Fortissimo)},
+		{PianoNote("D2", sixteenth + quarter, Loudness::Mezzo)},
+		{PianoNote("D2", eighth, Loudness::Mezzo)},
+		{PianoNote("D2", eighth, Loudness::Mezzo)},
+		{PianoNote("D2", quarter,Loudness::Mezzo)},
 
 	};
 
@@ -549,85 +549,85 @@ std::vector<std::vector<PianoNote>> MysterySong::getMysterySongBassTrack(const S
 	{
 		//13
 		{PianoNote("C2", dottedEighth, Loudness::Mezzo)},
-		{PianoNote("C2", sixteenth + quarter, Loudness::Forte)},
-		{PianoNote("C2", eighth, Loudness::Forte)},
-		{PianoNote("C2", eighth, Loudness::Forte)},
-		{PianoNote("C2", quarter,Loudness::Fortissimo)},
+		{PianoNote("C2", sixteenth + quarter, Loudness::Mezzo)},
+		{PianoNote("C2", eighth, Loudness::Mezzo)},
+		{PianoNote("C2", eighth, Loudness::Mezzo)},
+		{PianoNote("C2", quarter,Loudness::Mezzo)},
 		//14:
 		{PianoNote("E2", dottedEighth, Loudness::Mezzo)},
-		{PianoNote("E2", sixteenth + quarter, Loudness::Forte)},
-		{PianoNote("E2", eighth, Loudness::Forte)},
-		{PianoNote("E2", eighth, Loudness::Forte)},
-		{PianoNote("E2", quarter,Loudness::Fortissimo)},
+		{PianoNote("E2", sixteenth + quarter, Loudness::Mezzo)},
+		{PianoNote("E2", eighth, Loudness::Mezzo)},
+		{PianoNote("E2", eighth, Loudness::Mezzo)},
+		{PianoNote("E2", quarter,Loudness::Mezzo)},
 
 		//15:
 		{PianoNote("D2", dottedEighth, Loudness::Mezzo)},
-		{PianoNote("D2", sixteenth + quarter, Loudness::Forte)},
-		{PianoNote("D2", eighth, Loudness::Forte)},
-		{PianoNote("D2", eighth, Loudness::Forte)},
-		{PianoNote("D2", quarter,Loudness::Fortissimo)},
+		{PianoNote("D2", sixteenth + quarter, Loudness::Mezzo)},
+		{PianoNote("D2", eighth, Loudness::Mezzo)},
+		{PianoNote("D2", eighth, Loudness::Mezzo)},
+		{PianoNote("D2", quarter,Loudness::Mezzo)},
 		//16
 		{PianoNote("D2", dottedEighth, Loudness::Mezzo)},
-		{PianoNote("D2", sixteenth + quarter, Loudness::Forte)},
-		{PianoNote("D2", eighth, Loudness::Forte)},
-		{PianoNote("D2", eighth, Loudness::Forte)},
-		{PianoNote("D2", quarter,Loudness::Fortissimo)},
+		{PianoNote("D2", sixteenth + quarter, Loudness::Mezzo)},
+		{PianoNote("D2", eighth, Loudness::Mezzo)},
+		{PianoNote("D2", eighth, Loudness::Mezzo)},
+		{PianoNote("D2", quarter,Loudness::Mezzo)},
 	};
 
 	std::vector<std::vector<PianoNote>> measures17Through20 =
 	{
 		//17
 		{PianoNote("G2", dottedEighth, Loudness::Mezzo)},
-		{PianoNote("G2", sixteenth + quarter, Loudness::Forte)},
-		{PianoNote("G2", eighth, Loudness::Forte)},
-		{PianoNote("G2", eighth, Loudness::Forte)},
-		{PianoNote("G2", quarter,Loudness::Fortissimo)},
+		{PianoNote("G2", sixteenth + quarter, Loudness::Mezzo)},
+		{PianoNote("G2", eighth, Loudness::Mezzo)},
+		{PianoNote("G2", eighth, Loudness::Mezzo)},
+		{PianoNote("G2", quarter,Loudness::Mezzo)},
 		//18:
 		{PianoNote("D2", dottedEighth, Loudness::Mezzo)},
-		{PianoNote("D2", sixteenth + quarter, Loudness::Forte)},
-		{PianoNote("D2", eighth, Loudness::Forte)},
-		{PianoNote("D2", eighth, Loudness::Forte)},
-		{PianoNote("D2", quarter,Loudness::Fortissimo)},
+		{PianoNote("D2", sixteenth + quarter, Loudness::Mezzo)},
+		{PianoNote("D2", eighth, Loudness::Mezzo)},
+		{PianoNote("D2", eighth, Loudness::Mezzo)},
+		{PianoNote("D2", quarter,Loudness::Mezzo)},
 		//19:
 		{PianoNote("G2", dottedEighth, Loudness::Mezzo)},
-		{PianoNote("G2", sixteenth + quarter, Loudness::Forte)},
-		{PianoNote("G2", eighth, Loudness::Forte)},
-		{PianoNote("G2", eighth, Loudness::Forte)},
-		{PianoNote("G2", quarter,Loudness::Fortissimo)},
+		{PianoNote("G2", sixteenth + quarter, Loudness::Mezzo)},
+		{PianoNote("G2", eighth, Loudness::Mezzo)},
+		{PianoNote("G2", eighth, Loudness::Mezzo)},
+		{PianoNote("G2", quarter,Loudness::Mezzo)},
 		//20
 		{PianoNote("D2", dottedEighth, Loudness::Mezzo)},
-		{PianoNote("D2", sixteenth + quarter, Loudness::Forte)},
-		{PianoNote("D2", eighth, Loudness::Forte)},
-		{PianoNote("D2", eighth, Loudness::Forte)},
-		{PianoNote("D2", quarter,Loudness::Fortissimo)},
+		{PianoNote("D2", sixteenth + quarter, Loudness::Mezzo)},
+		{PianoNote("D2", eighth, Loudness::Mezzo)},
+		{PianoNote("D2", eighth, Loudness::Mezzo)},
+		{PianoNote("D2", quarter,Loudness::Mezzo)},
 	};
 
 	std::vector<std::vector<PianoNote>> measures21Through24 =
 	{
 		//17
 		{PianoNote("C2", dottedEighth, Loudness::Mezzo)},
-		{PianoNote("C2", sixteenth + quarter, Loudness::Forte)},
-		{PianoNote("C2", eighth, Loudness::Forte)},
-		{PianoNote("C2", eighth, Loudness::Forte)},
-		{PianoNote("C2", quarter,Loudness::Fortissimo)},
+		{PianoNote("C2", sixteenth + quarter, Loudness::Mezzo)},
+		{PianoNote("C2", eighth, Loudness::Mezzo)},
+		{PianoNote("C2", eighth, Loudness::Mezzo)},
+		{PianoNote("C2", quarter,Loudness::Mezzo)},
 		//18:
 		{PianoNote("E2", dottedEighth, Loudness::Mezzo)},
-		{PianoNote("E2", sixteenth + quarter, Loudness::Forte)},
-		{PianoNote("E2", eighth, Loudness::Forte)},
-		{PianoNote("E2", eighth, Loudness::Forte)},
-		{PianoNote("E2", quarter,Loudness::Fortissimo)},
+		{PianoNote("E2", sixteenth + quarter, Loudness::Mezzo)},
+		{PianoNote("E2", eighth, Loudness::Mezzo)},
+		{PianoNote("E2", eighth, Loudness::Mezzo)},
+		{PianoNote("E2", quarter,Loudness::Mezzo)},
 		//19:
 		{PianoNote("D2", dottedEighth, Loudness::Mezzo)},
-		{PianoNote("D2", sixteenth + quarter, Loudness::Forte)},
-		{PianoNote("D2", eighth, Loudness::Forte)},
-		{PianoNote("D2", eighth, Loudness::Forte)},
-		{PianoNote("D2", quarter,Loudness::Fortissimo)},
+		{PianoNote("D2", sixteenth + quarter, Loudness::Mezzo)},
+		{PianoNote("D2", eighth, Loudness::Mezzo)},
+		{PianoNote("D2", eighth, Loudness::Mezzo)},
+		{PianoNote("D2", quarter,Loudness::Mezzo)},
 		//20
 		{PianoNote("D2", dottedEighth, Loudness::Mezzo)},
-		{PianoNote("D2", sixteenth + quarter, Loudness::Forte)},
-		{PianoNote("D2", eighth, Loudness::Forte)},
-		{PianoNote("D2", eighth, Loudness::Forte)},
-		{PianoNote("D2", quarter,Loudness::Fortissimo)},
+		{PianoNote("D2", sixteenth + quarter, Loudness::Mezzo)},
+		{PianoNote("D2", eighth, Loudness::Mezzo)},
+		{PianoNote("D2", eighth, Loudness::Mezzo)},
+		{PianoNote("D2", quarter,Loudness::Mezzo)},
 	};
 
 	std::vector<std::vector<PianoNote>> measures25Through28 =
@@ -740,6 +740,11 @@ void MysterySong::getAndPlayFullSong()
 	{
 		std::cout << trackNames[i] << " lasts for : " << trackDurations[i] << " seconds\n";
 	}
+
+	/*Optional, for funsies*/
+	auto minAndMaxFrequencies = mysterySong.findMinAndMaxFrequenciesInSong(); 
+	std::cout << "Min frequency: " << minAndMaxFrequencies.first << "\n";
+	std::cout << "Max frequency: " << minAndMaxFrequencies.second << "\n";
 
 	auto tracks = mysterySong.getTracks();
 

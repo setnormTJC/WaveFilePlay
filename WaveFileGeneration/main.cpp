@@ -1,7 +1,7 @@
 // WaveFileGeneration.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-#include"DemoingWaveFile.h"
+#include"Demos.h"
 
 #include"FourierTransform.h"
 #include"MyException.h"
@@ -16,7 +16,9 @@ int main()
 
 	try
 	{
-		MysterySong::getAndPlayFullSong(); 
+		//FT::plotFTOfC2(); 
+		//MysterySong::getAndPlayFullSong(); 
+		//SimpleTesting::playAll88Notes_withHalfSecondDuration(); 
 	}
 	
 	catch (const MyException& e)

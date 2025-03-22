@@ -24,7 +24,7 @@
     <ClCompile Include="PianoNote.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DemoingWaveFile.cpp">
+    <ClCompile Include="Demos.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FourierTransform.cpp">
@@ -47,7 +47,7 @@
     <ClInclude Include="PianoNote.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DemoingWaveFile.h">
+    <ClInclude Include="Demos.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="scrappedCode.h">

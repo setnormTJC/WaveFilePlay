@@ -100,6 +100,9 @@ void FourierTransform::fillTransformDataAndFrequencyMap()
 
 void FourierTransform::writeFTMapToCSV(const std::string& csvFilename) const
 {
+	if (FourierTransform::frequenciesToAmplitudes.size() == 0)
+		throw MyException("frequencies to amplitudes map is empty", __FILE__, __LINE__);
+
 	if (csvFilename.find(".csv") == std::string::npos)
 		throw MyException("filename must contain .csv", __FILE__, __LINE__);
 
