@@ -16,7 +16,8 @@ int main()
 
 	try
 	{
-		
+		MusicMaking::writeRandomTrebleTrack(); 
+		MusicMaking::writeRandomChords(); 
 
 	}
 	

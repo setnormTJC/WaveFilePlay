@@ -62,6 +62,10 @@ namespace MusicMaking
 
 	/*treble and bass*/
 	void demoTwoSeparateTracks(); 
+
+	void writeRandomTrebleTrack(); 
+
+	void writeRandomChords(); 
 }
 
 /*Attack, decay, sustain, release envelope*/

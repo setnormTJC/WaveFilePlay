@@ -816,6 +816,96 @@ void MusicMaking::demoTwoSeparateTracks()
 
 }
 
+void MusicMaking::writeRandomTrebleTrack()
+{
+	std::mt19937 rng(std::random_device{}());
+
+	PianoNote::initialize();
+	int indexOfC3 = 27;
+	int indexOfC5 = 51;
+
+	std::uniform_int_distribution<> randomNoteNameDistribution(indexOfC3, indexOfC5);
+	std::vector<float> allowedNoteDurations =
+	{
+		0.5f,
+		1.0f,
+		2.0f
+	};
+	std::uniform_int_distribution<> randomDurationDistribution(0, allowedNoteDurations.size() - 1);
+
+	std::vector<PianoNote::Loudness> allowedLoudnesses =
+	{
+		PianoNote::Loudness::Piano,
+		PianoNote::Loudness::Mezzo,
+		PianoNote::Loudness::Forte,
+	};
+	std::uniform_int_distribution<> randomLoudnessDistribution(0, allowedLoudnesses.size() - 1);
+
+	std::vector<std::vector<PianoNote>> trebleTrack;
+
+	constexpr int desiredNumberOfNotes = 10;
+	for (int i = 0; i < desiredNumberOfNotes; ++i)
+	{
+		std::string currentNoteName = PianoNote::the88Notes.at(randomNoteNameDistribution(rng));
+		float currentNoteDuration = allowedNoteDurations.at(randomDurationDistribution(rng));
+		//PianoNote::Loudness currentNoteLoudness = (PianoNote::Loudness)randomLoudnessDistribution(rng);
+
+		PianoNote currentNote(currentNoteName, currentNoteDuration, PianoNote::Loudness::Mezzo);
+
+		trebleTrack.push_back({ currentNote });
+	}
+
+
+
+	WaveFile trebleWavefile(trebleTrack);
+
+	std::string filename = "trebleTrack.wav";
+	trebleWavefile.writeToWaveFile(filename);
+
+}
+
+void MusicMaking::writeRandomChords()
+{
+	std::mt19937 rng(std::random_device{}());
+
+	PianoNote::initialize();
+
+	auto cMajorChords = Utils::generateCMajorScaleChords(); 
+
+	std::uniform_int_distribution<> randomChordDistribution(0, cMajorChords.size() - 1);
+
+	std::vector<float> allowedNoteDurations =
+	{
+		0.5f,
+		1.0f,
+		2.0f
+	};
+
+	std::uniform_int_distribution<> randomDurationDistribution(0, allowedNoteDurations.size() - 1);
+
+	std::vector<std::vector<PianoNote>> bassTrack;
+
+	constexpr int desiredNumberOfNotes = 10;
+	for (int i = 0; i < desiredNumberOfNotes; ++i)
+	{
+		std::string currentChordName = PianoNote::the88Notes.at(randomChordDistribution(rng));
+		float currentNoteDuration = allowedNoteDurations.at(randomDurationDistribution(rng));
+		//PianoNote::Loudness currentNoteLoudness = (PianoNote::Loudness)randomLoudnessDistribution(rng);
+
+		PianoNote currentNote(currentChordName, currentNoteDuration, PianoNote::Loudness::Mezzo);
+
+		bassTrack.push_back({ currentNote });
+	}
+
+
+
+	WaveFile trebleWavefile(bassTrack);
+
+	std::string filename = "bassTrack.wav";
+	trebleWavefile.writeToWaveFile(filename);
+
+}
+
 
 #pragma endregion 
 
