@@ -10,14 +10,54 @@
 #include <random>
 
 
+void demoMelody()
+{
+	PianoNote firstNote("G3", 0.5, PianoNote::Loudness::Mezzo);
+
+	std::vector<PianoNote> firstChord =
+	{
+		firstNote
+	};
+
+	std::vector<std::vector<PianoNote>> songNotes =
+	{
+		firstChord
+	};
+
+
+	WaveFile anotherWaveFile(songNotes);
+
+}
 
 int main()
 {
 
+	//WaveFile theWaveFile("abcdefg.wav");
+	//theWaveFile.reverseAudio(); 
+
+	//theWaveFile.writeToWaveFile("gfedcba.wav");
+
+
+	//std::system("gfedcba.wav");
+
 	try
 	{
-		MusicMaking::writeRandomTrebleTrack(); 
-		MusicMaking::writeRandomChords(); 
+		FourierTransform ft("flute.wav");
+
+		ft.fillTransformDataAndFrequencyMap(); 
+
+		std::string ftFilename = "flute.csv";
+
+		ft.writeFTMapToCSV(ftFilename);
+
+		std::string callPythonToPlotTransform = "python plotFourierTransform.py " + ftFilename;
+
+		system(callPythonToPlotTransform.c_str());
+
+		//FourierTransform::FourierTransform ("440.wav");
+		//FourierTransform::FourierTransform()
+
+
 
 	}
 	
