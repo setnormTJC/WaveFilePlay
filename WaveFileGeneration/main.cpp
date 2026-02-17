@@ -50,7 +50,7 @@ int main()
 
 		ft.writeFTMapToCSV(ftFilename);
 
-		std::string callPythonToPlotTransform = "python plotFourierTransform.py " + ftFilename;
+		std::string callPythonToPlotTransform = "C:\\ProgramData\\Anaconda3\\python.exe plotFourierTransform.py " + ftFilename;
 
 		system(callPythonToPlotTransform.c_str());
 
